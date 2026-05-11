@@ -11,9 +11,15 @@ from settings.loggings import *  # noqa
 from settings.middlewares import *  # noqa
 from settings.observabilities import *  # noqa
 from settings.routings import *  # noqa
-from settings.sessions import *  # noqa
+from settings import sessions as _sessions
 from settings.securities import *  # noqa
 from settings.templates import *  # noqa
+
+for _name in dir(_sessions):
+    if _name.isupper():
+        globals()[_name] = getattr(_sessions, _name)
+del _name
+del _sessions
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", "changeme")
 
