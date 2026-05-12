@@ -31,7 +31,7 @@ cd ~/projetos/IFRN/ava/workspace
 | `AmbienteModelTestCase`          | Modelo `Ambiente`, `expressao_seletora`, `seleciona_ambiente`                     |
 | `SolicitacaoModelTestCase`       | Modelo `Solicitacao`, auto-populate no `save()`, `status_merged`                  |
 | `SyncErrorTestCase`              | Classe `SyncError` com código HTTP customizado                                    |
-| `UtilsFunctionsTestCase`         | `http_get`, `http_post`,`http_get_json`,`http_post_json`,`validate_http_response` |
+| `UtilsFunctionsTestCase`         | `http_get`, `http_post`,`http_get_json`,`http_post_json`                          |
 | `LocalSuapHTTPMockTestCase`      | Mock HTTP do plugin `local_suap`: auth, endpoints, 422, sync_up/down              |
 | `ToolSgaHTTPMockTestCase`        | Mock HTTP do plugin `tool_sga`: 400/401/404/501 (stub)                            |
 | `AmbienteSelecaoTestCase`        | Seleção de ambiente: múltiplas regras, ordem, sem ambiente, inativo               |
@@ -44,8 +44,6 @@ cd ~/projetos/IFRN/ava/workspace
 | `ManagementCommandTestCase`      | `atualiza_solicitacoes` (migração de registros antigos)                           |
 | `IntegrationTestCase`            | Fluxo completo de `sync_up_enrolments` com todos os decorators                    |
 | `EdgeCasesTestCase`              | Múltiplos ambientes, JSON incompleto, expressões complexas                        |
-
-> **Alias:** `MoodleHTTPMockTestCase = LocalSuapHTTPMockTestCase` (mantido para compatibilidade).
 
 ---
 

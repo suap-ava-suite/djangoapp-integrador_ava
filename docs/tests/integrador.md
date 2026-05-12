@@ -10,7 +10,7 @@
 ## Utils
 
 - SyncErrorTestCase: Classe de erro customizada
-- UtilsFunctionsTestCase: http_get, http_post, http_get_json, http_post_json, validate_http_response
+- UtilsFunctionsTestCase: http_get, http_post, http_get_json, http_post_json
 
 ## Decorators (8 decorators testados)
 
