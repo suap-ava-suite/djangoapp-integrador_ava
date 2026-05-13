@@ -19,6 +19,8 @@ from django.test import RequestFactory, TestCase, override_settings
 from security.apps import SecurityConfig
 from security.views import authenticate, login, logout
 
+TEST_LOGOUT_TOKEN = "test_token_123"  # noqa S105
+
 
 class SecurityAppConfigTestCase(TestCase):
     """Testes para a configuração da app security."""
@@ -453,12 +455,12 @@ class LogoutViewTestCase(TestCase):
         request = self.factory.get("/logout/")
         request.user = self.user
         self.add_session_to_request(request)
-        request.session["logout_token"] = "test_token_123"  # noqa S105
+        request.session["logout_token"] = TEST_LOGOUT_TOKEN
 
         response = logout(request)
 
         # Verifica que URL contém token
-        self.assertIn("token=test_token_123", response.url)
+        self.assertIn(f"token={TEST_LOGOUT_TOKEN}", response.url)
 
     def test_logout_with_empty_logout_token(self):
         """Testa logout sem logout_token na sessão."""
