@@ -7,12 +7,13 @@ from django.db import models
 from sga.db.obfuscators import mask_all
 
 
-class PermissiveURLField(models.URLField):
-    def permissive_url_validator(value):
-        pattern = r"^https?://[\w.-]+(:\d+)?(/.*)?$"
-        if not re.match(pattern, value):
-            raise ValidationError("Informe uma URL válidaaa.")
+def permissive_url_validator(value):
+    pattern = r"^https?://[\w.-]+(:\d+)?(/.*)?$"
+    if not re.match(pattern, value):
+        raise ValidationError("Informe uma URL válidaaa.")
 
+
+class PermissiveURLField(models.URLField):
     default_validators = [permissive_url_validator]
 
     def formfield(self, **kwargs):

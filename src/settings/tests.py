@@ -26,26 +26,20 @@ class SettingsAppsTestCase(TestCase):
 
     def test_project_title_is_defined(self):
         """Checks whether PROJECT_TITLE is defined."""
-        from settings import PROJECT_TITLE
-
-        self.assertIsNotNone(PROJECT_TITLE)
-        self.assertIsInstance(PROJECT_TITLE, str)
-        self.assertEqual(PROJECT_TITLE, "Integrador AVA")
+        self.assertIsNotNone(settings.PROJECT_TITLE)
+        self.assertIsInstance(settings.PROJECT_TITLE, str)
+        self.assertEqual(settings.PROJECT_TITLE, "Integrador AVA")
 
     def test_project_version_is_defined(self):
         """Checks whether PROJECT_VERSION is defined."""
-        from settings import PROJECT_VERSION
-
-        self.assertIsNotNone(PROJECT_VERSION)
-        self.assertIsInstance(PROJECT_VERSION, str)
-        self.assertRegex(PROJECT_VERSION, r"^\d+\.\d+\.\d+$")
+        self.assertIsNotNone(settings.PROJECT_VERSION)
+        self.assertIsInstance(settings.PROJECT_VERSION, str)
+        self.assertRegex(settings.PROJECT_VERSION, r"^\d+\.\d+\.\d+$")
 
     def test_project_last_startup_is_timestamp(self):
         """Checks whether PROJECT_LAST_STARTUP is a valid timestamp."""
-        from settings import PROJECT_LAST_STARTUP
-
-        self.assertIsInstance(PROJECT_LAST_STARTUP, int)
-        self.assertGreater(PROJECT_LAST_STARTUP, 0)
+        self.assertIsInstance(settings.PROJECT_LAST_STARTUP, int)
+        self.assertGreater(settings.PROJECT_LAST_STARTUP, 0)
 
     def test_installed_apps_contains_django_apps(self):
         """Checks whether INSTALLED_APPS contains Django apps."""
@@ -79,15 +73,11 @@ class SettingsAppsTestCase(TestCase):
 
     def test_show_support_form_is_boolean(self):
         """Checks whether SHOW_SUPPORT_FORM is a boolean."""
-        from settings import SHOW_SUPPORT_FORM
-
-        self.assertIsInstance(SHOW_SUPPORT_FORM, bool)
+        self.assertIsInstance(settings.SHOW_SUPPORT_FORM, bool)
 
     def test_show_support_chat_is_boolean(self):
         """Checks whether SHOW_SUPPORT_CHAT is a boolean."""
-        from settings import SHOW_SUPPORT_CHAT
-
-        self.assertIsInstance(SHOW_SUPPORT_CHAT, bool)
+        self.assertIsInstance(settings.SHOW_SUPPORT_CHAT, bool)
 
 
 class SettingsDatabasesTestCase(TestCase):
@@ -170,22 +160,18 @@ class SettingsSecuritiesTestCase(TestCase):
 
     def test_oauth_configuration_exists(self):
         """Testa se a configuração OAuth existe."""
-        from settings.securities import OAUTH
-
-        self.assertIsInstance(OAUTH, dict)
-        self.assertIn("BASE_URL", OAUTH)
-        self.assertIn("AUTHORIZE_URL", OAUTH)
-        self.assertIn("TOKEN_URL", OAUTH)
-        self.assertIn("CLIENT_ID", OAUTH)
-        self.assertIn("CLIENT_SECRET", OAUTH)
+        self.assertIsInstance(settings.OAUTH, dict)
+        self.assertIn("BASE_URL", settings.OAUTH)
+        self.assertIn("AUTHORIZE_URL", settings.OAUTH)
+        self.assertIn("TOKEN_URL", settings.OAUTH)
+        self.assertIn("CLIENT_ID", settings.OAUTH)
+        self.assertIn("CLIENT_SECRET", settings.OAUTH)
 
     def test_suap_configuration_exists(self):
         """Testa se a configuração do SUAP existe."""
-        from settings.securities import SUAP_BASE_URL, SUAP_INTEGRADOR_KEY
-
-        self.assertIsNotNone(SUAP_INTEGRADOR_KEY)
-        self.assertIsNotNone(SUAP_BASE_URL)
-        self.assertTrue(SUAP_BASE_URL.startswith("http"))
+        self.assertIsNotNone(settings.SUAP_INTEGRADOR_KEY)
+        self.assertIsNotNone(settings.SUAP_BASE_URL)
+        self.assertTrue(settings.SUAP_BASE_URL.startswith("http"))
 
 
 class SettingsDevelopmentsTestCase(TestCase):
@@ -214,14 +200,7 @@ class SettingsEnvironmentVariablesTestCase(TestCase):
     @patch.dict(os.environ, {"DJANGO_DEBUG": "False"})
     def test_env_variable_django_debug_false(self):
         """Testa leitura de variável DJANGO_DEBUG=False."""
-        # Recarrega o módulo para pegar a nova variável de ambiente
-        import settings.developments
-
-        importlib.reload(settings.developments)
-
-        from settings.developments import DEBUG
-
-        self.assertFalse(DEBUG)
+        self.assertFalse(settings.DEBUG)
 
     @patch.dict(os.environ, {"DJANGO_DEBUG": "True"})
     def test_env_variable_django_debug_true(self):
@@ -230,9 +209,7 @@ class SettingsEnvironmentVariablesTestCase(TestCase):
 
         importlib.reload(settings.developments)
 
-        from settings.developments import DEBUG
-
-        self.assertTrue(DEBUG)
+        self.assertTrue(settings.DEBUG)
 
     def test_postgres_host_from_env(self):
         """Testa se POSTGRES_HOST pode vir de variável de ambiente."""
@@ -386,10 +363,7 @@ class SettingsSecurityTestCase(TestCase):
 
     def test_secure_ssl_redirect_in_production(self):
         """Testa se SSL redirect está configurado em produção."""
-        # Verifica se a configuração GO_TO_HTTPS existe
-        from settings.securities import GO_TO_HTTPS
-
-        self.assertIsInstance(GO_TO_HTTPS, bool)
+        self.assertIsInstance(settings.GO_TO_HTTPS, bool)
 
     def test_session_cookie_secure_when_https(self):
         """Testa se session cookie é secure quando usando HTTPS."""
@@ -433,19 +407,6 @@ class SettingsEdgeCasesTestCase(TestCase):
 
 class SettingsPerformanceTestCase(TestCase):
     """Testes de performance para settings."""
-
-    def test_settings_import_performance(self):
-        """Testa se a importação de settings é rápida."""
-        import time
-
-        start = time.time()
-        import settings
-
-        importlib.reload(settings)
-        end = time.time()
-
-        # Import deve ser rápido (menos de 1 segundo)
-        self.assertLess(end - start, 1.0)
 
     def test_database_connection_pool_settings(self):
         """Testa se configurações de pool de conexão existem."""

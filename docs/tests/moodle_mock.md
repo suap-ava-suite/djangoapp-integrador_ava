@@ -183,10 +183,6 @@ response = mock.post(
 assert response.status_code == 501
 ```
 
-> Quando o broker `suap2tool_sga` for implementado, expanda este mock seguindo o padrão do
-> `LocalSuapHTTPMock`: adicione serviços a `_TOOL_SGA_IMPLEMENTED_SERVICES` e implemente
-> os métodos correspondentes.
-
 ---
 
 ## Broker `sga2tool_sga`

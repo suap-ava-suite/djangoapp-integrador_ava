@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import importlib.util
+import logging
 import sys
 
 from sc4py.env import env_as_bool, env_as_list
 
 from .apps import INSTALLED_APPS
 from .middlewares import MIDDLEWARE
+
+logger = logging.getLogger(__name__)
 
 DEBUG = env_as_bool("DJANGO_DEBUG", True)
 DEBUG_URLPATTERNS = []
@@ -42,4 +45,4 @@ if DEBUG and not IS_RUNNING_TESTS:
         # https://gitlab.com/living180/pyflame
         # https://django-debug-toolbar.readthedocs.io/en/latest/panels.html#uwsgi-stats
     except ModuleNotFoundError:
-        pass
+        logger.info("Não foi possível carregar o debug_toolbar")

@@ -380,7 +380,7 @@ class IntegrationTestCase(TestCase):
 
         # 2. Verifica se URLs foram registradas
         urls = admin.get_urls()
-        self.assertTrue(len(urls) > 0)
+        self.assertGreater(len(urls), 0)
 
         # 3. Verifica se há URL de visualização
         view_url_exists = any(url.pattern.name and url.pattern.name.endswith("_view") for url in urls)

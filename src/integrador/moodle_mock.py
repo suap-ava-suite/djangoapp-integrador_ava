@@ -35,8 +35,6 @@ _LOCAL_SUAP_IMPLEMENTED_SERVICES = frozenset(
 # ---------------------------------------------------------------------------
 # tool_sga plugin — serviços conhecidos (broker ainda não implementado)
 # ---------------------------------------------------------------------------
-_TOOL_SGA_KNOWN_SERVICES: frozenset[str] = frozenset()  # a definir quando o broker for implementado
-_TOOL_SGA_IMPLEMENTED_SERVICES: frozenset[str] = frozenset()
 
 
 class MockHTTPResponse:
