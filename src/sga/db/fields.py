@@ -36,7 +36,7 @@ class ObfuscatedCharField(models.CharField):
         return self.get_obfuscated_value(value)
 
     def to_python(self, value):
-        return self.get_obfuscated_value(value)
+        return super().to_python(value)
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
