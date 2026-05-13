@@ -57,8 +57,9 @@ def _get_tokens(request):
 
 def _get_userinfo(request_data):
     OAUTH = settings.OAUTH
+    query = urllib.parse.urlencode({"scope": request_data.get("scope", "")})
     response = requests.get(
-        f"{OAUTH['USERINFO_URL']}?scope={request_data.get('scope')}",
+        f"{OAUTH['USERINFO_URL']}?{query}",
         headers={
             "Authorization": f"Bearer {request_data.get('access_token')}",
             "x-api-key": OAUTH["CLIENT_SECRET"],
