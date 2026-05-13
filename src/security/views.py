@@ -40,7 +40,14 @@ def _get_tokens(request):
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
     logger.info("OAuth endpoint response status %s", response.status_code)
-    data = json.loads(response.text)
+    if not response.ok:
+        raise ValueError(
+            f"Falha ao obter token no OAuth (status {response.status_code}): {response.text[:200]}"
+        )
+    try:
+        data = json.loads(response.text)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Resposta inválida do endpoint de token: conteúdo não é JSON válido.") from exc
     if data.get("error_description") == "Mismatching redirect URI.":
         raise ValueError(
             "O administrador do sistema configurou errado o 'Redirect uris' no SUAP-Login ou no OAUTH_REDIRECT_URI."
@@ -68,13 +75,19 @@ def _get_userinfo(request_data):
 
 
 def _save_user(userinfo):
-    username = userinfo["identificacao"]
+    username = userinfo.get("identificacao")
+    if not username:
+        raise ValueError("Resposta do OAuth inválida: campo obrigatório 'identificacao' ausente.")
     user = User.objects.filter(username=username).first()
+
+    identificacao = userinfo.get("identificacao")
+    email_preferencial = userinfo.get("email_preferencial")
+    email = email_preferencial or (f"{identificacao}@ifrn.edu.br" if identificacao else "")
 
     defaults = {
         "first_name": userinfo.get("primeiro_nome"),
         "last_name": userinfo.get("ultimo_nome"),
-        "email": userinfo.get("email_preferencial") or userinfo.get("identificacao") + "@ifrn.edu.br",
+        "email": email,
     }
 
     if user is None:
@@ -120,7 +133,12 @@ def authenticate(request: HttpRequest) -> HttpResponse:
         userinfo = _get_userinfo(request_data)
         user = _save_user(userinfo)
         auth.login(request, user)
-        return redirect(request.session.pop("next", "/"))
+        next_url = request.session.pop("next", "/")
+        allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
+        require_https = request.is_secure()
+        if not url_has_allowed_host_and_scheme(next_url, allowed_hosts=allowed_hosts, require_https=require_https):
+            next_url = "/"
+        return redirect(next_url)
     except Exception as e:
         capture_exception(e)
         return render(request, "security/authorization_error.html", context={"error_cause": str(e)})
