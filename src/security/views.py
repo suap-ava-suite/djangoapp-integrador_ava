@@ -80,9 +80,8 @@ def _save_user(userinfo):
         raise ValueError("Resposta do OAuth inválida: campo obrigatório 'identificacao' ausente.")
     user = User.objects.filter(username=username).first()
 
-    identificacao = userinfo.get("identificacao")
     email_preferencial = userinfo.get("email_preferencial")
-    email = email_preferencial or (f"{identificacao}@ifrn.edu.br" if identificacao else "")
+    email = email_preferencial or (f"{username}@ifrn.edu.br" if username else "")
 
     defaults = {
         "first_name": userinfo.get("primeiro_nome"),
