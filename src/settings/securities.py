@@ -4,7 +4,7 @@ from sc4py.env import env, env_as_bool, env_as_int, env_as_list
 SUAP_INTEGRADOR_KEY = env("SUAP_INTEGRADOR_KEY", "changeme")
 SUAP_BASE_URL = env("SUAP_BASE_URL", "https://suap.ifrn.edu.br")
 
-SECRET_KEY = env("DJANGO_SECRET_KEY", "changeme")
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 LOGIN_URL = env("DJANGO_LOGIN_URL", "/login/")
 LOGIN_REDIRECT_URL = env("DJANGO_LOGIN_REDIRECT_URL", "/admin/")
 LOGOUT_REDIRECT_URL = env("DJANGO_LOGOUT_REDIRECT_URL", f"{SUAP_BASE_URL}/comum/logout")
@@ -17,7 +17,7 @@ AUTH_PASSWORD_VALIDATORS = env_as_list("DJANGO_AUTH_PASSWORD_VALIDATORS", [])
 CORS_ALLOWED_ORIGINS = env_as_list("DJANGO_CORS_ALLOWED_ORIGINS", [])
 CORS_ALLOWED_ORIGIN_REGEXES = env_as_list("DJANGO_CORS_ALLOWED_ORIGIN_REGEXES", [])
 CORS_ALLOW_ALL_ORIGINS = env_as_bool("DJANGO_CORS_ALLOW_ALL_ORIGINS", False)
-CORS_URLS_REGEX = env_as_list("DJANGO_CORS_URLS_REGEX", r"^.*$")
+CORS_URLS_REGEX = env_as_list("DJANGO_CORS_URLS_REGEX", [r"^.*$"])
 CORS_ALLOW_METHODS = env_as_list("DJANGO_CORS_ALLOW_METHODS", ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"])
 CORS_ALLOW_HEADERS = env_as_list("DJANGO_CORS_ALLOW_HEADERS", [])
 CORS_EXPOSE_HEADERS = env_as_list("DJANGO_CORS_EXPOSE_HEADERS", [])
@@ -47,5 +47,5 @@ OAUTH = {
     "REDIRECT_URI": env("OAUTH_REDIRECT_URI", ""),
     "CLIENT_ID": env("OAUTH_CLIENT_ID", "changeme"),
     "CLIENT_SECRET": env("OAUTH_CLIENT_SECRET", "changeme"),
-    "VERIFY_SSL": env_as_bool("OAUTH_VERIFY_SSL", False),
+    "VERIFY_SSL": env_as_bool("OAUTH_VERIFY_SSL", True),
 }
