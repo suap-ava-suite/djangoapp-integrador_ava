@@ -2168,7 +2168,7 @@ class SecurityViewsCoverageTestCase(TestCase):
             response = security_views.logout(request)
 
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/admin/?token="))
+        self.assertTrue(response.url.startswith("/admin/?next="))
 
     @override_settings(
         LOGOUT_REDIRECT_URL="https://suap.test.com/logout?origin=integrador", LOGIN_REDIRECT_URL="/admin/"
