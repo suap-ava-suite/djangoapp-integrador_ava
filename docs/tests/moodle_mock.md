@@ -139,12 +139,12 @@ O servidor em background é iniciado por `start_mock_moodle_server_in_background
 
 Configure as variáveis em `settings/developments.py`:
 
-| Variável                       | Descrição                                               | Default    |
-|--------------------------------|---------------------------------------------------------|------------|
-| `MOODLE_HTTP_MOCK_ENABLED`     | `true` → usa mock; `false` → usa `requests` normalmente | `false`    |
-| `MOODLE_HTTP_MOCK_BACKGROUND`  | `true` → sobe servidor HTTP em background no DEBUG      | `false`    |
-| `MOODLE_HTTP_MOCK_HOST`        | Host de bind do servidor mock                           | `0.0.0.0`  |
-| `MOODLE_HTTP_MOCK_PORT`        | Porta do servidor mock                                  | `18091`    |
+| Variável                       | Descrição                                               | Default      |
+|--------------------------------|---------------------------------------------------------|--------------|
+| `MOODLE_HTTP_MOCK_ENABLED`     | `true` → usa mock; `false` → usa `requests` normalmente | `false`      |
+| `MOODLE_HTTP_MOCK_BACKGROUND`  | `true` → sobe servidor HTTP em background no DEBUG      | `false`      |
+| `MOODLE_HTTP_MOCK_HOST`        | Host de bind do servidor mock                           | `127.0.0.1`  |
+| `MOODLE_HTTP_MOCK_PORT`        | Porta do servidor mock                                  | `18091`      |
 
 No `docker-compose.yml` do workspace, o serviço `integrador` já vem pré-configurado com
 `MOODLE_HTTP_MOCK_ENABLED=true` e `MOODLE_HTTP_MOCK_BACKGROUND=true`, permitindo validar
