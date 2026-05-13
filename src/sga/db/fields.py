@@ -41,6 +41,6 @@ class ObfuscatedCharField(models.CharField):
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        if self.obfuscator is not None:
+        if self.obfuscator != mask_all:
             kwargs["obfuscator"] = self.obfuscator
         return name, path, args, kwargs
