@@ -80,7 +80,7 @@ def _save_user(userinfo):
     user = User.objects.filter(username=username).first()
 
     email_preferencial = userinfo.get("email_preferencial")
-    email = email_preferencial or (f"{username}@ifrn.edu.br" if username else "")
+    email = email_preferencial or f"{username}@ifrn.edu.br"
 
     defaults = {
         "first_name": userinfo.get("primeiro_nome"),
