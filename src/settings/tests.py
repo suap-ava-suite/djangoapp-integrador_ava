@@ -1,13 +1,13 @@
 """
-Testes unitários para a app settings.
+Unit tests for the settings app.
 
-Este módulo contém testes para:
-- Configurações de apps (apps.py)
-- Configurações de banco de dados (databases.py)
-- Configurações de segurança (securities.py)
-- Configurações de desenvolvimento (developments.py)
-- Configurações de cache (caches.py)
-- Validação de variáveis de ambiente
+This module contains tests for:
+- App settings (apps.py)
+- Database settings (databases.py)
+- Security settings (securities.py)
+- Development settings (developments.py)
+- Cache settings (caches.py)
+- Environment variable validation
 """
 
 import builtins
@@ -22,10 +22,10 @@ from django.test import TestCase, override_settings
 
 
 class SettingsAppsTestCase(TestCase):
-    """Testes para settings/apps.py."""
+    """Tests for settings/apps.py."""
 
     def test_project_title_is_defined(self):
-        """Testa se PROJECT_TITLE está definido."""
+        """Checks whether PROJECT_TITLE is defined."""
         from settings import PROJECT_TITLE
 
         self.assertIsNotNone(PROJECT_TITLE)
@@ -33,7 +33,7 @@ class SettingsAppsTestCase(TestCase):
         self.assertEqual(PROJECT_TITLE, "Integrador AVA")
 
     def test_project_version_is_defined(self):
-        """Testa se PROJECT_VERSION está definido."""
+        """Checks whether PROJECT_VERSION is defined."""
         from settings import PROJECT_VERSION
 
         self.assertIsNotNone(PROJECT_VERSION)
@@ -41,14 +41,14 @@ class SettingsAppsTestCase(TestCase):
         self.assertRegex(PROJECT_VERSION, r"^\d+\.\d+\.\d+$")
 
     def test_project_last_startup_is_timestamp(self):
-        """Testa se PROJECT_LAST_STARTUP é um timestamp válido."""
+        """Checks whether PROJECT_LAST_STARTUP is a valid timestamp."""
         from settings import PROJECT_LAST_STARTUP
 
         self.assertIsInstance(PROJECT_LAST_STARTUP, int)
         self.assertGreater(PROJECT_LAST_STARTUP, 0)
 
     def test_installed_apps_contains_django_apps(self):
-        """Testa se INSTALLED_APPS contém apps Django."""
+        """Checks whether INSTALLED_APPS contains Django apps."""
         django_required_apps = [
             "django.contrib.admin",
             "django.contrib.auth",
@@ -60,14 +60,14 @@ class SettingsAppsTestCase(TestCase):
             self.assertIn(app, settings.INSTALLED_APPS)
 
     def test_installed_apps_contains_custom_apps(self):
-        """Testa se INSTALLED_APPS contém apps customizadas."""
+        """Checks whether INSTALLED_APPS contains custom apps."""
         custom_apps = ["base", "health", "integrador", "cohort"]
 
         for app in custom_apps:
             self.assertIn(app, settings.INSTALLED_APPS)
 
     def test_installed_apps_contains_third_party_apps(self):
-        """Testa se INSTALLED_APPS contém apps de terceiros."""
+        """Checks whether INSTALLED_APPS contains third-party apps."""
         third_party_apps = [
             "import_export",
             "simple_history",
@@ -78,13 +78,13 @@ class SettingsAppsTestCase(TestCase):
             self.assertIn(app, settings.INSTALLED_APPS)
 
     def test_show_support_form_is_boolean(self):
-        """Testa se SHOW_SUPPORT_FORM é booleano."""
+        """Checks whether SHOW_SUPPORT_FORM is a boolean."""
         from settings import SHOW_SUPPORT_FORM
 
         self.assertIsInstance(SHOW_SUPPORT_FORM, bool)
 
     def test_show_support_chat_is_boolean(self):
-        """Testa se SHOW_SUPPORT_CHAT é booleano."""
+        """Checks whether SHOW_SUPPORT_CHAT is a boolean."""
         from settings import SHOW_SUPPORT_CHAT
 
         self.assertIsInstance(SHOW_SUPPORT_CHAT, bool)
