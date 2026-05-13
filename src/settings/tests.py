@@ -375,7 +375,7 @@ class SettingsSecurityTestCase(TestCase):
         """Testa se DEBUG está False em produção."""
         # Este teste é mais para documentação
         # Em produção, DEBUG deve ser False
-        if settings.ENVIRONMENT == "production":
+        if getattr(settings, "ENVIRONMENT", "") == "production":
             self.assertFalse(settings.DEBUG)
 
     def test_allowed_hosts_configured(self):

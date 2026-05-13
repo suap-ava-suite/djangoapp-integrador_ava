@@ -111,7 +111,7 @@ class DashboardStorageTestCase(TestCase):
     def test_load_ambientes_with_invalid_expressao(self):
         """Testa carregamento de ambientes com expressão inválida."""
         # Cria um ambiente com expressão inválida
-        Ambiente.objects.create(**(AMBIENTE_GOOD | {"expressao_seletora": "invalid expression"}))
+        Ambiente.objects.create(**{**AMBIENTE_GOOD, "expressao_seletora": "invalid expression"})
 
         storage = DashboardStorage()
         context = storage.get_context()
@@ -165,8 +165,8 @@ class DashboardStorageTestCase(TestCase):
         self.assertEqual(context["solicitacoes_falha"], 1)
         self.assertEqual(context["solicitacoes_processando"], 1)
         self.assertEqual(context["total_solicitacoes"], 3)
-        # sucesso e falha nas últimas 24h, processando está fora (25 horas)
-        # Mas na verdade o timestamp padrão pode ter sido incluído no create
+        # success and failure are within the last 24h; processing is outside (25 hours)
+        # however, the default timestamp may actually have been included during create
         self.assertGreaterEqual(context["solicitacoes_24h"], 2)
 
     def test_load_solicitacoes_taxa_sucesso(self):
