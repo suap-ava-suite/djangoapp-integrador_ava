@@ -55,8 +55,9 @@ def _get_tokens(request):
 
 def _get_userinfo(request_data):
     OAUTH = settings.OAUTH
+    query = urllib.parse.urlencode({"scope": request_data.get("scope", "")})
     response = requests.get(
-        f"{OAUTH['USERINFO_URL']}?scope={request_data.get('scope')}",
+        f"{OAUTH['USERINFO_URL']}?{query}",
         headers={
             "Authorization": f"Bearer {request_data.get('access_token')}",
             "x-api-key": OAUTH["CLIENT_SECRET"],
@@ -78,9 +79,8 @@ def _save_user(userinfo):
         raise ValueError("Resposta do OAuth inválida: campo obrigatório 'identificacao' ausente.")
     user = User.objects.filter(username=username).first()
 
-    identificacao = userinfo.get("identificacao")
     email_preferencial = userinfo.get("email_preferencial")
-    email = email_preferencial or (f"{identificacao}@ifrn.edu.br" if identificacao else "")
+    email = email_preferencial or (f"{username}@ifrn.edu.br" if username else "")
 
     defaults = {
         "first_name": userinfo.get("primeiro_nome"),
@@ -152,6 +152,7 @@ def logout(request: HttpRequest) -> HttpResponse:
 
     auth.logout(request)
 
+    encoded_logout_token = urllib.parse.quote_plus(logout_token)
     next_url = urllib.parse.quote_plus(settings.LOGIN_REDIRECT_URL)
     separator = "&" if urllib.parse.urlsplit(logout_url).query else "?"
-    return redirect(f"{logout_url}{separator}token={logout_token}&next={next_url}")
+    return redirect(f"{logout_url}{separator}token={encoded_logout_token}&next={next_url}")

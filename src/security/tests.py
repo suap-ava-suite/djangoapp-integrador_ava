@@ -19,6 +19,8 @@ from django.test import RequestFactory, TestCase, override_settings
 from security.apps import SecurityConfig
 from security.views import authenticate, login, logout
 
+TEST_LOGOUT_TOKEN = "test_token_123"  # noqa S105
+
 
 class SecurityAppConfigTestCase(TestCase):
     """Testes para a configuração da app security."""
@@ -453,12 +455,12 @@ class LogoutViewTestCase(TestCase):
         request = self.factory.get("/logout/")
         request.user = self.user
         self.add_session_to_request(request)
-        request.session["logout_token"] = "test_token_123"  # noqa S105
+        request.session["logout_token"] = TEST_LOGOUT_TOKEN
 
         response = logout(request)
 
         # Verifica que URL contém token
-        self.assertIn("token=test_token_123", response.url)
+        self.assertIn(f"token={TEST_LOGOUT_TOKEN}", response.url)
 
     def test_logout_with_empty_logout_token(self):
         """Testa logout sem logout_token na sessão."""
@@ -600,7 +602,8 @@ class EdgeCasesTestCase(TestCase):
         """Testa autenticação com username muito longo."""
         mock_post.return_value = Mock(text=json.dumps({"access_token": "test_token", "scope": "test_scope"}))
 
-        long_username = "a" * 200
+        username_max_length = User._meta.get_field("username").max_length
+        long_username = "a" * (username_max_length + 50)
         mock_get.return_value = Mock(
             text=json.dumps({"identificacao": long_username, "primeiro_nome": "Long", "ultimo_nome": "User"})
         )
@@ -611,8 +614,7 @@ class EdgeCasesTestCase(TestCase):
 
         response = authenticate(request)
         self.assertEqual(response.status_code, 200)
-
-        self.assertIn(b"value too long for type character varying(150)", response.content)
+        self.assertFalse(User.objects.filter(username=long_username).exists())
 
     def test_login_with_special_characters_in_next(self):
         """Testa login com caracteres especiais em next."""

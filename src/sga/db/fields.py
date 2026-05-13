@@ -10,7 +10,7 @@ from sga.db.obfuscators import mask_all
 def permissive_url_validator(value):
     pattern = r"^https?://[\w.-]+(:\d+)?(/.*)?$"
     if not re.match(pattern, value):
-        raise ValidationError("Informe uma URL válidaaa.")
+        raise ValidationError("Informe uma URL válida.")
 
 
 class PermissiveURLField(models.URLField):
