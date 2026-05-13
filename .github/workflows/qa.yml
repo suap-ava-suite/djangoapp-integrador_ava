@@ -37,7 +37,7 @@ jobs:
 
 
       - name: Lint Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v23
+        uses: DavidAnson/markdownlint-cli2-action@ded1f9488f68a970bc66ea5619e13e9b52e601cd # v23
 
       - name: Lint reStructuredText (doc8)
         run: |
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run Semgrep SAST
         if: github.event_name == 'pull_request' || github.event_name == 'schedule'
-        uses: semgrep/semgrep-action@v1
+        uses: semgrep/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # v1
         with:
           config: p/ci
 
@@ -146,13 +146,13 @@ jobs:
         sed -i 's/"PROJECT_VERSION", ".*"/"PROJECT_VERSION", "${{ github.ref_name }}"/' src/settings/project.py
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v4
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v7
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
       with:
         context: .
         push: true
