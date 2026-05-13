@@ -285,7 +285,7 @@ class SettingsIntegrationTestCase(TestCase):
         ]
 
         for setting_name in required_settings:
-            self.assertTrue(hasattr(settings, setting_name), f"Setting {setting_name} não encontrada")
+            self.assertTrue(hasattr(settings, setting_name), f"Setting {setting_name} not found")
 
     def test_installed_apps_order(self):
         """Testa se as apps estão em ordem lógica."""
