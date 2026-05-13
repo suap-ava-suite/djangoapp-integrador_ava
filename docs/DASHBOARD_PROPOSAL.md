@@ -205,7 +205,7 @@ admin.site.index = admin_index_dashboard
 
 ### Internacionalização
 
-- Todos os textos usam `{% translate %}`
+- Todos os textos usam `{% raw %}{% translate %}{% endraw %}`
 - Suporta múltiplos idiomas
 
 ---
