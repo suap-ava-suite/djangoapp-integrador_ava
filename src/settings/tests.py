@@ -300,7 +300,7 @@ class SettingsIntegrationTestCase(TestCase):
                 custom_index = apps_list.index(custom_app)
                 if django_apps:
                     django_index = apps_list.index(django_apps[0])
-                    self.assertLess(custom_index, django_index, f"{custom_app} deve vir antes das apps Django")
+                    self.assertLess(custom_index, django_index, f"{custom_app} must come before Django apps")
 
     def test_middleware_order(self):
         """Testa se os middlewares estão em ordem apropriada."""
