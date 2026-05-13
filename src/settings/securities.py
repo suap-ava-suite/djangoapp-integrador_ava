@@ -47,5 +47,5 @@ OAUTH = {
     "REDIRECT_URI": env("OAUTH_REDIRECT_URI", ""),
     "CLIENT_ID": env("OAUTH_CLIENT_ID", "changeme"),
     "CLIENT_SECRET": env("OAUTH_CLIENT_SECRET", "changeme"),
-    "VERIFY_SSL": env_as_bool("OAUTH_VERIFY_SSL", False),
+    "VERIFY_SSL": env_as_bool("OAUTH_VERIFY_SSL", True),
 }
