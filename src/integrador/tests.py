@@ -52,13 +52,24 @@ from integrador.views import sync_up_enrolments
 logging.getLogger("integrador").setLevel(logging.WARNING)
 
 
-AMBIENTE_GOOD = dict(
+AMBIENTE_GOOD_SGA = dict(
     nome="Ambiente Teste",  # noqa: S106
     url="https://test.moodle.com",
     ordem=1,
     expressao_seletora="campus.sigla == 'TEST'",
     local_suap_token="local_suap_token",  # noqa: S106
     local_suap_active=True,
+    tool_sga_token="tool_sga_token",  # noqa: S106
+    tool_sga_active=True,
+)
+
+AMBIENTE_GOOD_SUAP = dict(
+    nome="Ambiente Teste",  # noqa: S106
+    url="https://test.moodle.com",
+    ordem=1,
+    expressao_seletora="campus.sigla == 'TEST'",
+    local_suap_token=None,  # noqa: S106
+    local_suap_active=False,
     tool_sga_token="tool_sga_token",  # noqa: S106
     tool_sga_active=True,
 )
@@ -565,11 +576,11 @@ class AmbienteModelTestCase(TestCase):
 
     def setUp(self):
         """Configura o ambiente de teste."""
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
     def test_create_ambiente(self):
         """Testa criação de ambiente."""
-        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
         self.assertIsNotNone(ambiente.pk)
 
     def test_manager_seleciona_ambiente_valid(self):
@@ -584,148 +595,148 @@ class AmbienteModelTestCase(TestCase):
 
     def test_str(self):
         """Testa __str__."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
         self.assertEqual(ambiente.nome, str(ambiente))
 
     def test_ok_base_url(self):
         """Testa validação de base_url válida (OK)."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
         self.assertEqual("https://test.moodle.com", ambiente.base_url)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"url": "https://test.moodle.com/"}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"url": "https://test.moodle.com/"}))
         self.assertEqual("https://test.moodle.com", ambiente.base_url)
 
     def test_not_ok_base_url(self):
         """Testa validação de base_url (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"url": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"url": None}))
         self.assertEqual("", ambiente.base_url)
 
     def test_ok_valid_expressao_seletora(self):
         """Testa validação de expressão seletora (OK)."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
         self.assertTrue(ambiente.valid_expressao_seletora)
 
     def test_not_ok_valid_expressao_seletora(self):
         """Testa validação de expressão seletora (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"expressao_seletora": ""}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": ""}))
         self.assertFalse(ambiente.valid_expressao_seletora)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"expressao_seletora": " "}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": " "}))
         self.assertFalse(ambiente.valid_expressao_seletora)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"expressao_seletora": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": None}))
         self.assertFalse(ambiente.valid_expressao_seletora)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"expressao_seletora": "asdf asdf"}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": "asdf asdf"}))
         self.assertFalse(ambiente.valid_expressao_seletora)
 
     def test_ok_can_send_to_local_suap(self):
         """Testa validação can_send_to_local_suap (OK)."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SUAP)
         self.assertFalse(ambiente.can_send_to_local_suap)
 
     def test_not_ok_can_send_to_local_suap(self):
         """Testa validação can_send_to_local_suap (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"local_suap_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_active": False}))
         self.assertFalse(ambiente.can_send_to_local_suap)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"local_suap_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_token": None}))
         self.assertFalse(ambiente.can_send_to_local_suap)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"local_suap_token": ""}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_token": ""}))
         self.assertFalse(ambiente.can_send_to_local_suap)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"local_suap_token": " "}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_token": " "}))
         self.assertFalse(ambiente.can_send_to_local_suap)
 
     def test_ok_can_send_to_tool_sga(self):
         """Testa validação can_send_to_local_suap (OK)."""
-        ambiente = Ambiente(AMBIENTE_GOOD)
+        ambiente = Ambiente(AMBIENTE_GOOD_SGA)
         self.assertFalse(ambiente.can_send_to_tool_sga)
 
     def test_not_ok_can_send_to_tool_sga(self):
         """Testa validação can_send_to_tool_sga (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False}))
         self.assertFalse(ambiente.can_send_to_tool_sga)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": None}))
         self.assertFalse(ambiente.can_send_to_tool_sga)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": ""}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": ""}))
         self.assertFalse(ambiente.can_send_to_tool_sga)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": " "}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": " "}))
         self.assertFalse(ambiente.can_send_to_tool_sga)
 
     def test_ok_which_broker(self):
         """Testa validação which_broker (OK)."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
         self.assertEqual("tool_sga", ambiente.which_broker)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False}))
         self.assertEqual("local_suap", ambiente.which_broker)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": None}))
         self.assertEqual("local_suap", ambiente.which_broker)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": ""}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": ""}))
         self.assertEqual("local_suap", ambiente.which_broker)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": " "}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": " "}))
         self.assertEqual("local_suap", ambiente.which_broker)
 
     def test_not_ok_which_broker(self):
         """Testa validação which_broker (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False, "local_suap_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False}))
         self.assertIsNone(ambiente.which_broker)
 
     def test_ok_token(self):
         """Testa validação token (OK)."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
         self.assertEqual("tool_sga_token", ambiente.token)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False}))
         self.assertEqual("local_suap_token", ambiente.token)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": None}))
         self.assertEqual("local_suap_token", ambiente.token)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": ""}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": ""}))
         self.assertEqual("local_suap_token", ambiente.token)
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": " "}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": " "}))
         self.assertEqual("local_suap_token", ambiente.token)
 
     def test_not_ok_token(self):
         """Testa validação token (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False, "local_suap_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False}))
         self.assertIsNone(ambiente.token)
 
     def test_ok_check_selectable(self):
         """Testa validação check_selectable (OK)."""
-        ambiente = Ambiente(**AMBIENTE_GOOD)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
         self.assertTrue(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
     def test_not_ok_check_selectable(self):
         """Testa validação token (NOT OK)."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False, "local_suap_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False}))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"expressao_seletora": ""}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": ""}))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
         ambiente = Ambiente(
-            **(AMBIENTE_GOOD | {"tool_sga_active": False, "local_suap_active": False, "expressao_seletora": ""})
+            **(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False, "expressao_seletora": ""})
         )
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
     def test_ok_ambiente_ordering(self):
         """Testa ordenação de ambientes."""
-        ambiente2 = Ambiente.objects.create(**(AMBIENTE_GOOD | {"ordem": 0}))
+        ambiente2 = Ambiente.objects.create(**(AMBIENTE_GOOD_SGA | {"ordem": 0}))
 
         ambientes = list(Ambiente.objects.all())
         # Ordenação por ordem, id
@@ -739,12 +750,12 @@ class AmbienteModelTestCase(TestCase):
     def test_ok_url(self):
         """Testa que PermissiveURLField aceita URLs http e https válidas."""
         for url in ["http://localhost:8000/path", "https://example.com"]:
-            ambiente = Ambiente(**(AMBIENTE_GOOD | {"nome": f"Ambiente {url}", "url": url}))
+            ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"nome": f"Ambiente {url}", "url": url}))
             ambiente.full_clean()
 
     def test_not_ok_url(self):
         """Testa que PermissiveURLField rejeita valores sem protocolo HTTP/HTTPS."""
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"nome": "Ambiente inválido", "url": "ftp://example.com"}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"nome": "Ambiente inválido", "url": "ftp://example.com"}))
         with self.assertRaises(ValidationError):
             ambiente.full_clean()
 
@@ -776,7 +787,7 @@ class AmbienteAdminTestCase(TestCase):
         )
 
         self.admin = AmbienteAdmin(Ambiente, AdminSite())
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
     @patch("requests.get")
     def test_ok_checked_url(self, mock_get):
@@ -850,7 +861,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_tool_sga3(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False, "tool_sga_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "tool_sga_token": None}))
         result = self.admin.checked_tool_sga(ambiente)
         self.assertIn("Tool SGA", result)
         self.assertIn("🚫", result)
@@ -859,7 +870,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_tool_sga4(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False}))
         result = self.admin.checked_tool_sga(ambiente)
         self.assertIn("Tool SGA", result)
         self.assertIn("⏸️", result)
@@ -868,7 +879,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_tool_sga5(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        ambiente = Ambiente(**(AMBIENTE_GOOD | {"tool_sga_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": None}))
         result = self.admin.checked_tool_sga(ambiente)
         self.assertIn("Tool SGA", result)
         self.assertIn("⚠️", result)
@@ -1135,7 +1146,7 @@ class DecoratorsTestCase(TestCase):
 
     def test_detect_ambiente_decorator_found(self):
         """Testa decorator detect_ambiente encontrando ambiente."""
-        Ambiente.objects.create(**AMBIENTE_GOOD)
+        Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         @detect_ambiente
         def test_view(request):
@@ -1170,7 +1181,7 @@ class TrySolicitacaoDecoratorTestCase(TestCase):
     def setUp(self):
         """Configura o ambiente de teste."""
         self.factory = RequestFactory()
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
     def test_try_solicitacao_success(self):
         """Testa try_solicitacao com sucesso."""
@@ -1261,7 +1272,7 @@ class CohortSelecaoTestCase(TestCase):
     }
 
     def setUp(self):
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
         self.solicitacao = Solicitacao.objects.create(
             ambiente=self.ambiente,
             operacao=Solicitacao.Operacao.SYNC_UP_DIARIO,
@@ -1450,7 +1461,7 @@ class SolicitacaoModelTestCase(TestCase):
 
     def setUp(self):
         """Configura o ambiente de teste."""
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         self.recebido_json = {
             "campus": {"sigla": "TEST"},
@@ -1569,7 +1580,7 @@ class SolicitacaoAdminTestCase(TestCase):
         from integrador.admin import SolicitacaoAdmin
 
         self.admin = SolicitacaoAdmin(Solicitacao, AdminSite())
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
         self.solicitacao = Solicitacao.objects.create(
             ambiente=self.ambiente,
             operacao=Solicitacao.Operacao.SYNC_UP_DIARIO,
@@ -1709,7 +1720,7 @@ class BaseBrokerTestCase(TestCase):
 
     def setUp(self):
         """Configura o ambiente de teste."""
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         self.solicitacao = Solicitacao.objects.create(
             ambiente=self.ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido={"diario": {"id": 123}}
@@ -1804,7 +1815,7 @@ class Suap2LocalSuapBrokerTestCase(TestCase):
 
     def setUp(self):
         """Configura o ambiente de teste."""
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         self.solicitacao = Solicitacao.objects.create(
             ambiente=self.ambiente,
@@ -1879,7 +1890,7 @@ class ManagementCommandTestCase(TestCase):
 
     def setUp(self):
         """Configura o ambiente de teste."""
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
     def test_atualiza_solicitacoes_command_exists(self):
         """Testa que o comando atualiza_solicitacoes existe."""
@@ -2195,7 +2206,7 @@ class SecurityViewsCoverageTestCase(TestCase):
             response = security_views.logout(request)
 
         self.assertEqual(response.status_code, 302)
-        self.assertIn("origin=integrador&token=", response.url)
+        self.assertIn("/logout?origin=integrador&next=", response.url)
 
 
 class IntegrationTestCase(TestCase):
@@ -2204,7 +2215,7 @@ class IntegrationTestCase(TestCase):
     def setUp(self):
         """Configura o ambiente de teste."""
         self.factory = RequestFactory()
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
     @override_settings(SUAP_INTEGRADOR_KEY="tool_sga_token")
     @patch("integrador.brokers.suap2local_suap.http_post_json")
@@ -2248,9 +2259,9 @@ class EdgeCasesTestCase(TestCase):
 
     def test_ambiente_with_multiple_matching_rules(self):
         """Testa ambiente com múltiplas regras correspondentes."""
-        amb1 = Ambiente.objects.create(**AMBIENTE_GOOD)
+        amb1 = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
-        Ambiente.objects.create(**AMBIENTE_GOOD)
+        Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         sync_json = {"campus": {"sigla": "TEST"}}
         ambiente = Ambiente.objects.seleciona_ambiente(sync_json)
@@ -2260,7 +2271,7 @@ class EdgeCasesTestCase(TestCase):
 
     def test_solicitacao_with_missing_json_fields(self):
         """Testa solicitação com campos JSON faltando."""
-        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         # JSON incompleto
         solicitacao = Solicitacao.objects.create(
@@ -2272,7 +2283,7 @@ class EdgeCasesTestCase(TestCase):
 
     def test_ambiente_expressao_with_complex_logic(self):
         """Testa ambiente com expressão seletora complexa."""
-        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         sync_json = {"campus": {"sigla": "TEST"}, "diario": {"tipo": "regular"}}
 
@@ -2281,7 +2292,7 @@ class EdgeCasesTestCase(TestCase):
 
     def test_broker_with_url_ending_with_slash(self):
         """Testa broker com URL terminando em barra."""
-        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD)
+        ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         solicitacao = Solicitacao.objects.create(
             ambiente=ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido={"diario": {"id": 1}}
@@ -2294,4 +2305,4 @@ class EdgeCasesTestCase(TestCase):
 
     def test_ambiente_manager_with_invalid_expression(self):
         """Testa manager com expressão inválida."""
-        Ambiente.objects.create(**(AMBIENTE_GOOD | {"expressao_seletora": "invalid { expression"}))
+        Ambiente.objects.create(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": "invalid { expression"}))
