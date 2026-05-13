@@ -60,9 +60,7 @@ def _get_userinfo(request_data):
     )
     logger.info("_get_userinfo response received with status %s", response.status_code)
     if not response.ok:
-        raise ValueError(
-            f"Falha ao consultar userinfo no OAuth (status {response.status_code}): {response.text[:200]}"
-        )
+        raise ValueError(f"Falha ao consultar userinfo no OAuth (status {response.status_code}): {response.text[:200]}")
     try:
         return json.loads(response.text)
     except json.JSONDecodeError as exc:
