@@ -38,6 +38,7 @@ def _get_tokens(request):
             "client_secret": OAUTH["CLIENT_SECRET"],
         },
         timeout=REQUEST_TIMEOUT_SECONDS,
+        verify=True,
     )
     logger.info("OAuth endpoint response status %s", response.status_code)
     if not response.ok:
@@ -63,6 +64,7 @@ def _get_userinfo(request_data):
             "x-api-key": OAUTH["CLIENT_SECRET"],
         },
         timeout=REQUEST_TIMEOUT_SECONDS,
+        verify=True,
     )
     logger.info("_get_userinfo response received with status %s", response.status_code)
     if not response.ok:
@@ -80,7 +82,7 @@ def _save_user(userinfo):
     user = User.objects.filter(username=username).first()
 
     email_preferencial = userinfo.get("email_preferencial")
-    email = email_preferencial or (f"{username}@ifrn.edu.br" if username else "")
+    email = email_preferencial or f"{username}@ifrn.edu.br"
 
     defaults = {
         "first_name": userinfo.get("primeiro_nome"),
@@ -109,6 +111,8 @@ def login(request: HttpRequest) -> HttpResponse:
     request.session["next"] = request.GET.get("next", "/")
 
     redirect_uri = OAUTH.get("REDIRECT_URI")
+    if not redirect_uri:
+        raise ValueError("Configure OAUTH['REDIRECT_URI'] para autenticação OAuth.")
     params = urllib.parse.urlencode(
         {
             "response_type": "code",
@@ -116,8 +120,6 @@ def login(request: HttpRequest) -> HttpResponse:
             "redirect_uri": redirect_uri,
         }
     )
-    if not redirect_uri:
-        raise ValueError("Configure OAUTH['REDIRECT_URI'] para autenticação OAuth.")
     suap_url = f"{OAUTH['BASE_URL']}/o/authorize/?{params}"
     return redirect(suap_url)  # nosemgrep: python.django.security.injection.open-redirect.open-redirect
 
@@ -143,7 +145,6 @@ def authenticate(request: HttpRequest) -> HttpResponse:
 
 
 def logout(request: HttpRequest) -> HttpResponse:
-    logout_token = request.session.get("logout_token", "")
     logout_url = settings.LOGOUT_REDIRECT_URL
     allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
     require_https = request.is_secure()
@@ -152,7 +153,6 @@ def logout(request: HttpRequest) -> HttpResponse:
 
     auth.logout(request)
 
-    encoded_logout_token = urllib.parse.quote_plus(logout_token)
     next_url = urllib.parse.quote_plus(settings.LOGIN_REDIRECT_URL)
     separator = "&" if urllib.parse.urlsplit(logout_url).query else "?"
-    return redirect(f"{logout_url}{separator}token={encoded_logout_token}&next={next_url}")
+    return redirect(f"{logout_url}{separator}next={next_url}")
