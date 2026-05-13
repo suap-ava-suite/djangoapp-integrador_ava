@@ -81,8 +81,10 @@ def _save_user(userinfo):
             **defaults,
         )
     else:
-        user = User.objects.filter(username=username).first()
-        User.objects.filter(username=username).update(**defaults)
+        user.first_name = defaults["first_name"]
+        user.last_name = defaults["last_name"]
+        user.email = defaults["email"]
+        user.save(update_fields=["first_name", "last_name", "email"])
     return user
 
 
