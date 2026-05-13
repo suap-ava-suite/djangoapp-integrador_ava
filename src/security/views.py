@@ -59,7 +59,14 @@ def _get_userinfo(request_data):
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
     logger.info("_get_userinfo response received with status %s", response.status_code)
-    return json.loads(response.text)
+    if not response.ok:
+        raise ValueError(
+            f"Falha ao consultar userinfo no OAuth (status {response.status_code}): {response.text[:200]}"
+        )
+    try:
+        return json.loads(response.text)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Resposta inválida do endpoint userinfo: conteúdo não é JSON válido.") from exc
 
 
 def _save_user(userinfo):
@@ -81,8 +88,10 @@ def _save_user(userinfo):
             **defaults,
         )
     else:
-        user = User.objects.filter(username=username).first()
-        User.objects.filter(username=username).update(**defaults)
+        user.first_name = defaults["first_name"]
+        user.last_name = defaults["last_name"]
+        user.email = defaults["email"]
+        user.save(update_fields=["first_name", "last_name", "email"])
     return user
 
 
@@ -91,7 +100,13 @@ def login(request: HttpRequest) -> HttpResponse:
     request.session["next"] = request.GET.get("next", "/")
 
     redirect_uri = OAUTH.get("REDIRECT_URI")
-    params = f"response_type=code&client_id={OAUTH['CLIENT_ID']}&redirect_uri={redirect_uri}"
+    params = urllib.parse.urlencode(
+        {
+            "response_type": "code",
+            "client_id": OAUTH["CLIENT_ID"],
+            "redirect_uri": redirect_uri,
+        }
+    )
     if not redirect_uri:
         raise ValueError("Configure OAUTH['REDIRECT_URI'] para autenticação OAuth.")
     suap_url = f"{OAUTH['BASE_URL']}/o/authorize/?{params}"
