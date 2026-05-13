@@ -61,7 +61,6 @@ def _get_userinfo(request_data):
         f"{OAUTH['USERINFO_URL']}?{query}",
         headers={
             "Authorization": f"Bearer {request_data.get('access_token')}",
-            "x-api-key": OAUTH["CLIENT_SECRET"],
         },
         timeout=REQUEST_TIMEOUT_SECONDS,
         verify=True,
@@ -108,7 +107,12 @@ def _save_user(userinfo):
 
 def login(request: HttpRequest) -> HttpResponse:
     OAUTH = settings.OAUTH
-    request.session["next"] = request.GET.get("next", "/")
+    next_url = request.GET.get("next", "/")
+    allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
+    require_https = request.is_secure()
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts=allowed_hosts, require_https=require_https):
+        next_url = "/"
+    request.session["next"] = next_url
 
     redirect_uri = OAUTH.get("REDIRECT_URI")
     if not redirect_uri:
@@ -134,7 +138,7 @@ def authenticate(request: HttpRequest) -> HttpResponse:
         user = _save_user(userinfo)
         auth.login(request, user)
         next_url = request.session.pop("next", "/")
-        allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
+        allowed_hosts = set(settings.ALLOWED_HOSTS) | {urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
         require_https = request.is_secure()
         if not url_has_allowed_host_and_scheme(next_url, allowed_hosts=allowed_hosts, require_https=require_https):
             next_url = "/"
@@ -146,7 +150,7 @@ def authenticate(request: HttpRequest) -> HttpResponse:
 
 def logout(request: HttpRequest) -> HttpResponse:
     logout_url = settings.LOGOUT_REDIRECT_URL
-    allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
+    allowed_hosts = set(settings.ALLOWED_HOSTS) | {urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
     require_https = request.is_secure()
     if not url_has_allowed_host_and_scheme(logout_url, allowed_hosts=allowed_hosts, require_https=require_https):
         logout_url = settings.LOGIN_REDIRECT_URL
