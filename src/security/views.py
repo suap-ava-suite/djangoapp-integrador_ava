@@ -59,7 +59,14 @@ def _get_userinfo(request_data):
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
     logger.info("_get_userinfo response received with status %s", response.status_code)
-    return json.loads(response.text)
+    if not response.ok:
+        raise ValueError(
+            f"Falha ao consultar userinfo no OAuth (status {response.status_code}): {response.text[:200]}"
+        )
+    try:
+        return json.loads(response.text)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Resposta inválida do endpoint userinfo: conteúdo não é JSON válido.") from exc
 
 
 def _save_user(userinfo):
