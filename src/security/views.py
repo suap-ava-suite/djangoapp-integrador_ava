@@ -108,7 +108,12 @@ def _save_user(userinfo):
 
 def login(request: HttpRequest) -> HttpResponse:
     OAUTH = settings.OAUTH
-    request.session["next"] = request.GET.get("next", "/")
+    next_url = request.GET.get("next", "/")
+    allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
+    require_https = request.is_secure()
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts=allowed_hosts, require_https=require_https):
+        next_url = "/"
+    request.session["next"] = next_url
 
     redirect_uri = OAUTH.get("REDIRECT_URI")
     if not redirect_uri:
