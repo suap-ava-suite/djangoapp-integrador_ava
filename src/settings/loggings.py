@@ -25,17 +25,13 @@ class Color:
 logging.config.dictConfig(
     {
         "version": 1,
-        "disable_existing_loggers": False,
+        "disable_existing_loggers": True,
         "datefmt": "[%X]",
         "formatters": {
-            "longformat": {
-                # "format": f"{Color.GREEN}%(asctime)s {Color.YELLOW}%(levelname)s {Color.MAGENTA}%(name)s:%(lineno)s {Color.CYANO}pid:%(process)d {Color.NONE}%(message)s"  # noqa
-                "format": "%(message)s"
-            },
+            "longformat": {"format": "%(message)s"},
         },
         "handlers": {
             "console": {
-                # "class": "rich.logging.RichHandler",
                 "class": "logging.StreamHandler",
                 "formatter": "longformat",
             },

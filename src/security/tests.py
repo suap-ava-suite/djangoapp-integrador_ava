@@ -197,10 +197,18 @@ class AuthenticateViewTestCase(SessionRequestTestCase):
     def test_authenticate_creates_first_user_as_superuser(self, mock_get, mock_post):
         """Testa se o primeiro usuário é criado como superuser."""
         # Mock das respostas
-        mock_post.return_value = Mock(text=json.dumps({"access_token": "test_token", "scope": "test_scope"}))
-
         mock_post.return_value = Mock(
             status_code=200, text=json.dumps({"access_token": "test_token", "scope": "test_scope"})
+        )
+        mock_get.return_value = Mock(
+            text=json.dumps(
+                {
+                    "identificacao": "firstuser",
+                    "primeiro_nome": "First",
+                    "ultimo_nome": "User",
+                    "email_preferencial": "first@example.com",
+                }
+            )
         )
         # Garante que não há usuários
         User.objects.all().delete()
@@ -209,7 +217,8 @@ class AuthenticateViewTestCase(SessionRequestTestCase):
         self.add_session_to_request(request)
         request.session["next"] = "/"
 
-        authenticate(request)
+        response = authenticate(request)
+        print(response)
 
         # Verifica que primeiro usuário é superuser
         user = User.objects.get(username="firstuser")
