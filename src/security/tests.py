@@ -43,18 +43,22 @@ class SecurityAppConfigTestCase(TestCase):
         self.assertEqual(SecurityConfig.default_auto_field, "django.db.models.BigAutoField")
 
 
-class LoginViewTestCase(TestCase):
-    """Testes para a view de login."""
-
-    def setUp(self):
-        """Configura o ambiente de teste."""
-        self.factory = RequestFactory()
+class SessionRequestTestCase(TestCase):
+    """Classe base para testes que precisam de sessão na requisição."""
 
     def add_session_to_request(self, request):
         """Adiciona sessão à requisição."""
         middleware = SessionMiddleware(lambda x: None)
         middleware.process_request(request)
         request.session.save()
+
+
+class LoginViewTestCase(SessionRequestTestCase):
+    """Testes para a view de login."""
+
+    def setUp(self):
+        """Configura o ambiente de teste."""
+        self.factory = RequestFactory()
 
     @override_settings(
         OAUTH={
