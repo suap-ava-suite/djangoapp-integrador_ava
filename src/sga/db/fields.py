@@ -7,6 +7,13 @@ from django.utils.translation import gettext_lazy as _
 from sga.db.obfuscators import mask_all
 
 OBFUSCATION_MASK = "****"
+OBFUSCATION_VISIBLE_SUFFIX_LENGTH = 4
+
+
+def default_obfuscation(value):
+    if len(value) >= OBFUSCATION_VISIBLE_SUFFIX_LENGTH:
+        return OBFUSCATION_MASK + value[-OBFUSCATION_VISIBLE_SUFFIX_LENGTH:]
+    return OBFUSCATION_MASK
 
 
 def permissive_url_validator(value):
@@ -36,7 +43,7 @@ class ObfuscatedCharField(models.CharField):
             return None
         if self.obfuscator is not None:
             return self.obfuscator(value)
-        return OBFUSCATION_MASK + value[-4:] if len(value) >= 4 else OBFUSCATION_MASK
+        return default_obfuscation(value)
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
