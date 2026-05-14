@@ -97,7 +97,7 @@ pyenv local 3.14
 python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade uv pip
-uv pip install --upgrade
+uv pip install --upgrade .
 uv pip install --upgrade -e ".[dev]"
 pre-commit install --hook-type pre-commit --hook-type pre-push
 
