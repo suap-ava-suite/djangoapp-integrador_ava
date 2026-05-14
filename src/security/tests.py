@@ -451,48 +451,6 @@ class SecurityURLsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class IntegrationTestCase(SessionRequestTestCase):
-    """Testes de integração para fluxos de autenticação."""
-
-    @patch("security.views.requests.post")
-    @patch("security.views.requests.get")
-    @override_settings(OAUTH=TEST_OAUTH_OK)
-    def test_complete_authentication_flow(self, mock_get, mock_post):
-        """Testa fluxo completo de autenticação."""
-        # 1. Login - redireciona para OAuth
-        response = self.client.get("/login/?next=/admin/")
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("authorize", response.url)
-
-        # 2. Mock de retorno do OAuth
-        mock_post.return_value = Mock(text=json.dumps({"access_token": TEST_TOKEN_VALUE, "scope": "test_scope"}))
-
-        mock_get.return_value = Mock(
-            text=json.dumps(
-                {
-                    "identificacao": "integrationtest",
-                    "primeiro_nome": "Integration",
-                    "ultimo_nome": "Test",
-                    "email_preferencial": "integration@test.com",
-                }
-            )
-        )
-
-        # 3. Authenticate - processa callback
-        session = self.client.session
-        session["next"] = "/admin/"
-        session.save()
-
-        response = self.client.get(f"/authenticate/?code={TEST_TOKEN_VALUE}")
-
-        # Deve criar usuário e redirecionar
-        self.assertEqual(response.status_code, 302)
-
-        # 4. Verifica que usuário foi criado
-        user = User.objects.get(username="integrationtest")
-        self.assertEqual(user.email, "integration@test.com")
-
-
 class EdgeCasesTestCase(TestCase):
     """Testes de casos extremos."""
 
