@@ -60,6 +60,7 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       DJANGO_CACHES_DEFAULT_BACKEND: django.core.cache.backends.dummy.DummyCache
+      SUAP_INTEGRADOR_KEY: test
     permissions:
       contents: read
       id-token: write
