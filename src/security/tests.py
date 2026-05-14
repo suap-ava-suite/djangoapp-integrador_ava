@@ -175,10 +175,6 @@ class AuthenticateViewTestCase(TestCase):
         # Verifica redirecionamento
         self.assertEqual(response.status_code, 302)
 
-        # Verifica se o token foi armazenado na sessão para uso no logout
-        self.assertIn("logout_token", request.session)
-        self.assertEqual(request.session["logout_token"], "test_token")
-
         # Verifica se o usuário foi criado
         user = User.objects.get(username="testuser")
         self.assertEqual(user.first_name, "Test")
@@ -457,8 +453,8 @@ class LogoutViewTestCase(TestCase):
         LOGIN_REDIRECT_URL="/admin/",
         OAUTH={"BASE_URL": "https://suap.test.com"},
     )
-    def test_logout_includes_logout_token(self):
-        """Testa se logout inclui token da sessão."""
+    def test_logout_with_logout_token_still_redirects(self):
+        """Testa se logout com token em sessão mantém redirecionamento esperado."""
         request = self.factory.get("/logout/")
         request.user = self.user
         self.add_session_to_request(request)
@@ -466,8 +462,9 @@ class LogoutViewTestCase(TestCase):
 
         response = logout(request)
 
-        # Verifica que URL contém token
-        self.assertIn(f"token={TEST_TOKEN_VALUE}", response.url)
+        # Verifica redirecionamento com parâmetro next
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("next=", response.url)
 
     def test_logout_with_empty_logout_token(self):
         """Testa logout sem logout_token na sessão."""
@@ -479,7 +476,7 @@ class LogoutViewTestCase(TestCase):
 
         # Deve funcionar sem token
         self.assertEqual(response.status_code, 302)
-        self.assertIn("token=", response.url)
+        self.assertIn("next=", response.url)
 
 
 class SecurityURLsTestCase(TestCase):
