@@ -28,8 +28,12 @@ def _get_tokens(request):
     if not redirect_uri:
         raise ValueError("Configure OAUTH['REDIRECT_URI'] para autenticação OAuth.")
 
+    token_url = OAUTH.get("TOKEN_URL")
+    if not token_url:
+        raise ValueError("Configure OAUTH['TOKEN_URL'] para autenticação OAuth.")
+
     response = requests.post(
-        OAUTH.get("TOKEN_URL", ""),
+        token_url,
         data={
             "grant_type": "authorization_code",
             "code": request.GET.get("code"),
@@ -56,12 +60,17 @@ def _get_tokens(request):
 
 def _get_userinfo(request_data):
     OAUTH = settings.OAUTH
+    userinfo_url = OAUTH.get("USERINFO_URL")
+    if not userinfo_url:
+        raise ValueError("Configure OAUTH['USERINFO_URL'] para consulta de userinfo OAuth.")
     query = urllib.parse.urlencode({"scope": request_data.get("scope", "")})
+    access_token = request_data.get("access_token")
+    if not access_token:
+        raise ValueError("Resposta do OAuth inválida: campo obrigatório 'access_token' ausente.")
+
     response = requests.get(
-        f"{OAUTH['USERINFO_URL']}?{query}",
-        headers={
-            "Authorization": f"Bearer {request_data.get('access_token')}",
-        },
+        f"{userinfo_url}?{query}",
+        headers={"Authorization": f"Bearer {access_token}"},
         timeout=REQUEST_TIMEOUT_SECONDS,
         verify=True,
     )
@@ -107,8 +116,11 @@ def _save_user(userinfo):
 
 def login(request: HttpRequest) -> HttpResponse:
     OAUTH = settings.OAUTH
+    base_url = OAUTH.get("BASE_URL")
+    if not base_url:
+        raise ValueError("Configure OAUTH['BASE_URL'] para autenticação OAuth.")
     next_url = request.GET.get("next", "/")
-    allowed_hosts = {request.get_host(), urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
+    allowed_hosts = {request.get_host(), urllib.parse.urlsplit(base_url).netloc}
     require_https = request.is_secure()
     if not url_has_allowed_host_and_scheme(next_url, allowed_hosts=allowed_hosts, require_https=require_https):
         next_url = "/"
@@ -124,7 +136,7 @@ def login(request: HttpRequest) -> HttpResponse:
             "redirect_uri": redirect_uri,
         }
     )
-    suap_url = f"{OAUTH['BASE_URL']}/o/authorize/?{params}"
+    suap_url = f"{base_url}/o/authorize/?{params}"
     return redirect(suap_url)  # nosemgrep: python.django.security.injection.open-redirect.open-redirect
 
 
@@ -136,7 +148,7 @@ def authenticate(request: HttpRequest) -> HttpResponse:
         request_data = _get_tokens(request)
         userinfo = _get_userinfo(request_data)
         user = _save_user(userinfo)
-        auth.login(request, user)
+        auth.login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         next_url = request.session.pop("next", "/")
         allowed_hosts = set(settings.ALLOWED_HOSTS) | {urllib.parse.urlsplit(settings.OAUTH["BASE_URL"]).netloc}
         require_https = request.is_secure()

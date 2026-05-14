@@ -52,26 +52,30 @@ from integrador.views import sync_up_enrolments
 logging.getLogger("integrador").setLevel(logging.WARNING)
 
 
+TEST_TOKEN = ToolSgaHTTPMock.TEST_TOKEN
+TEST_TOKEN_NOT_OK = f"test-{uuid.uuid4().hex}"
+
+
 AMBIENTE_GOOD_SGA = dict(
-    nome="Ambiente Teste",  # noqa: S106
+    nome="Ambiente Teste",
     url="https://test.moodle.com",
     ordem=1,
     expressao_seletora="campus.sigla == 'TEST'",
-    local_suap_token="local_suap_token",  # noqa: S106
-    local_suap_active=True,
-    tool_sga_token="tool_sga_token",  # noqa: S106
+    tool_sga_token=TEST_TOKEN,
     tool_sga_active=True,
+    local_suap_token=TEST_TOKEN,
+    local_suap_active=True,
 )
 
 AMBIENTE_GOOD_SUAP = dict(
-    nome="Ambiente Teste",  # noqa: S106
+    nome="Ambiente Teste",
     url="https://test.moodle.com",
     ordem=1,
     expressao_seletora="campus.sigla == 'TEST'",
-    local_suap_token=None,  # noqa: S106
-    local_suap_active=False,
-    tool_sga_token="tool_sga_token",  # noqa: S106
-    tool_sga_active=True,
+    tool_sga_token=None,
+    tool_sga_active=False,
+    local_suap_token=TEST_TOKEN,
+    local_suap_active=True,
 )
 
 
@@ -188,7 +192,7 @@ class ToolSgaHTTPMockTestCase(TestCase):
 
     PLUGIN_PATH = ToolSgaHTTPMock.PLUGIN_PATH
     BASE_URL = f"https://test.moodle.com{PLUGIN_PATH}"
-    AUTH_HEADERS = {"Authentication": f"Token {ToolSgaHTTPMock.TOKEN}"}
+    AUTH_HEADERS = {"Authentication": f"Token {TEST_TOKEN}"}
 
     def setUp(self):
         self.mock = ToolSgaHTTPMock()
@@ -202,7 +206,7 @@ class ToolSgaHTTPMockTestCase(TestCase):
 
     def test_authentication_incorreta_retorna_401(self):
         """Cabeçalho Authentication errado deve retornar 401."""
-        response = self.mock.get(self.BASE_URL, headers={"Authentication": "Token errado"})
+        response = self.mock.get(self.BASE_URL, headers={"Authentication": f"Token {TEST_TOKEN_NOT_OK}"})
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.content)
         self.assertEqual(data["error"]["code"], 401)
@@ -268,7 +272,7 @@ class LocalSuapHTTPMockTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertFalse(response.ok)
 
-    AUTH_HEADERS = {"Authentication": f"Token {LocalSuapHTTPMock.TOKEN}"}
+    AUTH_HEADERS = {"Authentication": f"Token {TEST_TOKEN}"}
 
     SYNC_UP_PAYLOAD_MINIMO = {
         "campus": {"id": 1, "sigla": "ZL", "descricao": "Campus ZL"},
@@ -336,7 +340,7 @@ class LocalSuapHTTPMockTestCase(TestCase):
 
     def test_authentication_incorreta_retorna_401(self):
         url = f"{self.BASE_URL}?sync_up_enrolments"
-        response = self.mock.post(url, jsonbody={}, headers={"Authentication": "Token token_errado"})
+        response = self.mock.post(url, jsonbody={}, headers={"Authentication": f"Token {TEST_TOKEN_NOT_OK}"})
         self.assertEqual(response.status_code, 401)
         self.assertFalse(response.ok)
         data = json.loads(response.content)
@@ -431,7 +435,7 @@ class CSRFErrorViewTestCase(TestCase):
         request.user = Mock()
         request.user.is_authenticated = False
 
-        response = self.csrf_failure_view(request, reason="Token mismatch")
+        response = self.csrf_failure_view(request, reason=f"Token {TEST_TOKEN_NOT_OK}")
 
         self.assertEqual(response.status_code, 403)
         self.assertIsInstance(response, JsonResponse)
@@ -439,7 +443,7 @@ class CSRFErrorViewTestCase(TestCase):
         data = json.loads(response.content)
         self.assertIn("error", data)
         self.assertIn("reason", data)
-        self.assertEqual(data["reason"], "Token mismatch")
+        self.assertEqual(data["reason"], f"Token {TEST_TOKEN_NOT_OK}")
 
     @patch("integrador.views_errors.sentry_sdk")
     def test_csrf_failure_returns_html_for_browser(self, mock_sentry):
@@ -457,11 +461,10 @@ class CSRFErrorViewTestCase(TestCase):
     @patch("integrador.views_errors.sentry_sdk")
     def test_csrf_failure_includes_user_info_when_authenticated(self, mock_sentry):
         """Testa que erro CSRF inclui informações do usuário autenticado."""
-        test_password = f"test-{uuid.uuid4().hex}"
         user = User.objects.create_user(
             username="testuser",
             email="test@example.com",
-            password=test_password,
+            password=f"test-{uuid.uuid4().hex}",
         )
 
         request = self.factory.post("/api/test/")
@@ -571,12 +574,8 @@ class CSRFErrorViewTestCase(TestCase):
 class AmbienteModelTestCase(TestCase):
     """Testes para o modelo Ambiente."""
 
-    SYNC_JSON = {"campus": {"sigla": "TEST"}}
+    SYNC_JSON_OK = {"campus": {"sigla": "TEST"}}
     SYNC_JSON_NOT_OK = {"campus": {"sigla": "ERROR"}}
-
-    def setUp(self):
-        """Configura o ambiente de teste."""
-        self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
     def test_create_ambiente(self):
         """Testa criação de ambiente."""
@@ -585,7 +584,8 @@ class AmbienteModelTestCase(TestCase):
 
     def test_manager_seleciona_ambiente_valid(self):
         """Testa __str__."""
-        ambiente = Ambiente.objects.seleciona_ambiente(AmbienteModelTestCase.SYNC_JSON)
+        Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
+        ambiente = Ambiente.objects.seleciona_ambiente(AmbienteModelTestCase.SYNC_JSON_OK)
         self.assertIsNotNone(ambiente)
 
     def test_manager_seleciona_ambiente_none(self):
@@ -633,7 +633,7 @@ class AmbienteModelTestCase(TestCase):
     def test_ok_can_send_to_local_suap(self):
         """Testa validação can_send_to_local_suap (OK)."""
         ambiente = Ambiente(**AMBIENTE_GOOD_SUAP)
-        self.assertFalse(ambiente.can_send_to_local_suap)
+        self.assertTrue(ambiente.can_send_to_local_suap)
 
     def test_not_ok_can_send_to_local_suap(self):
         """Testa validação can_send_to_local_suap (NOT OK)."""
@@ -651,8 +651,8 @@ class AmbienteModelTestCase(TestCase):
 
     def test_ok_can_send_to_tool_sga(self):
         """Testa validação can_send_to_local_suap (OK)."""
-        ambiente = Ambiente(AMBIENTE_GOOD_SGA)
-        self.assertFalse(ambiente.can_send_to_tool_sga)
+        ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
+        self.assertTrue(ambiente.can_send_to_tool_sga)
 
     def test_not_ok_can_send_to_tool_sga(self):
         """Testa validação can_send_to_tool_sga (NOT OK)."""
@@ -693,19 +693,19 @@ class AmbienteModelTestCase(TestCase):
     def test_ok_token(self):
         """Testa validação token (OK)."""
         ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
-        self.assertEqual("tool_sga_token", ambiente.token)
+        self.assertEqual(TEST_TOKEN, ambiente.token)
 
         ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False}))
-        self.assertEqual("local_suap_token", ambiente.token)
+        self.assertEqual(TEST_TOKEN, ambiente.token)
 
         ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": None}))
-        self.assertEqual("local_suap_token", ambiente.token)
+        self.assertEqual(TEST_TOKEN, ambiente.token)
 
         ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": ""}))
-        self.assertEqual("local_suap_token", ambiente.token)
+        self.assertEqual(TEST_TOKEN, ambiente.token)
 
         ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_token": " "}))
-        self.assertEqual("local_suap_token", ambiente.token)
+        self.assertEqual(TEST_TOKEN, ambiente.token)
 
     def test_not_ok_token(self):
         """Testa validação token (NOT OK)."""
@@ -715,23 +715,23 @@ class AmbienteModelTestCase(TestCase):
     def test_ok_check_selectable(self):
         """Testa validação check_selectable (OK)."""
         ambiente = Ambiente(**AMBIENTE_GOOD_SGA)
-        self.assertTrue(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
+        self.assertTrue(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_OK))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
     def test_not_ok_check_selectable(self):
         """Testa validação token (NOT OK)."""
         ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False}))
-        self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
+        self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_OK))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
         ambiente = Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": ""}))
-        self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
+        self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_OK))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
         ambiente = Ambiente(
             **(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False, "expressao_seletora": ""})
         )
-        self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON))
+        self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_OK))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
     def test_ok_ambiente_ordering(self):
@@ -775,17 +775,6 @@ class AmbienteAdminTestCase(TestCase):
 
         from integrador.admin import AmbienteAdmin
 
-        self.ambiente_suap_good = dict(
-            nome="Ambiente Teste",  # noqa: S106
-            url="https://test.moodle.com",
-            ordem=1,
-            expressao_seletora="campus.sigla == 'TEST'",
-            local_suap_token="local_suap_token",  # noqa: S106
-            local_suap_active=True,
-            tool_sga_token=None,  # noqa: S106
-            tool_sga_active=False,
-        )
-
         self.admin = AmbienteAdmin(Ambiente, AdminSite())
         self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
@@ -796,7 +785,7 @@ class AmbienteAdminTestCase(TestCase):
         mock_response.status_code = 200
         mock_get.return_value = mock_response
 
-        result = self.admin.checked_url(self.ambiente)
+        result = self.admin.checked_url(Ambiente(**AMBIENTE_GOOD_SGA))
         self.assertIn("✅", result)
         self.assertIn("https://test.moodle.com", result)
 
@@ -805,23 +794,24 @@ class AmbienteAdminTestCase(TestCase):
         """Testa checked_url com falha."""
         mock_get.side_effect = Exception("Connection error")
 
-        result = self.admin.checked_url(self.ambiente)
+        result = self.admin.checked_url(Ambiente(**AMBIENTE_GOOD_SGA))
         self.assertIn("🚫", result)
 
     def test_ok_checked_expressao_seletora(self):
         """Testa checked_expressao_seletora válida."""
-        self.ambiente.expressao_seletora = "campus.sigla == 'TEST'"
-        result = self.admin.checked_expressao_seletora(self.ambiente)
+        result = self.admin.checked_expressao_seletora(
+            Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": "campus.sigla == 'TEST'"}))
+        )
         self.assertIn("✅", result)
 
     def test_not_ok_checked_expressao_seletora(self):
         """Testa checked_expressao_seletora inválida."""
-        self.ambiente.expressao_seletora = "invalid rule"
-        result = self.admin.checked_expressao_seletora(self.ambiente)
+        result = self.admin.checked_expressao_seletora(
+            Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": "invalid rule"}))
+        )
         self.assertIn("🚫", result)
 
-        self.ambiente.expressao_seletora = None
-        result = self.admin.checked_expressao_seletora(self.ambiente)
+        result = self.admin.checked_expressao_seletora(Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": None})))
         self.assertIn("⚠️", result)
 
     def test_ok_get_queryset(self):
@@ -835,7 +825,7 @@ class AmbienteAdminTestCase(TestCase):
 
         # mock_get.side_effect = Exception("Connection error")
         mock_get.return_value = Mock(status_code=200, text="")
-        result = self.admin.checked_tool_sga(self.ambiente)
+        result = self.admin.checked_tool_sga(Ambiente(**AMBIENTE_GOOD_SGA))
         self.assertIn("Tool SGA", result)
         self.assertIn("✅", result)
 
@@ -845,7 +835,7 @@ class AmbienteAdminTestCase(TestCase):
 
         # mock_get.side_effect = Exception("Connection error")
         mock_get.return_value = Mock(status_code=401, text="")
-        result = self.admin.checked_tool_sga(self.ambiente)
+        result = self.admin.checked_tool_sga(Ambiente(**AMBIENTE_GOOD_SGA))
         self.assertIn("Tool SGA", result)
         self.assertIn("🔑", result)  # Token inválido
 
@@ -853,7 +843,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_tool_sga2(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        result = self.admin.checked_tool_sga(self.ambiente)
+        result = self.admin.checked_tool_sga(Ambiente(**AMBIENTE_GOOD_SGA))
         self.assertIn("Tool SGA", result)
         self.assertIn("❌", result)  # Qualquer outro erro
 
@@ -886,7 +876,7 @@ class AmbienteAdminTestCase(TestCase):
 
     def test_not_ok_checked_tool_sga6(self):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
-        result = self.admin.checked_tool_sga(self.ambiente)
+        result = self.admin.checked_tool_sga(Ambiente(**AMBIENTE_GOOD_SGA))
         self.assertIn("Tool SGA", result)
         self.assertIn("⛔", result)
 
@@ -896,7 +886,7 @@ class AmbienteAdminTestCase(TestCase):
 
         # mock_get.side_effect = Exception("Connection error")
         mock_get.return_value = Mock(status_code=200, text="")
-        result = self.admin.checked_local_suap(Ambiente(**self.ambiente_suap_good))
+        result = self.admin.checked_local_suap(Ambiente(**AMBIENTE_GOOD_SUAP))
         self.assertIn("Local SUAP", result)
         self.assertIn("✅", result)
 
@@ -906,7 +896,7 @@ class AmbienteAdminTestCase(TestCase):
 
         # mock_get.side_effect = Exception("Connection error")
         mock_get.return_value = Mock(status_code=401, text="")
-        result = self.admin.checked_local_suap(Ambiente(**self.ambiente_suap_good))
+        result = self.admin.checked_local_suap(Ambiente(**AMBIENTE_GOOD_SUAP))
         self.assertIn("Local SUAP", result)
         self.assertIn("🔑", result)  # Token inválido
 
@@ -914,7 +904,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_local_suap2(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        result = self.admin.checked_local_suap(Ambiente(**self.ambiente_suap_good))
+        result = self.admin.checked_local_suap(Ambiente(**AMBIENTE_GOOD_SUAP))
         self.assertIn("Local SUAP", result)
         self.assertIn("❌", result)  # Qualquer outro erro
 
@@ -922,7 +912,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_local_suap3(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        ambiente = Ambiente(**(self.ambiente_suap_good | {"local_suap_active": False, "local_suap_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_active": False, "local_suap_token": None}))
         result = self.admin.checked_local_suap(ambiente)
         self.assertIn("Local SUAP", result)
         self.assertIn("🚫", result)
@@ -931,7 +921,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_local_suap4(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        ambiente = Ambiente(**(self.ambiente_suap_good | {"local_suap_active": False}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_active": False}))
         result = self.admin.checked_local_suap(ambiente)
         self.assertIn("Local SUAP", result)
         self.assertIn("⏸️", result)
@@ -940,14 +930,14 @@ class AmbienteAdminTestCase(TestCase):
     def test_not_ok_checked_local_suap5(self, mock_get):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
         mock_get.return_value = Mock(status_code=500, text="")
-        ambiente = Ambiente(**(self.ambiente_suap_good | {"local_suap_token": None}))
+        ambiente = Ambiente(**(AMBIENTE_GOOD_SUAP | {"local_suap_token": None}))
         result = self.admin.checked_local_suap(ambiente)
         self.assertIn("Local SUAP", result)
         self.assertIn("⚠️", result)
 
     def test_not_ok_checked_local_suap6(self):
         """Testa que AmbienteAdmin.get_queryset chama all() no queryset base."""
-        result = self.admin.checked_local_suap(Ambiente(**(self.ambiente_suap_good)))
+        result = self.admin.checked_local_suap(Ambiente(**(AMBIENTE_GOOD_SUAP)))
         self.assertIn("Local SUAP", result)
         self.assertIn("⛔", result)
 
@@ -1021,7 +1011,7 @@ class DecoratorsTestCase(TestCase):
 
         self.assertEqual(response.status_code, 500)
 
-    @override_settings(SUAP_INTEGRADOR_KEY="test_key_123")
+    @override_settings(SUAP_INTEGRADOR_KEY=TEST_TOKEN)
     def test_valid_token_decorator_success(self):
         """Testa decorator valid_token com token válido."""
 
@@ -1030,12 +1020,12 @@ class DecoratorsTestCase(TestCase):
             return {"status": "ok"}
 
         request = self.factory.get("/test/")
-        request.META["HTTP_AUTHENTICATION"] = "Token test_key_123"
+        request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
 
         result = test_view(request)
         self.assertEqual(result["status"], "ok")
 
-    @override_settings(SUAP_INTEGRADOR_KEY="test_key_123")
+    @override_settings(SUAP_INTEGRADOR_KEY=TEST_TOKEN)
     def test_valid_token_decorator_invalid_token(self):
         """Testa decorator valid_token com token inválido."""
 
@@ -1044,14 +1034,14 @@ class DecoratorsTestCase(TestCase):
             return {"status": "ok"}
 
         request = self.factory.get("/test/")
-        request.META["HTTP_AUTHENTICATION"] = "Token wrong_token"
+        request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN_NOT_OK}"
 
         with self.assertRaises(SyncError) as context:
             test_view(request)
 
         self.assertEqual(context.exception.code, 403)
 
-    @override_settings(SUAP_INTEGRADOR_KEY="test_key_123")
+    @override_settings(SUAP_INTEGRADOR_KEY=TEST_TOKEN)
     def test_valid_token_decorator_missing_token(self):
         """Testa decorator valid_token sem token."""
 
@@ -1703,7 +1693,7 @@ class SolicitacaoAdminTestCase(TestCase):
     def test_get_queryset_select_related_ambiente(self, mock_get_queryset):
         """Testa que SolicitacaoAdmin.get_queryset aplica select_related em ambiente."""
         request = RequestFactory().get("/admin/integrador/solicitacao/")
-        request.user = User.objects.create_superuser("admin_sol", "admin_sol@test.com", "pass123")
+        request.user = User.objects.create_superuser("admin_sol", "admin_sol@test.com", str(uuid.uuid4()))
 
         mock_qs = Mock()
         mock_qs.select_related.return_value = "SELECT_RELATED_QS"
@@ -1738,7 +1728,7 @@ class BaseBrokerTestCase(TestCase):
         credentials = self.broker.credentials
 
         self.assertIn("Authentication", credentials)
-        self.assertIn("Token tool_sga_token", credentials["Authentication"])
+        self.assertIn(f"Token {TEST_TOKEN}", credentials["Authentication"])
 
     def test_base_broker_get_cohorts(self):
         """Testa método get_cohort."""
@@ -1963,12 +1953,12 @@ class SecurityViewsCoverageTestCase(TestCase):
         ):
             mock_post.return_value = Mock(
                 status_code=200,
-                text=json.dumps({"access_token": "token123", "scope": "read"}),
+                text=json.dumps({"access_token": TEST_TOKEN, "scope": "read"}),
             )
             request = self.factory.get("/authenticate/?code=abc")
             tokens = security_views._get_tokens(request)
 
-            self.assertEqual(tokens["access_token"], "token123")
+            self.assertEqual(tokens["access_token"], TEST_TOKEN)
 
             mock_get.return_value = Mock(
                 status_code=200,
@@ -2117,12 +2107,12 @@ class SecurityViewsCoverageTestCase(TestCase):
         """Cobre fluxo de sucesso da authenticate com redirect para next."""
         from security import views as security_views
 
-        mock_get_tokens.return_value = {"access_token": "token123", "scope": "read"}
+        mock_get_tokens.return_value = {"access_token": TEST_TOKEN, "scope": "read"}
         mock_get_userinfo.return_value = {"identificacao": "auth.user"}
         user = User.objects.create_user(username="auth.user")
         mock_save_user.return_value = user
 
-        request = self.factory.get("/authenticate/?code=abc")
+        request = self.factory.get(f"/authenticate/?code={TEST_TOKEN}")
         self._add_session(request)
         request.session["next"] = "/admin/"
 
@@ -2130,7 +2120,7 @@ class SecurityViewsCoverageTestCase(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/admin/")
-        mock_auth_login.assert_called_once_with(request, user)
+        mock_auth_login.assert_called_once_with(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
     def test_authenticate_access_denied_renders_not_authorized(self):
         """Cobre retorno imediato quando OAuth responde access_denied."""
@@ -2194,7 +2184,6 @@ class SecurityViewsCoverageTestCase(TestCase):
 
         request = self.factory.get("/logout/")
         self._add_session(request)
-        request.session["logout_token"] = "abc123"  # noqa: S105
 
         with patch.dict(
             settings.OAUTH,
@@ -2217,7 +2206,7 @@ class IntegrationTestCase(TestCase):
         self.factory = RequestFactory()
         self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
-    @override_settings(SUAP_INTEGRADOR_KEY="tool_sga_token")
+    @override_settings(SUAP_INTEGRADOR_KEY=TEST_TOKEN)
     @patch("integrador.brokers.suap2local_suap.http_post_json")
     def test_complete_sync_up_flow(self, mock_post):
         """Testa fluxo completo de sync_up_enrolments."""
@@ -2242,7 +2231,7 @@ class IntegrationTestCase(TestCase):
         }
 
         request = self.factory.post("/api/enviar_diarios/", data=json.dumps(json_data), content_type="application/json")
-        request.META["HTTP_AUTHENTICATION"] = "Token tool_sga_token"
+        request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
 
         response = sync_up_enrolments(request)
 

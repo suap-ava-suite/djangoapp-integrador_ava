@@ -10,16 +10,17 @@ Este módulo contém testes para:
 """
 
 import json
+import uuid
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase, override_settings
 
 from security.apps import SecurityConfig
 from security.views import authenticate, login, logout
 
-TEST_TOKEN_VALUE = "test_token_123"
+TEST_TOKEN_VALUE = f"test-{uuid.uuid4().hex}"
 
 
 class SecurityAppConfigTestCase(TestCase):
@@ -173,6 +174,10 @@ class AuthenticateViewTestCase(TestCase):
 
         # Verifica redirecionamento
         self.assertEqual(response.status_code, 302)
+
+        # Verifica se o token foi armazenado na sessão para uso no logout
+        self.assertIn("logout_token", request.session)
+        self.assertEqual(request.session["logout_token"], "test_token")
 
         # Verifica se o usuário foi criado
         user = User.objects.get(username="testuser")
@@ -578,7 +583,15 @@ class EdgeCasesTestCase(TestCase):
     )
     def test_authenticate_with_mismatching_redirect_uri_error(self, mock_post):
         """Testa erro de redirect URI não correspondente."""
-        mock_post.return_value = Mock(text=json.dumps({"error_description": "Mismatching redirect URI."}))
+        token_error_payload = {
+            "error": "invalid_request",
+            "error_description": "Mismatching redirect URI.",
+        }
+        mock_post.return_value = Mock(
+            status_code=400,
+            text=json.dumps(token_error_payload),
+            json=Mock(return_value=token_error_payload),
+        )
 
         request = self.factory.get("/authenticate/?code=test_code")
         self.add_session_to_request(request)
@@ -619,6 +632,33 @@ class EdgeCasesTestCase(TestCase):
         self.assertIn(b"username", response.content.lower())
         self.assertFalse(User.objects.filter(username=long_username).exists())
 
+    @patch("security.views.requests.post")
+    @patch("security.views.requests.get")
+    @override_settings(
+        OAUTH={
+            "BASE_URL": "https://suap.test.com",
+            "TOKEN_URL": "https://suap.test.com/o/token/",
+            "USERINFO_URL": "https://suap.test.com/api/rh/eu/",
+            "CLIENT_ID": "test_client",
+            "CLIENT_SECRET": "test_secret",
+            "REDIRECT_URI": "http://suap.test.com/authenticate/",
+        }
+    )
+    def test_authenticate_with_username_at_max_length(self, mock_get, mock_post):
+        """Testa autenticação com username no limite exato de tamanho."""
+        mock_post.return_value = Mock(text=json.dumps({"access_token": "test_token", "scope": "test_scope"}))
+        username_max_length = User._meta.get_field("username").max_length
+        exact_username = "a" * username_max_length
+        mock_get.return_value = Mock(
+            text=json.dumps({"identificacao": exact_username, "primeiro_nome": "Edge", "ultimo_nome": "User"})
+        )
+        request = self.factory.get("/authenticate/?code=test_code")
+        self.add_session_to_request(request)
+        request.session["next"] = "/"
+        response = authenticate(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username=exact_username).exists())
+
     def test_login_with_special_characters_in_next(self):
         """Testa login com caracteres especiais em next."""
         request = self.factory.get("/login/?next=/admin/test?id=123&name=test")
@@ -637,7 +677,7 @@ class EdgeCasesTestCase(TestCase):
     def test_logout_without_authenticated_user(self):
         """Testa logout sem usuário autenticado."""
         request = self.factory.get("/logout/")
-        request.user = None
+        request.user = AnonymousUser()
         self.add_session_to_request(request)
 
         response = logout(request)
@@ -699,7 +739,7 @@ class GetTokensTestCase(TestCase):
 
         request = self.factory.get("/authenticate/")
 
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(ValueError) as context:
             _get_tokens(request)
 
         self.assertIn("código", str(context.exception))

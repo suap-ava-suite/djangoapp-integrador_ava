@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sc4py.env import env, env_as_bool, env_as_int, env_as_list
 
-SUAP_INTEGRADOR_KEY = env("SUAP_INTEGRADOR_KEY", "changeme")
+SUAP_INTEGRADOR_KEY = env("SUAP_INTEGRADOR_KEY")
 SUAP_BASE_URL = env("SUAP_BASE_URL", "https://suap.ifrn.edu.br")
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
@@ -32,7 +32,7 @@ CSRF_COOKIE_HTTPONLY = env_as_bool("DJANGO_CSRF_COOKIE_HTTPONLY", True)
 CSRF_COOKIE_NAME = env("DJANGO_CSRF_COOKIE_NAME", "csrftoken")
 CSRF_COOKIE_PATH = env("DJANGO_CSRF_COOKIE_PATH", "/")
 CSRF_COOKIE_SAMESITE = env("DJANGO_CSRF_COOKIE_SAMESITE", "Lax")
-CSRF_COOKIE_SECURE = env_as_bool("DJANGO_CSRF_COOKIE_SECURE", True)
+CSRF_COOKIE_SECURE = env_as_bool("DJANGO_CSRF_COOKIE_SECURE", GO_TO_HTTPS)
 CSRF_USE_SESSIONS = env_as_bool("DJANGO_CSRF_USE_SESSIONS", False)
 CSRF_FAILURE_VIEW = env("DJANGO_CSRF_FAILURE_VIEW", "integrador.views_errors.csrf_failure")
 CSRF_HEADER_NAME = env("DJANGO_CSRF_HEADER_NAME", "HTTP_X_CSRFTOKEN")
@@ -45,7 +45,7 @@ OAUTH = {
     "TOKEN_URL": env("OAUTH_TOKEN_URL", f"{oauth_base_url}/o/token/"),
     "USERINFO_URL": env("OAUTH_USERINFO_URL", f"{oauth_base_url}/api/rh/eu/"),
     "REDIRECT_URI": env("OAUTH_REDIRECT_URI", ""),
-    "CLIENT_ID": env("OAUTH_CLIENT_ID", "changeme"),
-    "CLIENT_SECRET": env("OAUTH_CLIENT_SECRET", "changeme"),
+    "CLIENT_ID": env("OAUTH_CLIENT_ID"),
+    "CLIENT_SECRET": env("OAUTH_CLIENT_SECRET"),
     "VERIFY_SSL": env_as_bool("OAUTH_VERIFY_SSL", True),
 }

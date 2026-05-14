@@ -10,6 +10,8 @@ OBFUSCATION_MASK = "****"
 
 
 def permissive_url_validator(value):
+    if value is None:
+        return None
     validator = URLValidator(schemes=["http", "https"])
     try:
         validator(value)
@@ -35,9 +37,6 @@ class ObfuscatedCharField(models.CharField):
         if self.obfuscator is not None:
             return self.obfuscator(value)
         return OBFUSCATION_MASK + value[-4:] if len(value) >= 4 else OBFUSCATION_MASK
-
-    def from_db_value(self, value, expression, connection):
-        return value
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()

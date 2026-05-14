@@ -1,6 +1,7 @@
 import json
 import logging
 import threading
+import uuid
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -70,7 +71,7 @@ class LocalSuapHTTPMock:
       - sync_down_grades    (GET)
     """
 
-    TOKEN = "changeme"  # noqa: S105
+    TEST_TOKEN = f"test-{uuid.uuid4().hex}"
 
     def _validate_authentication(self, headers: dict) -> MockHTTPResponse | None:
         auth = headers.get("Authentication") or headers.get("authentication")
@@ -79,7 +80,7 @@ class LocalSuapHTTPMock:
                 {"error": {"message": "Bad Request - Authentication not informed", "code": 400}},
                 status_code=400,
             )
-        if auth != f"Token {self.TOKEN}":  #
+        if auth != f"Token {LocalSuapHTTPMock.TEST_TOKEN}":  #
             return MockHTTPResponse(
                 {"error": {"message": "Unauthorized", "code": 401}},
                 status_code=401,
@@ -193,7 +194,7 @@ class ToolSgaHTTPMock:
     a definição da API do plugin `tool_sga`.
     """
 
-    TOKEN = "changeme"  # noqa: S105
+    TEST_TOKEN = LocalSuapHTTPMock.TEST_TOKEN
 
     PLUGIN_PATH = "/local/tool_sga/api/index.php"
 
@@ -204,7 +205,7 @@ class ToolSgaHTTPMock:
                 {"error": {"message": "Bad Request - Authentication not informed", "code": 400}},
                 status_code=400,
             )
-        if auth != f"Token {self.TOKEN}":
+        if auth != f"Token {ToolSgaHTTPMock.TEST_TOKEN}":
             return MockHTTPResponse(
                 {"error": {"message": "Unauthorized", "code": 401}},
                 status_code=401,
