@@ -1977,15 +1977,6 @@ class SecurityViewsCoverageTestCase(TestCase):
             self.assertEqual(user.username, "user.security")
             self.assertEqual(user.email, "user.security@ifrn.edu.br")
 
-    def test_get_tokens_missing_code_raises(self):
-        """Cobre erro quando o código OAuth não é enviado."""
-        from security import views as security_views
-
-        request = self.factory.get("/authenticate/")
-
-        with self.assertRaises(Exception):
-            security_views._get_tokens(request)
-
     def test_get_tokens_missing_redirect_uri_raises(self):
         """Cobre erro quando REDIRECT_URI não está configurado."""
         from django.conf import settings

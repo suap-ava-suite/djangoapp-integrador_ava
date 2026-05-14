@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import importlib.util
 import logging
+import os
 import sys
 
 from sc4py.env import env_as_bool, env_as_list
@@ -13,10 +14,11 @@ logger = logging.getLogger(__name__)
 DEBUG = env_as_bool("DJANGO_DEBUG", True)
 DEBUG_URLPATTERNS = []
 
-# Check if running tests
-IS_RUNNING_TESTS = "test" in sys.argv
+TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
 
-if DEBUG and not IS_RUNNING_TESTS:
+# Check if running tests
+
+if DEBUG and not TESTING:
     try:
         if importlib.util.find_spec("debug_toolbar") is not None:
             MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
@@ -24,7 +26,7 @@ if DEBUG and not IS_RUNNING_TESTS:
             INTERNAL_IPS = ["127.0.0.1", "localhost"]
             DEBUG_TOOLBAR_CONFIG = {
                 "SHOW_TOOLBAR_CALLBACK": lambda request: True,
-                "IS_RUNNING_TESTS": False,
+                "TESTING": False,
                 "DISABLE_PANELS": {
                     "debug_toolbar.panels.history.HistoryPanel",
                     "debug_toolbar.panels.versions.VersionsPanel",

@@ -48,6 +48,7 @@ src/.coverage
 nosetests.xml
 src/coverage.xml
 coverage.xml
+junit.xml
 *.cover
 .hypothesis/
 .pytest_cache/
