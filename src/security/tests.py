@@ -152,10 +152,13 @@ class AuthenticateViewTestCase(TestCase):
     def test_authenticate_successful_flow(self, mock_get, mock_post):
         """Testa fluxo de autenticação bem-sucedido."""
         # Mock do token response
-        mock_post.return_value = Mock(text=json.dumps({"access_token": "test_token", "scope": "test_scope"}))
+        mock_post.return_value = Mock(
+            status_code=200, text=json.dumps({"access_token": "test_token", "scope": "test_scope"})
+        )
 
         # Mock do userinfo response
         mock_get.return_value = Mock(
+            status_code=200,
             text=json.dumps(
                 {
                     "identificacao": "testuser",
@@ -163,7 +166,7 @@ class AuthenticateViewTestCase(TestCase):
                     "ultimo_nome": "User",
                     "email_preferencial": "test@example.com",
                 }
-            )
+            ),
         )
 
         request = self.factory.get("/authenticate/?code=test_code")
