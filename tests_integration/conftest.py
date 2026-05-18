@@ -11,7 +11,7 @@ from integrador.models import Ambiente
 MOODLE_URL = os.getenv("MOODLE_INTEGRATION_URL", "http://moodle")
 
 
-def wait_for_url(url, timeout=60):
+def wait_for_url(url, timeout=300):
     start_time = time.time()
     while time.time() - start_time < timeout:
         time.sleep(2)
