@@ -40,7 +40,7 @@ def docker_compose():
         pytest.fail("docker não encontrado no PATH")
 
     subprocess.run(  # noqa: S603
-        [docker_bin, "compose", "-f", "docker-compose.integration.yml", "up", "-d", "--wait"],
+        [docker_bin, "compose", "-f", "tests_integration/docker-compose.integration.yml", "up", "-d", "--wait"],
         check=True,
     )
     if not wait_for_url(MOODLE_URL):
