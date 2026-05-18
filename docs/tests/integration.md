@@ -19,7 +19,7 @@ Esses testes utilizam contêineres Docker para subir um ambiente completo, inclu
 O comando abaixo sobe todo o ambiente, executa os testes e encerra os contêineres, retornando o código de saída correto:
 
 ```bash
-docker compose -f docker-compose.integration.yml up --build integrador-integration --exit-code-from integrador-integration
+docker compose -f docker-compose.integration.yml up --build test-integration --exit-code-from test-integration
 ```
 
 ### 2) Durante o Desenvolvimento

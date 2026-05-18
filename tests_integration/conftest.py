@@ -50,15 +50,15 @@ def docker_compose():
 
 
 @pytest.fixture
-def integration_ambiente(db, moodle_seed_data):
+def integration_ambiente(db):
     """Cria o ambiente no Django apontando para o Moodle Docker."""
 
     ambiente, created = Ambiente.objects.update_or_create(
         nome="Moodle Local Docker",
         defaults={
             "url": MOODLE_URL,
-            "expressao_seletora": "campus.sigla == 'ZL'",
-            "local_suap_token": "test_token",
+            "expressao_seletora": "campus.sigla != 'AAAA'",
+            "local_suap_token": "change",
             "local_suap_active": True,
             "ordem": 0,
         },

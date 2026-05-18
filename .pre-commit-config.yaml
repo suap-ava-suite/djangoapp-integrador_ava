@@ -76,7 +76,7 @@ repos:
     - id: integration-test
       name: integration-test
       stages: [pre-push]
-      entry: docker compose -f tests_integration/docker-compose.integration.yml up --build integrador-integration --exit-code-from integrador-integration
+      entry: docker compose -f tests_integration/docker-compose.integration.yml up --build test-integration --exit-code-from test-integration
       language: system
       pass_filenames: false
       always_run: true

@@ -26,8 +26,6 @@ services:
       CFG_DISPLAY_ERRORS: '0'
       XDEBUG_MODE: 'off'
       MOODLE_DOCKER_PHPUNIT_EXTERNAL_HOSTNAME: moodle
-    ports:
-      - "8080:80"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://moodle/local/suap/healthcheck.php"]
       interval: 10s
@@ -49,11 +47,10 @@ services:
       timeout: 5s
       retries: 5
 
-  integrador-integration:
+  integrador:
     build:
       context: ../.
       target: development
-    user: root
     environment:
       POSTGRES_ENGINE: django.db.backends.postgresql
       POSTGRES_HOST: db-integrador
@@ -62,15 +59,33 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       DJANGO_CACHES_DEFAULT_BACKEND: django.core.cache.backends.dummy.DummyCache
-      SUAP_INTEGRADOR_KEY: test
-      MOODLE_INTEGRATION_URL: http://moodle
+      DJANGO_ALLOWED_HOSTS: localhost:8000,integrador:8000
+      SUAP_INTEGRADOR_KEY: changeme
     volumes:
       - ../.:/app
       - /var/run/docker.sock:/var/run/docker.sock
-    working_dir: /app
     depends_on:
       db-integrador:
         condition: service_healthy
       moodle:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "http", "http://integrador:8000/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  test-integration:
+    build:
+      context: ../.
+      target: development
+    user: root
+    environment:
+      SUAP_INTEGRADOR_KEY: changeme
+    volumes:
+      - ../.:/app
+    working_dir: /app
+    depends_on:
+      integrador:
         condition: service_healthy
     command: ["pytest", "tests_integration", "--ds=settings", "-v", "-s"]

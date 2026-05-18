@@ -3,6 +3,11 @@
 
 
 ### Apenas os atributos os obrigatórios
+GET http://localhost:8091/api/baixar_notas/?campus_sigla=ZL&diario_id=4 HTTP/1.1
+Authentication: Token changeme
+
+
+### Apenas os atributos os obrigatórios
 POST http://localhost:8091/api/enviar_diarios/ HTTP/1.1
 Authentication: Token changeme
 
