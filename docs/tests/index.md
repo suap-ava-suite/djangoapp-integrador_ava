@@ -114,6 +114,14 @@ em testes de integração sem Moodle real, consulte:
 
 ---
 
+## Testes de Integração Reais (Docker)
+
+Para validar o contrato fim-a-fim contra um Moodle real em contêineres:
+
+- [Testes de Integração](integration.md)
+
+---
+
 ## Cobertura
 
 A política de cobertura exige **mínimo 91%** (meta: 95%).

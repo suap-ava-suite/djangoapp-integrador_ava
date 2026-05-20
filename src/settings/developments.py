@@ -12,9 +12,8 @@ from .middlewares import MIDDLEWARE
 logger = logging.getLogger(__name__)
 
 DEBUG = env_as_bool("DJANGO_DEBUG", True)
-DEBUG_URLPATTERNS = []
-
 TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+DEVELOPMENT = DEBUG and not TESTING
 
 # Check if running tests
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
@@ -30,7 +29,7 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_COLLAPSED": True,
 }
 
-if DEBUG and not TESTING:
+if DEVELOPMENT:
     try:
         if importlib.util.find_spec("debug_toolbar") is not None:
             MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]

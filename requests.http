@@ -3,6 +3,11 @@
 
 
 ### Apenas os atributos os obrigatórios
+GET http://localhost:8091/api/baixar_notas/?campus_sigla=ZL&diario_id=4 HTTP/1.1
+Authentication: Token changeme
+
+
+### Apenas os atributos os obrigatórios
 POST http://localhost:8091/api/enviar_diarios/ HTTP/1.1
 Authentication: Token changeme
 
@@ -144,69 +149,7 @@ Authentication: Token changeme
                 "id": 1,
                 "descricao": "Técnico"
             }
-        },
-        "restricoes": [
-            {
-                "descricao": "Modalidade do curso da matricula",
-                "chave": "modalidade.id",
-                "restricao": "1"
-            },
-            {
-                "descricao": "Aluno, conforme modalidade do curso",
-                "chave": "modalidade.id",
-                "restricao": "13"
-            },
-            {
-                "descricao": "Aluno, conforme nível de ensino do curso",
-                "chave": "modalidade.nivel_ensino.id",
-                "restricao": "1"
-            },
-            {
-                "descricao": "É aluno",
-                "chave": "eh_aluno",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É servidor",
-                "chave": "eh_servidor",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É prestador",
-                "chave": "eh_prestador",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É usuario externo",
-                "chave": "eh_usuarioexterno",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É docente",
-                "chave": "eh_docente",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É técnico administrativo",
-                "chave": "eh_tecnico_administrativo",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É estrangeiro",
-                "chave": "eh_estrangeiro",
-                "restricao": "true"
-            },
-            {
-                "descricao": "É matriculado no curso",
-                "chave": "outras_matriculas.*.curso.codigo",
-                "restricao": "99999"
-            },
-            {
-                "descricao": "É matriculado no curso",
-                "chave": "outras_matriculas.*.curso.codigo",
-                "restricao": "99999"
-            }
-        ]
+        }
     },
     "componente": {
         "id": 333,
@@ -244,6 +187,26 @@ Authentication: Token changeme
         "situacao": "Aberto",
         "descricao": "CCCCC",
         "descricao_historico": "CCCCC"
+    },
+    "autoinscricao": {
+        "estrangeiros": true,
+        "tecnicos_administrativos": true,
+        "docentes": true,
+        "prestadores": true,
+        "alunos": true,
+        "niveis_ensino": [
+            "Graduação", "Ensino Médio", "Pós-Graduação"
+        ],
+        "modalidades": [
+            "Tecnologia", "Artes"
+        ],
+        "campi": [
+            "CNAT", "ZL"
+        ],
+        "cursos": [
+            "Tecnologia em Desenvolvimento de Software",
+            "Tecnologias de Sistemas para Internet"
+        ]
     }
 }
 

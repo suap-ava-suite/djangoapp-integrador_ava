@@ -4,9 +4,8 @@ import sys
 import time
 
 import psycopg
-from sc4py.env import env_as_bool
 
-from settings import DATABASES
+from settings import DATABASES, DEBUG, DEVELOPMENT
 
 
 def _wait_db(db):
@@ -34,7 +33,7 @@ def _wait_db(db):
 
 
 def start_debug():
-    if env_as_bool("DJANGO_DEBUG", False):
+    if DEBUG:
         try:
             import debugpy
             from django.core.management import execute_from_command_line
@@ -46,6 +45,22 @@ def start_debug():
             logging.debug("Nao foi possivel iniciar debugpy")
 
 
+def start_dev_env():
+    if DEVELOPMENT:
+        from integrador.models import Ambiente
+
+        Ambiente.objects.update_or_create(
+            nome="Local dev",
+            defaults={
+                "url": "http://moodle",
+                "expressao_seletora": "campus.sigla != 'QQ'",
+                "ordem": 0,
+                "local_suap_token": "changeme",
+                "local_suap_active": True,
+            },
+        )
+
+
 def boot():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
     try:
@@ -55,3 +70,5 @@ def boot():
 
     _wait_db(DATABASES["default"])
     execute_from_command_line([sys.argv[0], "migrate"])
+
+    start_dev_env()

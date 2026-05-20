@@ -46,18 +46,82 @@ class Suap2LocalSuapBroker(BaseBroker):
                 422,
             )
 
+    def _set_restricoes(self, enviados: dict) -> None:
+        def get_tipos_usuarios(ai: dict) -> str:
+            tipos_usuarios = []
+            if "tecnicos_administrativos" in ai and ai["tecnicos_administrativos"]:
+                tipos_usuarios.append("'Servidor (Técnico-Administrativo)'")
+
+            if "docentes" in ai and ai["docentes"]:
+                tipos_usuarios.append("'Servidor (Docente)'")
+
+            if "prestadores" in ai and ai["prestadores"]:
+                tipos_usuarios.append("'Prestador de Serviço'")
+
+            if "alunos" in ai and ai["alunos"]:
+                tipos_usuarios.append("'Aluno'")
+            return f"tipo_usuario in [{', '.join(tipos_usuarios)}]" if tipos_usuarios else ""
+
+        def get_nacionalidades(ai: dict) -> str:
+            return "$any([m.estrangeiro==true for m in outras_matriculas])" if ai.get("estrangeiros") else ""
+
+        def get_alunos(lista: list[dict[str:str]], filter: str) -> str:
+            args = [f"'{i}'" for i in lista]
+            return (
+                f"$any([m.tipo == 'aluno' and m.situacao_diario == 'ativo' and m.{filter} in"
+                + f" [{', '.join(args)}] for m in outras_matriculas])"
+            )
+
+        payload = enviados or {}
+        if payload.get("turma") is None:
+            payload["turma"] = {}
+
+        autoinscricao = payload.get("autoinscricao", {})
+
+        restricoes = [
+            get_tipos_usuarios(autoinscricao),
+            get_nacionalidades(autoinscricao),
+            get_alunos(autoinscricao.get("campi", []), "campus"),
+            get_alunos(autoinscricao.get("modalidades", []), "detalhamento.modalidade"),
+            get_alunos(autoinscricao.get("niveis_ensino", []), "detalhamento.nivel_ensino"),
+            get_alunos(autoinscricao.get("cursos", []), "detalhamento.curso"),
+        ]
+        payload["turma"]["restricoes"] = " and ".join([r for r in restricoes if r != ""])
+
+        if payload["turma"].get("autoinscricao") is None:
+            payload["turma"]["autoinscricao"] = payload.get("autoinscricao") is not None
+
     def sync_up_enrolments(self) -> dict:
         self._validate_sync_payload(self.solicitacao.recebido)
+        self.solicitacao.enviado = self.solicitacao.recebido or {}
+
         try:
-            self.solicitacao.enviado = dict(**self.solicitacao.recebido, **{"coortes": self.get_cohort()})
-            self.solicitacao.save()
-        except SyncError:
-            raise
+            self.solicitacao.enviado["coortes"] = self.get_cohort()
         except Exception as e:
             raise SyncError(
-                "Erro ao tentar obter as coortes antes de iniciar a integração com o AVA. Contacte um administrador."
-                + f"Erro: {e}.",
+                "Erro ao tentar obter as COORTES"
+                + " antes mesmo de iniciar a integração com o Moodle."
+                + f" Contacte um administrador. Erro: {e}.",
                 getattr(e, "code", 525),
+            )
+
+        try:
+            self._set_restricoes(self.solicitacao.enviado)
+        except Exception as e:
+            raise SyncError(
+                "Erro ao tentar processar as RESTRIÇÕES do curso com autoinscrição "
+                + "antes mesmo de iniciar a integraçãos o Moodle."
+                + f" Contacte um administrador.Erro: {e}.",
+                getattr(e, "code", 526),
+            )
+
+        try:
+            self.solicitacao.save()
+        except Exception as e:
+            raise SyncError(
+                "Erro ao tentar SALVAR o payload antes mesmo de ser enviado ao Moodle."
+                + f" Contacte um administrador. Erro: {e}.",
+                getattr(e, "code", 527),
             )
 
         result = self.__post_json("sync_up_enrolments", self.solicitacao.enviado)

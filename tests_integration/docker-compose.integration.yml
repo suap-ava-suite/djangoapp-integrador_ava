@@ -1,0 +1,91 @@
+services:
+  db-moodle:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: moodle
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./fixtures/:/docker-entrypoint-initdb.d/:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d moodle"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  moodle:
+    image: ctezlifrn/avamoodle:4.5.11.045-dev
+    environment:
+      CFG_DBTYPE: pgsql
+      CFG_DBHOST: db-moodle
+      CFG_DBNAME: moodle
+      CFG_DBUSER: postgres
+      CFG_DBPASS: postgres
+      CFG_WWWROOT: http://moodle
+      CFG_DEBUG: 'false'
+      CFG_DISPLAY_ERRORS: '0'
+      XDEBUG_MODE: 'off'
+      MOODLE_DOCKER_PHPUNIT_EXTERNAL_HOSTNAME: moodle
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://moodle/local/suap/healthcheck.php"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      db-moodle:
+        condition: service_healthy
+
+  db-integrador:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: integrador
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d integrador"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  integrador:
+    build:
+      context: ../.
+      target: development
+    environment:
+      POSTGRES_ENGINE: django.db.backends.postgresql
+      POSTGRES_HOST: db-integrador
+      POSTGRES_PORT: "5432"
+      POSTGRES_DATABASE: integrador
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DJANGO_CACHES_DEFAULT_BACKEND: django.core.cache.backends.dummy.DummyCache
+      DJANGO_ALLOWED_HOSTS: localhost:8000,integrador:8000,localhost,integrador
+      SUAP_INTEGRADOR_KEY: changeme
+    volumes:
+      - ../.:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      db-integrador:
+        condition: service_healthy
+      moodle:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "http", "http://integrador:8000/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  test-integration:
+    build:
+      context: ../.
+      target: development
+    user: root
+    environment:
+      SUAP_INTEGRADOR_KEY: changeme
+    volumes:
+      - ../.:/app
+    working_dir: /app
+    depends_on:
+      integrador:
+        condition: service_healthy
+    command: ["pytest", "tests_integration", '-v', '-s']

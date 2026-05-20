@@ -7,6 +7,7 @@ ARG BASEIMAGE=6.0.5.28
 FROM ctezlifrn/avaintegrationbase:$BASEIMAGE AS development
 
 RUN uv pip uninstall --system dsgovbr
+RUN apt-get update && apt-get install -y docker.io docker-compose && rm -rf /var/lib/apt/lists/*
 RUN uv pip install --system pre-commit \
                     black ruff doc8 pytest pytest-cov python-dotenv pytest-coverage-gate pytest-django \
                     django-sass-processor Werkzeug django-debug-toolbar
@@ -14,7 +15,7 @@ RUN uv pip install --system pre-commit \
 USER app
 EXPOSE 8000
 WORKDIR /app/src
-CMD  ["runserver_plus"]
+CMD  ["python", "manage.py", "runserver_plus", "0.0.0.0:8000"]
 
 
 #########################

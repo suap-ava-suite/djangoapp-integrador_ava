@@ -153,7 +153,8 @@ python -m djlint --profile=django --check --lint src
 - Lint JS/CSS/Markdown: `prettier --check`
 - Lint HTML: `djlint --check --lint`
 - SAST: `bandit` (Python) e `semgrep` (Python/JS/CSS/Markdown/HTML)
-- Testes unitários com cobertura no `pre-push` (via `coverage run src/manage.py test`)
+- Testes unitários com cobertura no `pre-push`
+- Testes de integração reais com Docker no `pre-push`
 
 ### 3) Política de cobertura
 
