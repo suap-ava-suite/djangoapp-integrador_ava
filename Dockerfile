@@ -23,8 +23,7 @@ RUN mkdir -p /app/static \
 USER app
 EXPOSE 8000
 WORKDIR /app/src
-# CMD  ["python", "manage.py", "runserver_plus", "0.0.0.0:8000"]
-CMD  ["uvicorn" ]
+CMD  ["python", "manage.py", "runserver_plus", "0.0.0.0:8000"]
 
 
 #########################
