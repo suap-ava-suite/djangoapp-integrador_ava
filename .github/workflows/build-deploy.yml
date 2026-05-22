@@ -1,0 +1,70 @@
+name: Build and Deploy Integrador
+
+env:
+  MAIN_IMAGE: ctezlifrn/avaintegrador
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.DOCKERHUB_HOST }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: [self-hosted, runner-dead]
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.K8S_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Enviar Chart do Helm
+        run: |
+          ssh root@${{ secrets.K8S_HOST }} "rm -rf /tmp/integrador-chart"
+          scp -r ./helm root@${{ secrets.K8S_HOST }}:/tmp/integrador-chart
+
+      - name: Executar Upgrade no Helm
+        run: |
+          ssh root@${{ secrets.K8S_HOST }} "
+            helm upgrade --install integrador /tmp/integrador-chart \
+              --namespace ava \
+              --set image.tag=${{ github.sha }} \
+              --set image.repository=${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}
+          "

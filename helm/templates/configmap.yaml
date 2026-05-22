@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "integrador.fullname" . }}-env-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "integrador.labels" . | nindent 4 }}
+data:
+  DJANGO_DEBUG: "false"
+  DJANGO_ALLOWED_HOSTS: "localhost,integrador.ead.ifrn.edu.br,integracao.ead.ifrn.edu.br"
+  DJANGO_CSRF_TRUSTED_ORIGINS: "https://integrador.ead.ifrn.edu.br,https://integracao.ead.ifrn.edu.br"
+  DJANGO_USE_X_FORWARDED_HOST: "True"
+  SENTRY_ENVIRONMENT: "production"
+  SENTRY_SAMPLE_RATE: "100"
+  SENTRY_TRACES_SAMPLE_RATE: "100"
+  DJANGO_LOGOUT_REDIRECT_URL: "https://suap.ifrn.edu.br/accounts/logout/"
+  DJANGO_LOGIN_URL: "https://integrador.ead.ifrn.edu.br/api/login/"
+  DJANGO_LOGIN_REDIRECT_URL: "https://integrador.ead.ifrn.edu.br/"
+  DJANGO_STATIC_URL: https://ava-painel-statics.pages.dev/integrador/
+  OAUTH_REDIRECT_URI: "https://integrador.ead.ifrn.edu.br/authenticate/"
+  OAUTH_BASE_URL: "https://suap.ifrn.edu.br"
+  OAUTH_TOKEN_URL: "https://suap.ifrn.edu.br/o/token/"
+  OAUTH_USERINFO_URL: "https://suap.ifrn.edu.br/api/rh/eu/"
+  SHOW_USERWAY: "false"
+  USERWAY_ACCOUNT: "wPr7IBWf6k"
+  SHOW_VLIBRAS: "false"
+  TZ: "America/Fortaleza"
+  GUNICORN_TIMEOUT: "30"
+  GUNICORN_NUM_WORKERS: "5"
+  GUNICORN_LOG_LEVEL: "debug"
+  VIRTUAL_PORT: "8000"

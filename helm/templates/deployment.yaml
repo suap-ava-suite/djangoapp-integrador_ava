@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "integrador.fullname" . }}
+  labels:
+    {{- include "integrador.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "integrador.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "integrador.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          
+          envFrom:
+            - configMapRef:
+                name: {{ include "integrador.fullname" . }}-env-config
+            {{- if .Values.vault.enabled }}
+            - secretRef:
+                name: {{ .Values.vault.secretName }}
+            {{- end }}
+
+          env:
+            - name: GUNICORN_CMD_ARGS
+              value: "--bind=0.0.0.0:8000"
+
+            # --- POSTGRES ENV VARS ---
+            # (A senha injetada via envFrom já completa o setup do Django)
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgres.host | quote }}
+            - name: POSTGRES_DATABASE
+              value: {{ .Values.postgres.name | quote }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.user | quote }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.postgres.port | quote }}
+
+            # --- REDIS ENV VARS ---
+            # Como o REDIS_PASSWORD veio do envFrom, a interpolação $(REDIS_PASSWORD) funciona perfeitamente aqui embaixo!
+            {{- if .Values.redis.enabled }}
+            - name: DJANGO_CACHES_DEFAULT_LOCATION
+              value: "redis://:$(REDIS_PASSWORD)@{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.database }}"
+            {{- end }}
+
+            {{- range $key, $val := .Values.envSecrets }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
