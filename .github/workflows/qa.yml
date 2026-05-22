@@ -3,7 +3,11 @@ name: Full cicle
 on:
   push:
     branches:
-      - main
+      - main  # <-- Adicione isso para rodar automaticamente a cada push na main
+  release:
+    types: [published]
+  workflow_dispatch:
+
 
 permissions:
   contents: read
@@ -159,9 +163,12 @@ jobs:
         run: |
           docker compose -f tests_integration/docker-compose.integration.yml up --build test-integration --exit-code-from test-integration
 
-  build-and-push:
+  publish-to-test:
     runs-on: ubuntu-latest
     needs: integration-tests
+    if: |
+      always() && needs.build-main.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/') && endsWith(github.ref_name, '-dev')
 
     steps:
       - name: Checkout source code
@@ -188,11 +195,14 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.sha }}
+            ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
 
   deploy-to-test:
     runs-on: [self-hosted, runner-dead]
     needs: build-and-push
+    if: |
+      always() && needs.publish-to-test.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/') && endsWith(github.ref_name, '-dev')
     environment:
       name: production
 
@@ -216,5 +226,5 @@ jobs:
             helm upgrade --install integrador /tmp/integrador-chart \
               --namespace ava \
               --set image.tag=${{ github.sha }} \
-              --set image.repository=${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}
+              --set image.repository=${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}"
           "
