@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python 3.14
         uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version: '3.14'
 
       - name: Install quality dependencies
         run: |
@@ -64,8 +64,6 @@ jobs:
       id-token: write
     strategy:
       fail-fast: false
-      matrix:
-        python-version: ["3.14"]
     services:
       db:
         image: postgres:16
@@ -90,10 +88,10 @@ jobs:
           ls -la
           find . -maxdepth 3 -name manage.py
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.14
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.14'
 
       - name: Install CI tools
         run: |
@@ -117,7 +115,7 @@ jobs:
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: coverage-reports-py${{ matrix.python-version }}
+          name: coverage-reports-py
           path: |
             src/htmlcov/
             src/coverage.xml
@@ -150,7 +148,7 @@ jobs:
       - name: Set up Python 3.14
         uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version: '3.14'
 
       - name: Install dependencies
         run: |
