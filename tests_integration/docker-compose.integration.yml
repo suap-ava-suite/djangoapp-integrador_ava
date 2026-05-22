@@ -62,9 +62,11 @@ services:
       DJANGO_CACHES_DEFAULT_BACKEND: django.core.cache.backends.dummy.DummyCache
       DJANGO_ALLOWED_HOSTS: localhost:8000,integrador:8000,localhost,integrador
       SUAP_INTEGRADOR_KEY: changeme
+      VIRTUAL_PORT: "8000"
     volumes:
       - ../.:/app
       - /var/run/docker.sock:/var/run/docker.sock
+    command: ["gunicorn"]
     depends_on:
       db-integrador:
         condition: service_healthy
