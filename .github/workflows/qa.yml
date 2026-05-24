@@ -163,45 +163,46 @@ jobs:
         run: |
           docker compose -f tests_integration/docker-compose.integration.yml up --build test-integration --exit-code-from test-integration
 
-# JOB COMENTADO PARA FINS DE TESTE
-#  publish-to-dockerhub:
-#    runs-on: ubuntu-latest
-#    needs: integration-tests
-#    if: |
-#      always() && needs.integration-tests.result == 'success' &&
-#      startsWith(github.ref, 'refs/tags/') && endsWith(github.ref_name, '-test')
-#
-#    steps:
-#      - name: Checkout source code
-#        uses: actions/checkout@v4
-#
-#      - name: Set up QEMU
-#        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
-#
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
-#
-#      - name: Log in to Docker Hub
-#        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
-#        with:
-#          registry: ${{ vars.DOCKERHUB_HOST }}
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#
-#      - name: Build and push Docker image
-#        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
-#        with:
-#          context: .
-#          file: ./Dockerfile
-#          push: true
-#          platforms: linux/amd64,linux/arm64
-#          tags: |
-#            ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
+  publish-to-dockerhub:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: |
+      always() && needs.integration-tests.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/') && endsWith(github.ref_name, '-test')
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ${{ vars.DOCKERHUB_HOST }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
 
   deploy-to-test:
     runs-on: [self-hosted, runner-dead]
-    needs: integration-tests
-    if: always() && needs.integration-tests.result == 'success'
+    needs: publish-to-dockerhub
+    if: |
+      always() && needs.publish-to-dockerhub.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/') && endsWith(github.ref_name, '-test')
     environment:
       name: test
 
@@ -218,30 +219,29 @@ jobs:
         run: |
           ssh root@${{ secrets.K8S_HOST }} "rm -rf /tmp/integrador-chart"
           scp -r ./helm root@${{ secrets.K8S_HOST }}:/tmp/integrador-chart
-      
+
       - name: Executar Upgrade no Helm
         run: |
           ssh root@${{ secrets.K8S_HOST }} "
             helm upgrade --install integrador /tmp/integrador-chart \
               --namespace ava \
-              --set image.repository=${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }} \
-              --set image.tag=latest
+              --set image.tag=${{ github.sha }} \
+              --set image.repository=${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
           "
 
-# JOB COMENTADO PARA EVITAR ERROS JÁ QUE DEPENDE DO PUBLISH
-#  deploy-to-prod:
-#    runs-on: [self-hosted, runner-dead]
-#    needs: publish-to-dockerhub
-#    if: |
-#      always() && needs.publish-to-dockerhub.result == 'success' &&
-#      startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref_name, '-test')
-#    environment:
-#      name: production
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: Executar Upgrade no Helm
-#        run: |
-#          echo ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
+  deploy-to-prod:
+    runs-on: [self-hosted, runner-dead]
+    needs: publish-to-dockerhub
+    if: |
+      always() && needs.publish-to-dockerhub.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref_name, '-test')
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Executar Upgrade no Helm
+        run: |
+          echo ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
