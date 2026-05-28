@@ -16,7 +16,7 @@ class Suap2LocalSuapIntegrationTestCase(TestCase):
 
     def test_sync_up_enrolments_real(self):
         """Testa a sincronização de matrículas com um Moodle real."""
-        diario_id = self.moodle_seed_data["diario_id"]
+        diario_id = 7
         payload = {
             "campus": {"id": 14, "sigla": "ZL", "descricao": "CAMPUS AVANÇADO NATAL-ZONA LESTE"},
             "curso": {"id": 12, "nome": "Tecnologia em Gestão Ambiental", "codigo": "12345"},
@@ -27,8 +27,8 @@ class Suap2LocalSuapIntegrationTestCase(TestCase):
                 {
                     "id": 13,
                     "nome": "Aluno Teste",
-                    "email": self.moodle_seed_data["student_username"] + "@example.com",
-                    "matricula": self.moodle_seed_data["student_username"],
+                    "email": "aluno7@example.com",
+                    "matricula": "aluno7",
                     "situacao": "ativo",
                 }
             ],
