@@ -3,16 +3,13 @@ from unittest import TestCase
 from sc4net import get_json
 
 from integrador.brokers.suap2local_suap import Suap2LocalSuapBroker
-from integrador.models import Solicitacao
+from integrador.models import Ambiente, Solicitacao
 
 DEFAULT_HEADERS = {"Authentication": "Token changeme"}
 
 
 class Suap2LocalSuapIntegrationTestCase(TestCase):
     """Testes de integração para o broker Suap2LocalSuap com Moodle real."""
-
-    def setup_fixtures(self, integration_ambiente):
-        self.integration_ambiente = integration_ambiente
 
     def test_sync_up_enrolments_real(self):
         """Testa a sincronização de matrículas com um Moodle real."""
@@ -36,8 +33,9 @@ class Suap2LocalSuapIntegrationTestCase(TestCase):
             "sincrono": True,
         }
 
+        ambiente = Ambiente.objects.get(id=1)
         solicitacao = Solicitacao.objects.create(
-            ambiente=self.integration_ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido=payload
+            ambiente=ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido=payload
         )
 
         broker = Suap2LocalSuapBroker(solicitacao)
