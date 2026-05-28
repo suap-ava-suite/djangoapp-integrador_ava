@@ -76,7 +76,7 @@ class Suap2LocalSuapBroker(BaseBroker):
         if payload.get("turma") is None:
             payload["turma"] = {}
 
-        autoinscricao = payload.get("autoinscricao", {})
+        autoinscricao = payload.get("autoinscricao") or {}
 
         restricoes = [
             get_tipos_usuarios(autoinscricao),
