@@ -3,7 +3,7 @@ name: Full cicle
 on:
   push:
     branches:
-      - main 
+      - main
     tags:
       - '*'  # Ativa a esteira quando qualquer tag for criada (necessário para hmg e prod)
   release:
@@ -248,4 +248,5 @@ jobs:
 
       - name: Executar Upgrade no Helm
         run: |
-          echo ${{ vars.DOCKERHUB_HOST }}/${{ env.MAIN_IMAGE }}:${{ github.ref_name }}
+          ssh root@${{ vars.DOCKERHUB_HOST }} "sed -i 's/avaintegrador.*/avaintegrador:${{ github.ref_name }}/g' /var/dockers/docker-compose.yml"
+          ssh root@${{ vars.DOCKERHUB_HOST }} "cd /var/dockers && docker compose pull && docker compose down integrador && docker compose up -d integrador && docker compose logs -f integrador"
