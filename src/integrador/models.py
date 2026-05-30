@@ -135,6 +135,10 @@ class Solicitacao(Model):
     enviado = JSONField(_("JSON enviado"), null=True, blank=True)
     respondido = JSONField(_("JSON respondido"), null=True, blank=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.site_url: str | None = None
+
     class Meta:
         verbose_name = _("solicitação")
         verbose_name_plural = _("solicitações")
