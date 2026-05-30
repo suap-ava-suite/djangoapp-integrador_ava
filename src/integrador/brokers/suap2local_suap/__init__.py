@@ -94,6 +94,9 @@ class Suap2LocalSuapBroker(BaseBroker):
     def sync_up_enrolments(self) -> dict:
         self._validate_sync_payload(self.solicitacao.recebido)
         self.solicitacao.enviado = self.solicitacao.recebido or {}
+        self.solicitacao.enviado["solicitacao_url"] = (
+            f"{self.solicitacao.site_url}/integrador/solicitacao/{self.solicitacao.id}/view/"
+        )
 
         try:
             self.solicitacao.enviado["coortes"] = self.get_cohort()
