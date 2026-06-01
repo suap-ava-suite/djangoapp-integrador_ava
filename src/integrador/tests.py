@@ -1162,6 +1162,11 @@ class DecoratorsTestCase(TestCase):
         def test_view(request):
             return {"status": "ok"}
 
+        # Exibe o sucesso primeiro para cobrir a linha interna da view
+        request_ok = self.factory.get("/test/")
+        request_ok.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
+        test_view(request_ok)
+
         request = self.factory.get("/test/")
         request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN_NOT_OK}"
 
@@ -1177,6 +1182,11 @@ class DecoratorsTestCase(TestCase):
         @valid_token
         def test_view(request):
             return {"status": "ok"}
+
+        # Exibe o sucesso primeiro para cobrir a linha interna da view
+        request_ok = self.factory.get("/test/")
+        request_ok.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
+        test_view(request_ok)
 
         request = self.factory.get("/test/")
 
@@ -1204,6 +1214,10 @@ class DecoratorsTestCase(TestCase):
         def test_view(request):
             return {"status": "ok"}
 
+        # Exibe o sucesso primeiro para cobrir a linha interna da view
+        request_ok = self.factory.post("/test/")
+        test_view(request_ok)
+
         request = self.factory.get("/test/")
 
         with self.assertRaises(SyncError) as context:
@@ -1229,6 +1243,10 @@ class DecoratorsTestCase(TestCase):
         @check_is_get
         def test_view(request):
             return {"status": "ok"}
+
+        # Exibe o sucesso primeiro para cobrir a linha interna da view
+        request_ok = self.factory.get("/test/")
+        test_view(request_ok)
 
         request = self.factory.post("/test/")
 
@@ -1285,6 +1303,14 @@ class DecoratorsTestCase(TestCase):
         def test_view(request):
             return {"status": "ok"}
 
+        # Exibe o sucesso primeiro para cobrir a linha interna da view
+        Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
+        request_ok = self.factory.get("/test/?campus_sigla=TEST")
+        request_ok.json_recebido = {"campus": {"sigla": "TEST"}}
+        test_view(request_ok)
+
+        # Limpa e executa a falha
+        Ambiente.objects.all().delete()
         request = self.factory.get("/test/?campus_sigla=INEXISTENTE")
         request.json_recebido = {"campus": {"sigla": "INEXISTENTE"}}
 
@@ -1355,6 +1381,18 @@ class TrySolicitacaoDecoratorTestCase(TestCase):
         def test_view(request):
             return {"status": "ok"}
 
+        # Exibe o sucesso primeiro para cobrir a linha interna da view
+        request_ok = self.factory.post("/test/")
+        request_ok.ambiente = self.ambiente
+        request_ok.json_recebido = {
+            "campus": {"sigla": "TEST"},
+            "turma": {"codigo": "T1"},
+            "componente": {"sigla": "C1"},
+            "diario": {"id": 123},
+        }
+        test_view(request_ok)
+
+        # Executa a falha
         request = self.factory.post("/test/")
         request.ambiente = self.ambiente
         request.json_recebido = {"error": {"code": 400, "message": "Invalid JSON"}}
