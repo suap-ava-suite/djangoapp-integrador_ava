@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - '*'  # Ativa a esteira quando qualquer tag for criada (necessário para hmg e prod)
   release:
     types: [published]
   workflow_dispatch:
