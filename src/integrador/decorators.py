@@ -21,6 +21,16 @@ def exception_as_json(func):
     def inner(request: HttpRequest, *args, **kwargs):
         def __response_error(request: HttpRequest, error: Exception):
             event_id = sentry_sdk.capture_exception(error)
+
+            retorno = getattr(error, "retorno", None)
+            if retorno and isinstance(retorno, dict):
+                import copy
+
+                response_data = copy.deepcopy(retorno)
+                if "error" in response_data and isinstance(response_data["error"], dict):
+                    response_data["error"].pop("trace", None)
+                return JsonResponse(response_data, status=getattr(error, "code", 500))
+
             error_json = {
                 "code": getattr(error, "code", 500),
                 "error": getattr(error, "message", f"{error}"),
@@ -171,16 +181,17 @@ def try_solicitacao(operacao: str):
 
                 return solicitacao.respondido
             except Exception as e:
-                error_text = f"""
-                    Erro na integração. O AVA retornou um erro. Contacte um administrador. Erro:\n{e}.
-                """
+                error_text = f"Contacte um administrador. O AVA retornou o seguinte erro:\n{e}."
                 if solicitacao is not None:
-                    solicitacao.respondido = {"error": {"error_message": f"{e}", "error": f"{e}"}}
+                    if hasattr(e, "retorno") and e.retorno is not None:
+                        solicitacao.respondido = e.retorno
+                    else:
+                        solicitacao.respondido = {"error": {"error_message": f"{e}", "error": f"{e}"}}
                     solicitacao.status = Solicitacao.Status.FALHA
                     solicitacao.status_code = getattr(e, "code", 500)
                     solicitacao.save()
-                    raise SyncError(error_text, solicitacao.status_code)
-                raise SyncError(error_text, 500)
+                    raise SyncError(error_text, solicitacao.status_code, retorno=getattr(e, "retorno", None))
+                raise SyncError(error_text, 500, retorno=getattr(e, "retorno", None))
 
         return wrapper
 
