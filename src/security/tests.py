@@ -185,13 +185,13 @@ class AuthenticateViewTestCase(SessionRequestTestCase):
 
         request = self.factory.get("/authenticate/?code=test_code")
         self.add_session_to_request(request)
-        request.session["next"] = "/admin/"
+        request.session["next"] = "/"
 
         response = authenticate(request)
 
         # Verifica redirecionamento
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/admin/")
+        self.assertEqual(response.url, "/")
 
         # Verifica se o usuário foi criado
         user = User.objects.get(username="testuser")

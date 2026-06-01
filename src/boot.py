@@ -53,7 +53,7 @@ def start_dev_env():
             nome="Local dev",
             defaults={
                 "url": "http://moodle",
-                "expressao_seletora": "campus.sigla != 'QQ'",
+                "expressao_seletora": "campus['sigla'] != 'QQ'",
                 "ordem": 0,
                 "local_suap_token": "changeme",
                 "local_suap_active": True,

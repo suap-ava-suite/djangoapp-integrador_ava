@@ -358,7 +358,7 @@ class HealthAmbientesTestCase(TransactionTestCase):
             nome="Env1",
             url="https://env1.moodle.com",
             ordem=1,
-            expressao_seletora="campus.sigla == 'ENV1'",
+            expressao_seletora="campus['sigla'] == 'ENV1'",
             local_suap_token="token_suap",  # noqa: S106
             local_suap_active=True,
             tool_sga_token="token_sga",  # noqa: S106
@@ -370,7 +370,7 @@ class HealthAmbientesTestCase(TransactionTestCase):
             nome="Env2",
             url="https://env2.moodle.com",
             ordem=2,
-            expressao_seletora="campus.sigla == 'ENV2'",
+            expressao_seletora="campus['sigla'] == 'ENV2'",
             local_suap_token="",
             local_suap_active=True,
             tool_sga_token="token_sga_fail",  # noqa: S106
@@ -382,7 +382,7 @@ class HealthAmbientesTestCase(TransactionTestCase):
             nome="Env3",
             url="https://env3.moodle.com",
             ordem=3,
-            expressao_seletora="campus.sigla == 'ENV3'",
+            expressao_seletora="campus['sigla'] == 'ENV3'",
             local_suap_token="token_suap_error",  # noqa: S106
             local_suap_active=False,
             tool_sga_token="token_sga_error",  # noqa: S106
@@ -394,7 +394,7 @@ class HealthAmbientesTestCase(TransactionTestCase):
             nome="Env4",
             url="https://env4.moodle.com",
             ordem=4,
-            expressao_seletora="campus.sigla == 'ENV4'",
+            expressao_seletora="campus['sigla'] == 'ENV4'",
             local_suap_token="token_suap_ok",  # noqa: S106
             local_suap_active=True,
             tool_sga_token="token_sga_ok",  # noqa: S106

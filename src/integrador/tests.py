@@ -61,7 +61,7 @@ AMBIENTE_GOOD_SGA = dict(
     nome="Ambiente Teste",
     url="https://test.moodle.com",
     ordem=1,
-    expressao_seletora="campus.sigla == 'TEST'",
+    expressao_seletora="campus['sigla'] == 'TEST'",
     tool_sga_token=TEST_TOKEN,
     tool_sga_active=True,
     local_suap_token=TEST_TOKEN,
@@ -72,7 +72,7 @@ AMBIENTE_GOOD_SUAP = dict(
     nome="Ambiente Teste",
     url="https://test.moodle.com",
     ordem=1,
-    expressao_seletora="campus.sigla == 'TEST'",
+    expressao_seletora="campus['sigla'] == 'TEST'",
     tool_sga_token=None,
     tool_sga_active=False,
     local_suap_token=TEST_TOKEN,
@@ -910,7 +910,7 @@ class AmbienteAdminTestCase(TestCase):
     def test_ok_checked_expressao_seletora(self):
         """Testa checked_expressao_seletora válida."""
         result = self.admin.checked_expressao_seletora(
-            Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": "campus.sigla == 'TEST'"}))
+            Ambiente(**(AMBIENTE_GOOD_SGA | {"expressao_seletora": "campus['sigla'] == 'TEST'"}))
         )
         self.assertIn("✅", result)
 
@@ -1579,8 +1579,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooPolo.Natal(RN)",
             idnumber="ZL.CooPolo.Natal(RN)",
             role=self.role_coo_polo,
-            rule_diario='$any([aluno.polo.descricao == "Natal (RN)" for aluno in alunos])',
-            rule_coordenacao='$any([aluno.polo.descricao == "Natal (RN)" for aluno in alunos])',
+            rule_diario='$any([aluno["polo"]["descricao"] == "Natal (RN)" for aluno in alunos])',
+            rule_coordenacao='$any([aluno["polo"]["descricao"] == "Natal (RN)" for aluno in alunos])',
             active=False,
         )
         resultado = self.broker.get_cohort()
@@ -1592,8 +1592,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooPolo.Parelhas",
             idnumber="ZL.CooPolo.Parelhas",
             role=self.role_coo_polo,
-            rule_diario='$any([aluno.polo.descricao == "Parelhas" for aluno in alunos])',
-            rule_coordenacao='$any([aluno.polo.descricao == "Parelhas" for aluno in alunos])',
+            rule_diario='$any([aluno["polo"]["descricao"] == "Parelhas" for aluno in alunos])',
+            rule_coordenacao='$any([aluno["polo"]["descricao"] == "Parelhas" for aluno in alunos])',
         )
         self.solicitacao.recebido = self.SYNC_JSON_SEM_POLO
         resultado = self.broker.get_cohort()
@@ -1607,8 +1607,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooPolo.Natal(RN)",
             idnumber="ZL.CooPolo.Natal(RN)",
             role=self.role_coo_polo,
-            rule_diario='$any([aluno.polo.descricao == "Natal (RN)" for aluno in alunos])',
-            rule_coordenacao='$any([aluno.polo.descricao == "Natal (RN)" for aluno in alunos])',
+            rule_diario='$any([aluno["polo"]["descricao"] == "Natal (RN)" for aluno in alunos])',
+            rule_coordenacao='$any([aluno["polo"]["descricao"] == "Natal (RN)" for aluno in alunos])',
         )
         self._adiciona_colaborador(cohort, "coord.natal", "Coord Natal", "coord.natal@ifrn.edu.br")
         resultado = self.broker.get_cohort()
@@ -1621,8 +1621,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooPolo.Mossoró (RN)",
             idnumber="ZL.CooPolo.Mossoró (RN)",
             role=self.role_coo_polo,
-            rule_diario='$any([aluno.polo.descricao == "Mossoró (RN)" for aluno in alunos])',
-            rule_coordenacao='$any([aluno.polo.descricao == "Mossoró (RN)" for aluno in alunos])',
+            rule_diario='$any([aluno["polo"]["descricao"] == "Mossoró (RN)" for aluno in alunos])',
+            rule_coordenacao='$any([aluno["polo"]["descricao"] == "Mossoró (RN)" for aluno in alunos])',
         )
         self.solicitacao.recebido = self.SYNC_JSON_SEM_POLO
         resultado = self.broker.get_cohort()
@@ -1636,8 +1636,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooCurso.15056",
             idnumber="ZL.CooCurso.15056",
             role=self.role_coo_curso,
-            rule_diario='curso.codigo == "15056"',
-            rule_coordenacao='curso.codigo == "15056"',
+            rule_diario='curso["codigo"] == "15056"',
+            rule_coordenacao='curso["codigo"] == "15056"',
         )
         self._adiciona_colaborador(cohort, "coo.curso15056", "Coo Curso 15056", "coo@ifrn.edu.br")
         resultado = self.broker.get_cohort()
@@ -1650,8 +1650,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooCurso.99624",
             idnumber="ZL.CooCurso.99624",
             role=self.role_coo_curso,
-            rule_diario='curso.codigo == "99624"',
-            rule_coordenacao='curso.codigo == "99624"',
+            rule_diario='curso["codigo"] == "99624"',
+            rule_coordenacao='curso["codigo"] == "99624"',
         )
         resultado = self.broker.get_cohort()
         self.assertEqual(resultado, [])
@@ -1664,8 +1664,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooTutProg.UAB",
             idnumber="ZL.CooTutProg.UAB",
             role=self.role_tut,
-            rule_diario='$any([aluno.programa == "UAB" for aluno in alunos])',
-            rule_coordenacao='$any([aluno.programa == "UAB" for aluno in alunos])',
+            rule_diario='$any([aluno["programa"] == "UAB" for aluno in alunos])',
+            rule_coordenacao='$any([aluno["programa"] == "UAB" for aluno in alunos])',
         )
         self._adiciona_colaborador(cohort, "tut.uab", "Tutor UAB", "tut.uab@ifrn.edu.br")
         resultado = self.broker.get_cohort()
@@ -1680,15 +1680,15 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooPolo.Natal(RN)",
             idnumber="ZL.CooPolo.Natal(RN)",
             role=self.role_coo_polo,
-            rule_diario='$any([aluno.polo.descricao == "Natal (RN)" for aluno in alunos])',
-            rule_coordenacao='$any([aluno.polo.descricao == "Natal (RN)" for aluno in alunos])',
+            rule_diario='$any([aluno["polo"]["descricao"] == "Natal (RN)" for aluno in alunos])',
+            rule_coordenacao='$any([aluno["polo"]["descricao"] == "Natal (RN)" for aluno in alunos])',
         )
         c2 = self._cria_cohort(
             name="ZL.CooCurso.15056",
             idnumber="ZL.CooCurso.15056",
             role=self.role_coo_curso,
-            rule_diario='curso.codigo == "15056"',
-            rule_coordenacao='curso.codigo == "15056"',
+            rule_diario='curso["codigo"] == "15056"',
+            rule_coordenacao='curso["codigo"] == "15056"',
         )
         self._adiciona_colaborador(c1, "coord.natal", "Coord Natal", "coord.natal@ifrn.edu.br")
         self._adiciona_colaborador(c2, "coo.curso", "Coo Curso", "coo.curso@ifrn.edu.br")
@@ -1706,8 +1706,8 @@ class CohortSelecaoTestCase(TestCase):
             name="ZL.CooCurso.15056",
             idnumber="ZL.CooCurso.15056",
             role=self.role_coo_curso,
-            rule_diario='curso.codigo == "15056"',
-            rule_coordenacao='curso.codigo == "15056"',
+            rule_diario='curso["codigo"] == "15056"',
+            rule_coordenacao='curso["codigo"] == "15056"',
         )
         self._adiciona_colaborador(cohort, "coord.x", "Coord X", "coord.x@ifrn.edu.br")
 
@@ -2588,7 +2588,7 @@ class IntegrationTestCase(TestCase):
             nome="Ambiente SGA",
             url="https://test.moodle.com",
             ordem=2,
-            expressao_seletora="campus.sigla == 'SGA'",
+            expressao_seletora="campus['sigla'] == 'SGA'",
             tool_sga_token=TEST_TOKEN,
             tool_sga_active=True,
             local_suap_token=None,
@@ -2623,7 +2623,7 @@ class IntegrationTestCase(TestCase):
             nome="Ambiente Inativo",
             url="https://test.moodle.com",
             ordem=3,
-            expressao_seletora="campus.sigla == 'INATIVO'",
+            expressao_seletora="campus['sigla'] == 'INATIVO'",
             tool_sga_token=None,
             tool_sga_active=False,
             local_suap_token=None,
@@ -2780,10 +2780,10 @@ class MoodleMockTestCase(TestCase):
                         raise exc_to_raise
 
                     url = f"http://{host}:{port}/local/suap/api/index.php?sync_down_grades&diario_id=123"
-                    req = urllib.request.Request(
+                    req = urllib.request.Request(  # noqa: S310
                         url, headers={"Authentication": f"Token {LocalSuapHTTPMock.TEST_TOKEN}"}
                     )
-                    with urllib.request.urlopen(req, timeout=2) as resp:
+                    with urllib.request.urlopen(req, timeout=2) as resp:  # noqa: S310
                         self.assertEqual(resp.status, 200)
 
                     # POST Handler - Envia payload válido para retornar 200 e cobrir a linha do resp.status
@@ -2798,7 +2798,7 @@ class MoodleMockTestCase(TestCase):
                         }
                     ).encode("utf-8")
 
-                    req_post = urllib.request.Request(
+                    req_post = urllib.request.Request(  # noqa: S310
                         url_post,
                         data=valid_payload,
                         headers={
@@ -2807,11 +2807,11 @@ class MoodleMockTestCase(TestCase):
                         },
                         method="POST",
                     )
-                    with urllib.request.urlopen(req_post, timeout=2) as resp:
+                    with urllib.request.urlopen(req_post, timeout=2) as resp:  # noqa: S310
                         self.assertEqual(resp.status, 200)
 
                     # Envia JSON inválido para cobrir JSONDecodeError no mock
-                    req_invalid = urllib.request.Request(
+                    req_invalid = urllib.request.Request(  # noqa: S310
                         url_post,
                         data=b"invalid-json",
                         headers={
@@ -2821,7 +2821,7 @@ class MoodleMockTestCase(TestCase):
                         method="POST",
                     )
                     try:
-                        urllib.request.urlopen(req_invalid, timeout=2)
+                        urllib.request.urlopen(req_invalid, timeout=2)  # noqa: S310
                     except urllib.error.HTTPError as exc:
                         self.assertEqual(exc.code, 422)
                 except Exception as exc:

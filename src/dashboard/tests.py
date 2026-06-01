@@ -23,7 +23,7 @@ AMBIENTE_GOOD = dict(
     nome="Ambiente Teste",  # noqa: S106
     url="https://test.moodle.com",
     ordem=1,
-    expressao_seletora="campus.sigla == 'TEST'",
+    expressao_seletora="campus['sigla'] == 'TEST'",
     local_suap_token="local_suap_token",  # noqa: S106
     local_suap_active=True,
     tool_sga_token="tool_sga_token",  # noqa: S106
