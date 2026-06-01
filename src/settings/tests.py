@@ -418,43 +418,30 @@ class SettingsPerformanceTestCase(TestCase):
 class SettingsMiddlewaresTestCase(TestCase):
     """Testes de middlewares settings."""
 
+    def _test_middleware_with_env(self, original_env):
+        try:
+            os.environ["DJANGO_DEBUG"] = "False"
+            if "settings.middlewares" in sys.modules:
+                del sys.modules["settings.middlewares"]
+            importlib.import_module("settings.middlewares")
+
+            from settings.middlewares import MIDDLEWARE
+
+            self.assertIn("whitenoise.middleware.WhiteNoiseMiddleware", MIDDLEWARE)
+        finally:
+            if original_env is None:
+                os.environ.pop("DJANGO_DEBUG", None)
+            else:
+                os.environ["DJANGO_DEBUG"] = original_env
+            if "settings.middlewares" in sys.modules:
+                importlib.reload(sys.modules["settings.middlewares"])
+
+    @patch.dict(os.environ, {}, clear=True)
     def test_white_noise_middleware_inserted_when_debug_false_with_env_absent(self):
         """Testa se o WhiteNoiseMiddleware é inserido quando DJANGO_DEBUG=False e a env estava ausente."""
-        original_env = os.environ.pop("DJANGO_DEBUG", None)
-        try:
-            os.environ["DJANGO_DEBUG"] = "False"
-            if "settings.middlewares" in sys.modules:
-                del sys.modules["settings.middlewares"]
-            importlib.import_module("settings.middlewares")
+        self._test_middleware_with_env(None)
 
-            from settings.middlewares import MIDDLEWARE
-
-            self.assertIn("whitenoise.middleware.WhiteNoiseMiddleware", MIDDLEWARE)
-        finally:
-            if original_env is None:
-                os.environ.pop("DJANGO_DEBUG", None)
-            else:
-                os.environ["DJANGO_DEBUG"] = original_env
-            if "settings.middlewares" in sys.modules:
-                importlib.reload(sys.modules["settings.middlewares"])
-
+    @patch.dict(os.environ, {"DJANGO_DEBUG": "True"}, clear=True)
     def test_white_noise_middleware_inserted_when_debug_false_with_env_present(self):
         """Testa se o WhiteNoiseMiddleware é inserido quando DJANGO_DEBUG=False e a env estava presente."""
-        os.environ["DJANGO_DEBUG"] = "True"
-        original_env = os.environ.pop("DJANGO_DEBUG", None)
-        try:
-            os.environ["DJANGO_DEBUG"] = "False"
-            if "settings.middlewares" in sys.modules:
-                del sys.modules["settings.middlewares"]
-            importlib.import_module("settings.middlewares")
-
-            from settings.middlewares import MIDDLEWARE
-
-            self.assertIn("whitenoise.middleware.WhiteNoiseMiddleware", MIDDLEWARE)
-        finally:
-            if original_env is None:
-                os.environ.pop("DJANGO_DEBUG", None)
-            else:
-                os.environ["DJANGO_DEBUG"] = original_env
-            if "settings.middlewares" in sys.modules:
-                importlib.reload(sys.modules["settings.middlewares"])
+        self._test_middleware_with_env("True")
