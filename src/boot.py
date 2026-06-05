@@ -38,8 +38,6 @@ def start_debug():
             import debugpy
             from django.core.management import execute_from_command_line
 
-            if "test" not in sys.argv:  # pragma: no cover
-                execute_from_command_line([sys.argv[0], "show_urls"])  # pragma: no cover
             debugpy.listen(("0.0.0.0", 12345))  # noqa: S104
         except Exception:  # pragma: no cover
             logging.debug("Nao foi possivel iniciar debugpy")
