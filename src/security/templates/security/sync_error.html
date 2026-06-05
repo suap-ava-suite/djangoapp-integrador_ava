@@ -1,0 +1,8 @@
+{% extends "security/error_base.html" %}
+{% block error_title %}
+    Erro na sincronização!
+{% endblock error_title %}
+{% block error_description %}
+    <!-- authorization_error -->
+    Ocorreu um erro ao tentar sincronizar com o ambiente {{solicitacao.ambiente.url}}. Por favor, tente novamente.
+{% endblock error_description %}
