@@ -65,13 +65,13 @@ class Suap2LocalSuapBroker(BaseBroker):
             return f"tipo_usuario in [{', '.join(tipos_usuarios)}]" if tipos_usuarios else ""
 
         def get_nacionalidades(ai: dict) -> str:
-            return "$any([m.estrangeiro==true for m in outras_matriculas])" if ai.get("estrangeiros") else ""
+            return "$any([m.estrangeiro==truefor m in outras_matriculas])" if ai.get("estrangeiros") else ""
 
         def get_alunos(lista: list[dict[str:str]], filter: str) -> str:
             if not lista or len(lista) == 0:
                 return ""
             args = [f"'{i}'" for i in lista]
-            return f"$any([m.tipo == 'aluno' and m.{filter} in" + f" [{', '.join(args)}] for m in outras_matriculas])"
+            return f"$any([m['tipo'] == 'aluno' and m['detalhamento']['ativo'] == true and {filter} in" + f" [{', '.join(args)}] for m in outras_matriculas])"
 
         payload = enviados or {}
         if payload.get("turma") is None:
@@ -82,10 +82,10 @@ class Suap2LocalSuapBroker(BaseBroker):
         restricoes = [
             get_tipos_usuarios(autoinscricao),
             get_nacionalidades(autoinscricao),
-            get_alunos(autoinscricao.get("campi", []), "campus"),
-            get_alunos(autoinscricao.get("modalidades", []), "detalhamento.modalidade"),
-            get_alunos(autoinscricao.get("niveis_ensino", []), "detalhamento.nivel_ensino"),
-            get_alunos(autoinscricao.get("cursos", []), "detalhamento.curso"),
+            get_alunos(autoinscricao.get("campi", []), "m['campus']"),
+            get_alunos(autoinscricao.get("modalidades", []), "m['detalhamento']['modalidade']"),
+            get_alunos(autoinscricao.get("niveis_ensino", []), "m['detalhamento']['nivel_ensino']"),
+            get_alunos(autoinscricao.get("cursos", []), "m['detalhamento']['curso']"),
         ]
         payload["turma"]["restricoes"] = " and ".join([r for r in restricoes if r != ""])
 
