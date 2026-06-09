@@ -2217,7 +2217,7 @@ class Suap2LocalSuapBrokerTestCase(TestCase):
         self.assertIn("Servidor (Docente)", restricoes)
         self.assertIn("Prestador de Serviço", restricoes)
         self.assertIn("Aluno", restricoes)
-        self.assertIn("estrangeiro==true", restricoes)
+        self.assertIn("m['estrangeiro'] == true", restricoes)
 
     def test_broker_set_restricoes_without_turma(self):
         """Testa _set_restricoes com payload que não tem chave turma."""
