@@ -29,91 +29,36 @@ def csrf_failure(request, reason=""):
     Returns:
         JsonResponse ou HttpResponse com status 403
     """
-    # Captura informações importantes da requisição
-    client_info = {
+    content_type = request.META.get("CONTENT_TYPE", "unknown").lower()
+    accept_header = request.META.get("HTTP_ACCEPT", "unknown").lower()
+    is_json_request = request.path.startswith("/api/") or "application/json" in [content_type, accept_header]
+
+    context = {
+        "error": "A verificação CSRF falhou. Certifique-se de incluir um token CSRF válido.",
+        "reason": reason,
         "path": request.path,
         "method": request.method,
+        "referer": request.META.get("HTTP_REFERER", "Unknown"),
+        "content_type": content_type,
+        "accept_header": accept_header,
+        "is_json_request": is_json_request,
         "user_agent": request.META.get("HTTP_USER_AGENT", "Unknown"),
-        "remote_addr": request.META.get("REMOTE_ADDR", "Unknown"),
-        "http_referer": request.META.get("HTTP_REFERER", "Unknown"),
-        "content_type": request.META.get("CONTENT_TYPE", "Unknown"),
-        "reason": reason,
     }
 
     # Log local para debug
-    logger.warning(
-        f"CSRF verification failed: {reason}",
-        extra={
-            "request": request,
-            "client_info": client_info,
-        },
-    )
+    logger.debug(f"CSRF verification failed: {reason}", extra={"context": context})
 
     # Envia o erro para o Sentry com contexto adicional
     with sentry_sdk.push_scope() as scope:
-        # Adiciona tags para facilitar a filtragem no Sentry
+        if request.user.is_authenticated:
+            user = request.user
+            scope.set_user({"id": user.id, "username": user.username, "email": getattr(user, "email", "")})
         scope.set_tag("error_type", "csrf_failure")
         scope.set_tag("csrf_reason", reason)
-
-        # Adiciona contexto adicional
-        scope.set_context(
-            "csrf_failure",
-            {
-                "reason": reason,
-                "path": request.path,
-                "method": request.method,
-                "referer": request.META.get("HTTP_REFERER", "Unknown"),
-            },
-        )
-
-        scope.set_context(
-            "client",
-            {
-                "ip": request.META.get("REMOTE_ADDR", "Unknown"),
-                "user_agent": request.META.get("HTTP_USER_AGENT", "Unknown"),
-            },
-        )
-
-        # Se o usuário estiver autenticado, adiciona suas informações
-        if request.user.is_authenticated:
-            scope.set_user(
-                {
-                    "id": request.user.id,
-                    "username": request.user.username,
-                    "email": getattr(request.user, "email", ""),
-                }
-            )
-
-        # Captura a mensagem no Sentry
+        scope.set_context("csrf_failure", context)
         sentry_sdk.capture_message(f"CSRF verification failed: {reason}", level="warning")
 
-    # Retorna resposta apropriada baseada no tipo de requisição
-    # Prioridade: 1) Content-Type é JSON, 2) Accept é JSON, 3) Path é /api/
-    content_type = request.META.get("CONTENT_TYPE", "").lower()
-    accept_header = request.META.get("HTTP_ACCEPT", "").lower()
-    is_json_request = (
-        "application/json" in content_type or "application/json" in accept_header or request.path.startswith("/api/")
-    )
-
     if is_json_request:
-        # Para requisições de API/JSON, retorna JSON
-        return JsonResponse(
-            {
-                "error": "CSRF verification failed",
-                "reason": reason,
-                "message": "A verificação CSRF falhou. Certifique-se de incluir um token CSRF válido.",
-            },
-            status=403,
-        )
+        return JsonResponse(context, status=403)
 
-    # Para requisições normais, retorna HTML
-    try:
-        return render(request, "403_csrf.html", {"reason": reason}, status=403)
-    except Exception:
-        # Fallback se o template não existir
-        return render(
-            request,
-            "security/authorization_error.html",
-            context={"error_cause": "403 CSRF verification failed."},
-            status=403,
-        )
+    return render(request, "403_csrf.html", {"reason": reason}, status=403)
