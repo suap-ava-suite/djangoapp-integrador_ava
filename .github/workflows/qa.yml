@@ -245,5 +245,5 @@ jobs:
 
       - name: Executar Upgrade no Helm
         run: |
-          ssh root@${{ vars.DOCKERHUB_HOST }} "sed -i 's/avaintegrador.*/avaintegrador:${{ github.ref_name }}/g' /var/dockers/docker-compose.yml"
-          ssh root@${{ vars.DOCKERHUB_HOST }} "cd /var/dockers && docker compose pull && docker compose down integrador && docker compose up -d integrador && docker compose logs -f integrador"
+          ssh root@${{ vars.INTEGRADOR_HOST }} "sed -i 's/avaintegrador.*/avaintegrador:${{ github.ref_name }}/g' /var/dockers/docker-compose.yml"
+          ssh root@${{ vars.INTEGRADOR_HOST }} "cd /var/dockers && docker compose pull && docker compose down integrador && docker compose up -d integrador && docker compose logs -f integrador"
