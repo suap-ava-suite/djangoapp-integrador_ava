@@ -24,6 +24,7 @@ if env("SENTRY_DNS", None):
         environment=env("SENTRY_ENVIRONMENT", "local"),
         max_breadcrumbs=env_as_int("SENTRY_MAX_BREADCRUMBS", 100),
         ignore_errors=[DisallowedHost],
+        profiles_sample_rate=env_as_int("SENTRY_PROFILES_SAMPLE_RATE", 100) / 100.0,
         # release=env('SENTRY_RELEASE', '1.0.0'),
         # attach_stacktrace=env('SENTRY_ATTACH_STACKTRACE', 'off'),
         # server_name=env('SENTRY_SERVER_NAME', 'off'),
