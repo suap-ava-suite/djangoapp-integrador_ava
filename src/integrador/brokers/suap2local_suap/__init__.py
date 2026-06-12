@@ -71,7 +71,7 @@ class Suap2LocalSuapBroker(BaseBroker):
                 else ""
             )
 
-        def get_alunos(lista: list[dict[str:str]], filter: str) -> str:
+        def get_alunos(lista: list[dict[str, str]], filter: str) -> str:
             if not lista or len(lista) == 0:
                 return ""
             args = [f"'{i}'" for i in lista]
