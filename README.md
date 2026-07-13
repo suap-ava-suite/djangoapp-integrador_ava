@@ -1,5 +1,7 @@
 # Integrador AVA
 
+> **_APENAS PARA DESENVOLVIMENTO_** no IFRN, **USE apenas neste sentido**.
+
 O Integrador AVA é um middleware que conecta Sistemas de Gestão Acadêmica (SGA) ao Moodle. Suporta o Suap como padrão
 principal — pronto de fábrica para o IFRN — e o padrão SGA genérico para instituições que usam SIGAA, qAcadêmico ou
 outro sistema acadêmico.
