@@ -5,9 +5,12 @@ from sc4py.env import env, env_as_bool, env_as_int
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-if env("SENTRY_DNS", None):
+from settings.project import PROJECT_VERSION
+
+sentry_dsn = env("SENTRY_DSN", env("SENTRY_DNS", None))
+if sentry_dsn:
     sentry_sdk.init(
-        dsn=env("SENTRY_DNS"),
+        dsn=sentry_dsn,
         integrations=[DjangoIntegration(), RedisIntegration()],
         default_integrations=env_as_bool("SENTRY_DEFAULT_INTEGRATIONS", True),
         # Informe em porcentual, ou seja, 50 significa que 100% de erros serão reportados.
@@ -24,7 +27,8 @@ if env("SENTRY_DNS", None):
         environment=env("SENTRY_ENVIRONMENT", "local"),
         max_breadcrumbs=env_as_int("SENTRY_MAX_BREADCRUMBS", 100),
         ignore_errors=[DisallowedHost],
-        # release=env('SENTRY_RELEASE', '1.0.0'),
+        profiles_sample_rate=env_as_int("SENTRY_PROFILES_SAMPLE_RATE", 100) / 100.0,
+        release=env("SENTRY_RELEASE", PROJECT_VERSION),
         # attach_stacktrace=env('SENTRY_ATTACH_STACKTRACE', 'off'),
         # server_name=env('SENTRY_SERVER_NAME', 'off'),
         # in_app_include=env_as_list('SENTRY_IN_APP_INCLUDE', []),

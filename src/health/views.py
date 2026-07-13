@@ -49,6 +49,7 @@ def health(request):
 
     return JsonResponse(
         {
+            "Version": settings.PROJECT_VERSION,
             "Debug": "FAIL (are active)" if settings.DEBUG else "OK",
             "Database": connection_result,
             "Moodles": moodles,

@@ -66,7 +66,7 @@ docker push ctezlifrn/avaintegrador:<tag>
 ## Como construir a imagem localmente
 
 ```bash
-cd ~/projetos/IFRN/ava/integration/integrador_ava
+cd ~/projetos/IFRN/suap-ava-suite/integrador_ava
 
 git checkout proximo
 docker build -t ctezlifrn/avaintegrador:proximo .
@@ -122,7 +122,7 @@ pelo Git da interface do VS Code. Hooks com `language: system`, como o `semgrep-
 Fluxo recomendado:
 
 ```bash
-cd ~/projetos/IFRN/ava/integration/integrador_ava
+cd ~/projetos/IFRN/suap-ava-suite/integrador_ava
 source .venv/bin/activate
 python -m pip install -r requirements-dev.txt
 pre-commit install --hook-type pre-commit --hook-type pre-push

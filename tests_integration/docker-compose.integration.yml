@@ -84,6 +84,13 @@ services:
       target: development
     user: root
     environment:
+      POSTGRES_ENGINE: django.db.backends.postgresql
+      POSTGRES_HOST: db-integrador
+      POSTGRES_PORT: "5432"
+      POSTGRES_DATABASE: integrador
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DJANGO_CACHES_DEFAULT_BACKEND: django.core.cache.backends.dummy.DummyCache
       SUAP_INTEGRADOR_KEY: changeme
     volumes:
       - ../.:/app

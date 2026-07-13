@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <style>
+            body {background-color: #f5f5f5;}
+            main, header {display: block; width: 75%; max-width: 600px; padding: 30px; margin: 0 auto;}
+            main {border-radius: 20px; background: #fefefe;}
+            h1 {text-align: center; margin-bottom: 30px;}
+            .buttons {border-top: 2px solid #ddd; margin-top: 30px; padding-top: 15px; text-align: center;}
+            .title {font-size: 2em; font-weight: bold; margin-left: 10px; height: 40px; vertical-align: middle; float: right;}
+        </style>
+    </head>
+    <body>
+        <header>
+            <img alt="Logo do IFRN" src="{% static 'img/logo_ifrn_zl.png' %}" width="132" height="40" />
+            <span class="title">Integrador AVA</span>
+        </header>
+        <main>
+            <h1>Ocorreu erro de CSRF (403)!</h1>
+            {% if error %}<p class="error">{{ error }}.</p>{% endif %}
+            {% if reason %}<p class="error">reason: {{ reason }}.</p>{% endif %}
+            {% if path %}<p class="error">path: {{ path }}.</p>{% endif %}
+            {% if method %}<p class="error">method: {{ method }}.</p>{% endif %}
+            {% if referer %}<p class="error">referer: {{ referer }}.</p>{% endif %}
+            {% if content_type %}<p class="error">content_type: {{ content_type }}.</p>{% endif %}
+            {% if accept_header %}<p class="error">accept_header: {{ accept_header }}.</p>{% endif %}
+        </main>
+    </body>
+</html>

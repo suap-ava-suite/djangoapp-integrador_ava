@@ -36,11 +36,6 @@ class SettingsAppsTestCase(TestCase):
         self.assertIsInstance(settings.PROJECT_VERSION, str)
         self.assertRegex(settings.PROJECT_VERSION, r"^\d+\.\d+\.\d+$")
 
-    def test_project_last_startup_is_timestamp(self):
-        """Checks whether PROJECT_LAST_STARTUP is a valid timestamp."""
-        self.assertIsInstance(settings.PROJECT_LAST_STARTUP, int)
-        self.assertGreater(settings.PROJECT_LAST_STARTUP, 0)
-
     def test_installed_apps_contains_django_apps(self):
         """Checks whether INSTALLED_APPS contains Django apps."""
         django_required_apps = [

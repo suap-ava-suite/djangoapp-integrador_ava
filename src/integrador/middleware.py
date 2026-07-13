@@ -14,9 +14,8 @@ class DisableCSRFForAPIMiddleware(MiddlewareMixin):
 
     # Padrões de URL que devem ser isentos de CSRF
     CSRF_EXEMPT_URLS = [
-        re.compile(r"^api/enviar_diarios/"),
-        re.compile(r"^api/baixar_notas/"),
         re.compile(r"^__debug__/"),  # Django Debug Toolbar
+        re.compile(r"^api/"),  # APIs
     ]
 
     def process_request(self, request):

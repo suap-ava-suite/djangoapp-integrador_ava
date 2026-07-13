@@ -15,11 +15,6 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 _LOCAL_SUAP_KNOWN_SERVICES = frozenset(
     {
-        "get_diarios",
-        "get_atualizacoes_counts",
-        "set_favourite_course",
-        "set_visible_course",
-        "set_user_preference",
         "sync_user_preference",
         "sync_up_enrolments",
         "sync_down_grades",

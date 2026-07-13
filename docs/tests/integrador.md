@@ -47,14 +47,14 @@ validação de JSON, seleção de ambiente baseada em regras, tratamento de erro
 No workspace:
 
 ```bash
-cd ~/projetos/IFRN/ava/workspace
+cd ~/projetos/IFRN/suap-ava-suite/workspace
 ./ava test integrador
 ```
 
 ### 2) Rodar apenas os testes do mock de Moodle
 
 ```bash
-cd ~/projetos/IFRN/ava/workspace
+cd ~/projetos/IFRN/suap-ava-suite/workspace
 ./ava test integrador \
  integrador.tests.LocalSuapHTTPMockTestCase \
  integrador.tests.ToolSgaHTTPMockTestCase \
@@ -66,7 +66,7 @@ cd ~/projetos/IFRN/ava/workspace
 Quando quiser garantir execução sem dependência externa:
 
 ```bash
-cd ~/projetos/IFRN/ava/workspace
+cd ~/projetos/IFRN/suap-ava-suite/workspace
 docker compose run --rm \
  -e MOODLE_HTTP_MOCK_ENABLED=true \
  integrador \
@@ -85,7 +85,7 @@ No `docker-compose.yml` do workspace, manter no serviço `integrador`:
 Depois subir normalmente:
 
 ```bash
-cd ~/projetos/IFRN/ava/workspace
+cd ~/projetos/IFRN/suap-ava-suite/workspace
 ./ava launch integrador
 ```
 
@@ -97,7 +97,7 @@ de dados no Moodle.
 Use Moodle real para validar contrato fim a fim:
 
 ```bash
-cd ~/projetos/IFRN/ava/workspace
+cd ~/projetos/IFRN/suap-ava-suite/workspace
 docker compose run --rm \
  -e MOODLE_HTTP_MOCK_ENABLED=false \
  integrador \

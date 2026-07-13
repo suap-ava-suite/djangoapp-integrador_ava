@@ -4,7 +4,7 @@ from sc4py.env import env, env_as_bool, env_as_int, env_as_list
 SUAP_INTEGRADOR_KEY = env("SUAP_INTEGRADOR_KEY")
 SUAP_BASE_URL = env("SUAP_BASE_URL", "https://suap.ifrn.edu.br")
 
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = env("DJANGO_SECRET_KEY", "changeme")
 LOGIN_URL = env("DJANGO_LOGIN_URL", "/login/")
 LOGIN_REDIRECT_URL = env("DJANGO_LOGIN_REDIRECT_URL", "/admin/")
 LOGOUT_REDIRECT_URL = env("DJANGO_LOGOUT_REDIRECT_URL", f"{SUAP_BASE_URL}/comum/logout")

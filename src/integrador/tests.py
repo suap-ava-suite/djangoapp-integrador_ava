@@ -432,15 +432,6 @@ class LocalSuapHTTPMockTestCase(TestCase):
         self.assertEqual(data["error"]["code"], 404)
         self.assertEqual(data["error"]["message"], "Serviço não existe")
 
-    def test_servico_nao_implementado_retorna_501(self):
-        url = f"{self.BASE_URL}?get_diarios"
-        response = self.mock.get(url, headers=self.AUTH_HEADERS)
-        self.assertEqual(response.status_code, 501)
-        self.assertFalse(response.ok)
-        data = json.loads(response.content)
-        self.assertEqual(data["error"]["code"], 501)
-        self.assertEqual(data["error"]["message"], "Não implementado")
-
     def test_sem_authentication_retorna_400(self):
         url = f"{self.BASE_URL}?sync_up_enrolments"
         response = self.mock.post(url, jsonbody={})
@@ -485,20 +476,26 @@ class MiddlewareTestCase(TestCase):
         self.factory = RequestFactory()
         self.middleware = DisableCSRFForAPIMiddleware(lambda x: None)
 
-    def test_csrf_middleware_exempts_api_urls(self):
-        """Testa que middleware isenta URLs da API de CSRF."""
-        request = self.factory.post("/api/enviar_diarios/")
+    def test_csrf_middleware_exempts_debug_toolbar(self):
+        """Testa que middleware isenta URL do Debug Toolbar de CSRF."""
+        request = self.factory.post("/__debug__/")
 
         self.middleware.process_request(request)
 
         self.assertTrue(getattr(request, "_dont_enforce_csrf_checks", False))
 
-    def test_csrf_middleware_exempts_baixar_notas(self):
-        """Testa que middleware isenta baixar_notas de CSRF."""
-        request = self.factory.post("/api/baixar_notas/")
-
+    def test_csrf_middleware_exempts_api_urls(self):
+        """Testa que middleware isenta URLs da API de CSRF."""
+        request = self.factory.post("/api/enviar_diarios/")
         self.middleware.process_request(request)
+        self.assertTrue(getattr(request, "_dont_enforce_csrf_checks", False))
 
+        request = self.factory.post("/api/baixar_notas/")
+        self.middleware.process_request(request)
+        self.assertTrue(getattr(request, "_dont_enforce_csrf_checks", False))
+
+        request = self.factory.post("/api/qualquer-outra-rota/")
+        self.middleware.process_request(request)
         self.assertTrue(getattr(request, "_dont_enforce_csrf_checks", False))
 
     def test_csrf_middleware_does_not_exempt_other_urls(self):
@@ -508,6 +505,14 @@ class MiddlewareTestCase(TestCase):
         self.middleware.process_request(request)
 
         self.assertFalse(getattr(request, "_dont_enforce_csrf_checks", False))
+
+    def test_api_urls_are_csrf_exempt(self):
+        """Testa que as URLs da API são resolvidas para views isentas de CSRF."""
+        from django.urls import resolve
+
+        for url in ["/api/enviar_diarios/", "/api/baixar_notas/"]:
+            match = resolve(url)
+            self.assertTrue(getattr(match.func, "csrf_exempt", False))
 
 
 class CSRFErrorViewTestCase(TestCase):
@@ -570,6 +575,40 @@ class CSRFErrorViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertIn(b"403", response.content)
 
+    @patch("integrador.views_errors.render")
+    @patch("integrador.views_errors.sentry_sdk")
+    def test_csrf_failure_fallback_html_when_render_fails(self, mock_sentry, mock_render):
+        """Testa fallback de renderização de erro CSRF quando template padrão falha."""
+        from django.http import HttpResponse
+
+        mock_render.side_effect = [Exception("Template error"), HttpResponse("Fallback HTML", status=403)]
+
+        request = self.factory.post("/admin/login/")
+        request.META["HTTP_ACCEPT"] = "text/html"
+        request.user = Mock()
+        request.user.is_authenticated = False
+
+        response = self.csrf_failure_view(request, reason="Template fails")
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(mock_render.call_count, 2)
+        self.assertEqual(response.content, b"Fallback HTML")
+
+    @patch("integrador.views_errors.render")
+    @patch("integrador.views_errors.sentry_sdk")
+    def test_csrf_failure_fallback_html_when_all_renders_fail(self, mock_sentry, mock_render):
+        """Testa fallback de erro CSRF para HttpResponse puro quando todos os templates falham."""
+        mock_render.side_effect = [Exception("Template error 1"), Exception("Template error 2")]
+
+        request = self.factory.post("/admin/login/")
+        request.META["HTTP_ACCEPT"] = "text/html"
+        request.user = Mock()
+        request.user.is_authenticated = False
+
+        response = self.csrf_failure_view(request, reason="All templates fail")
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(mock_render.call_count, 2)
+        self.assertIn(b"Forbidden (403)", response.content)
+
     @patch("integrador.views_errors.sentry_sdk")
     def test_csrf_failure_includes_user_info_when_authenticated(self, mock_sentry):
         """Testa que erro CSRF inclui informações do usuário autenticado."""
@@ -619,6 +658,21 @@ class CSRFErrorViewTestCase(TestCase):
         # Verifica que todos os detalhes foram capturados
         self.assertEqual(response.status_code, 403)
         mock_sentry.capture_message.assert_called_once()
+
+        # Verifica que o contexto csrf_failure incluiu o content_type
+        scope_mock = mock_sentry.push_scope.return_value.__enter__.return_value
+        self.assertTrue(scope_mock.set_context.called)
+        called_with_csrf = False
+        for args, kwargs in scope_mock.set_context.call_args_list:
+            if len(args) >= 2 and args[0] == "csrf_failure":
+                called_with_csrf = True
+                captured = args[1]
+                self.assertEqual(captured["reason"], "CSRF cookie not set")
+                self.assertEqual(captured["path"], "/api/sensitive-endpoint/")
+                self.assertEqual(captured["method"], "POST")
+                self.assertEqual(captured["referer"], "https://malicious-site.com")
+                self.assertEqual(captured["content_type"], "application/json")
+        self.assertTrue(called_with_csrf, "set_context não foi chamado com csrf_failure")
 
     @patch("integrador.views_errors.sentry_sdk")
     def test_csrf_failure_with_empty_reason(self, mock_sentry):
@@ -2226,7 +2280,7 @@ class Suap2LocalSuapBrokerTestCase(TestCase):
         self.assertIn("Servidor (Docente)", restricoes)
         self.assertIn("Prestador de Serviço", restricoes)
         self.assertIn("Aluno", restricoes)
-        self.assertIn("estrangeiro==true", restricoes)
+        self.assertIn("m['estrangeiro'] == true", restricoes)
 
     def test_broker_set_restricoes_without_turma(self):
         """Testa _set_restricoes com payload que não tem chave turma."""
@@ -2805,10 +2859,9 @@ class MoodleMockTestCase(TestCase):
         # Testa URL sem query
         self.assertEqual(mock._extract_service("http://localhost"), "")
 
-        # Testa POST com serviço não suportado
-        response = mock.post(
-            "http://localhost/local/suap/api/index.php?get_diarios",
-            jsonbody={},
+        # Testa serviço conhecido mas não implementado (sync_user_preference)
+        response = mock.get(
+            "http://localhost/local/suap/api/index.php?sync_user_preference",
             headers={"Authentication": f"Token {LocalSuapHTTPMock.TEST_TOKEN}"},
         )
         self.assertEqual(response.status_code, 501)

@@ -14,7 +14,7 @@ data:
   SENTRY_SAMPLE_RATE: "100"
   SENTRY_TRACES_SAMPLE_RATE: "100"
   DJANGO_LOGOUT_REDIRECT_URL: "https://suap.ifrn.edu.br/accounts/logout/"
-  DJANGO_LOGIN_URL: "https://integrador.ead.ifrn.edu.br/api/login/"
+  DJANGO_LOGIN_URL: "https://integrador.ead.ifrn.edu.br/login/"
   DJANGO_LOGIN_REDIRECT_URL: "https://integrador.ead.ifrn.edu.br/"
   DJANGO_STATIC_URL: https://ava-painel-statics.pages.dev/integrador/
   OAUTH_REDIRECT_URI: "https://integrador.ead.ifrn.edu.br/authenticate/"
