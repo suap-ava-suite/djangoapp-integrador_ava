@@ -66,7 +66,7 @@ docker push ctezlifrn/avaintegrador:<tag>
 ## Como construir a imagem localmente
 
 ```bash
-cd ~/projetos/IFRN/suap-ava-suite/integrador_ava
+cd ~/projetos/IFRN/sas/integrador_ava
 
 git checkout proximo
 docker build -t ctezlifrn/avaintegrador:proximo .
@@ -93,7 +93,7 @@ O projeto usa gates de qualidade locais (pre-commit/pre-push) e no CI.
 ### 1) Ativar pre-commit
 
 ```bash
-cd ~/projetos/IFRN/suap-ava-suite/integrador_ava
+cd ~/projetos/IFRN/sas/integrador_ava
 pyenv install 3.14
 pyenv local 3.14
 python -m venv .venv
@@ -122,7 +122,7 @@ pelo Git da interface do VS Code. Hooks com `language: system`, como o `semgrep-
 Fluxo recomendado:
 
 ```bash
-cd ~/projetos/IFRN/suap-ava-suite/integrador_ava
+cd ~/projetos/IFRN/sas/integrador_ava
 source .venv/bin/activate
 python -m pip install -r requirements-dev.txt
 pre-commit install --hook-type pre-commit --hook-type pre-push
