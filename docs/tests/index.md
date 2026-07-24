@@ -6,7 +6,7 @@ Os testes são todos do tipo unittest (Django `TestCase`) e rodam com PostgreSQL
 Para rodar, use o `ava` CLI do workspace:
 
 ```bash
-cd ~/projetos/IFRN/suap-ava-suite/workspace
+cd ~/projetos/IFRN/sas/workspace
 ./ava test integrador                # suíte completa do app integrador
 ./ava test integrador <TestCase>     # apenas um TestCase específico
 ```
@@ -52,7 +52,7 @@ cd ~/projetos/IFRN/suap-ava-suite/workspace
 ### 1) Rodar suíte completa
 
 ```bash
-cd ~/projetos/IFRN/suap-ava-suite/workspace
+cd ~/projetos/IFRN/sas/workspace
 ./ava test integrador
 ```
 
@@ -88,7 +88,7 @@ MOODLE_HTTP_MOCK_PORT: "18091"
 Depois subir normalmente:
 
 ```bash
-cd ~/projetos/IFRN/suap-ava-suite/workspace
+cd ~/projetos/IFRN/sas/workspace
 ./ava launch integrador
 ```
 
