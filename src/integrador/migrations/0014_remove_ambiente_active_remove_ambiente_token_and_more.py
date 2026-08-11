@@ -2,9 +2,6 @@
 
 from django.db import migrations, models
 
-import sga.db.fields
-import sga.db.obfuscators
-
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -28,9 +25,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ambiente",
             name="local_suap_token",
-            field=sga.db.fields.ObfuscatedCharField(
-                default="", max_length=255, obfuscator=sga.db.obfuscators.mask_all, verbose_name="token local_suap"
-            ),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="token local_suap"),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -41,9 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ambiente",
             name="tool_sga_token",
-            field=sga.db.fields.ObfuscatedCharField(
-                default="", max_length=255, obfuscator=sga.db.obfuscators.mask_all, verbose_name="token tool_sga"
-            ),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="token tool_sga"),
             preserve_default=False,
         ),
     ]
