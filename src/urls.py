@@ -24,14 +24,9 @@ if settings.DEBUG:
         pass
 
 urlpatterns += [
-    path("admin/login/", RedirectView.as_view(url="/login/")),
-    path("authenticate/", SuapCallbackView.as_view(), name="authenticate"),
-    path("login/", SuapLoginView.as_view(), name="login"),
-    path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
-    path("api/", include("django_rule_engine.api.urls")),  # API precisa vir ANTES do admin
     path("", include("integrador.urls")),  # noqa URLs do integrador ANTES do admin
     path("", include("health.urls")),  # noqa
-    path("", include("django_suap_auth.urls")),  # noqa
+    path("auth/suap/", include("django_suap_auth.urls")),  # noqa
     path("", admin.site.urls),  # noqa
 ]
 
