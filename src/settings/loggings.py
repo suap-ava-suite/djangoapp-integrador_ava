@@ -44,7 +44,6 @@ logging.config.dictConfig(
                     "integrador.views_errors": {"level": "ERROR"},
                     "dashboard.storage": {"level": "CRITICAL"},
                     "integrador.admin": {"level": "CRITICAL"},
-                    "security.views": {"level": "CRITICAL"},
                 }
                 if TESTING
                 else {}
