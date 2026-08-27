@@ -21,7 +21,6 @@ cd ~/projetos/IFRN/sas/workspace
 | `coorte`     | [coorte](coorte.md)         | `EnrolmentModelTestCase`, `RoleAdminTestCase`, `CohortAdminTestCase`    |
 | `health`     | [health](health.md)         | `HealthViewTestCase`, `HealthURLsTestCase`, `HealthMonitoringTestCase`  |
 | `integrador` | [integrador](integrador.md) | Ver tabela abaixo                                                       |
-| `security`   | [security](security.md)     | `LoginViewTestCase`, `AuthenticateViewTestCase`, `LogoutViewTestCase`   |
 | `settings`   | [settings](settings.md)     | `SettingsAppsTestCase`, `SettingsSecuritiesTestCase`                    |
 
 ### App `integrador` — TestCases detalhados
