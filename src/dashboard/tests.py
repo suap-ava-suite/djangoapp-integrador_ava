@@ -375,3 +375,21 @@ class AdminIndexDashboardTestCase(TestCase):
                         context = mock_render.call_args[0][2]
                         # Deve ter lista vazia
                         self.assertEqual(context["log_entries"], [])
+
+    def test_admin_dashboard_with_extra_context(self):
+        """Testa se extra_context é mesclado no contexto final do dashboard."""
+        request = self.factory.get("/admin/")
+        request.user = self.staff_user
+
+        with patch("dashboard.admin_views.DashboardStorage") as mock_storage:
+            mock_instance = mock_storage.return_value
+            mock_instance.get_context.return_value = {}
+
+            with patch("dashboard.admin_views.LogEntry.objects.filter") as mock_log:
+                mock_log.return_value.select_related.return_value.order_by.return_value = []
+                with patch("dashboard.admin_views.admin.site.get_app_list", return_value=[]):
+                    with patch("dashboard.admin_views.render") as mock_render:
+                        admin_index_dashboard(request, extra_context={"extra_test": 123})
+                        context = mock_render.call_args[0][2]
+                        self.assertEqual(context.get("extra_test"), 123)
+
