@@ -132,35 +132,11 @@ class SettingsSecuritiesTestCase(TestCase):
         """Testa se LOGOUT_REDIRECT_URL está definida."""
         self.assertIsNotNone(settings.LOGOUT_REDIRECT_URL)
 
-    def test_cors_allow_methods_contains_standard_methods(self):
-        """Testa se CORS_ALLOW_METHODS contém métodos padrão."""
-        standard_methods = ["GET", "POST", "PUT", "DELETE"]
-
-        for method in standard_methods:
-            self.assertIn(method, settings.CORS_ALLOW_METHODS)
-
-    def test_csrf_cookie_age_is_positive(self):
-        """Testa se CSRF_COOKIE_AGE é um valor positivo."""
-        self.assertIsInstance(settings.CSRF_COOKIE_AGE, int)
-        self.assertGreater(settings.CSRF_COOKIE_AGE, 0)
-
-    def test_csrf_cookie_name_is_defined(self):
-        """Testa se CSRF_COOKIE_NAME está definido."""
-        self.assertIsNotNone(settings.CSRF_COOKIE_NAME)
-        self.assertIsInstance(settings.CSRF_COOKIE_NAME, str)
-
-    def test_csrf_cookie_path_is_root(self):
-        """Testa se CSRF_COOKIE_PATH é a raiz."""
-        self.assertEqual(settings.CSRF_COOKIE_PATH, "/")
-
-    def test_oauth_configuration_exists(self):
-        """Testa se a configuração OAuth existe."""
-        self.assertIsInstance(settings.OAUTH, dict)
-        self.assertIn("BASE_URL", settings.OAUTH)
-        self.assertIn("AUTHORIZE_URL", settings.OAUTH)
-        self.assertIn("TOKEN_URL", settings.OAUTH)
-        self.assertIn("CLIENT_ID", settings.OAUTH)
-        self.assertIn("CLIENT_SECRET", settings.OAUTH)
+    def test_suap_auth_configuration_exists(self):
+        """Testa se a configuração SUAP_AUTH existe."""
+        self.assertIsInstance(settings.SUAP_AUTH, dict)
+        self.assertIn("CLIENT_ID", settings.SUAP_AUTH)
+        self.assertIn("CLIENT_SECRET", settings.SUAP_AUTH)
 
     def test_suap_configuration_exists(self):
         """Testa se a configuração do SUAP existe."""

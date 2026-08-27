@@ -348,7 +348,7 @@ class SolicitacaoAdmin(BaseModelAdmin):
             logger.exception(f"Error while syncing Moodle for Solicitacao {getattr(original, 'id', '-')}. ERROR: {e}")
             return render(
                 request,
-                "security/sync_error.html",
+                "integrador/sync_error.html",
                 context={"error_cause": str(e), "solicitacao": original},
                 status=200,
             )
