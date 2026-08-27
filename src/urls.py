@@ -27,6 +27,7 @@ urlpatterns += [
     path("admin/login/", RedirectView.as_view(url="/auth/suap/login/", query_string=True)),
     path("login/", RedirectView.as_view(url="/auth/suap/login/", query_string=True)),
     path("logout/", RedirectView.as_view(url="/auth/suap/logout/", query_string=True)),
+    path("authenticate/", RedirectView.as_view(url="/auth/suap/callback/", query_string=True)),
     path("", include("integrador.urls")),  # noqa URLs do integrador ANTES do admin
     path("", include("health.urls")),  # noqa
     path("auth/suap/", include("django_suap_auth.urls")),  # noqa
