@@ -16,6 +16,6 @@ THIRD_APPS = env_as_list(
 DJANGO_APPS = [
     f"django.contrib.{x}" for x in ["admin", "auth", "contenttypes", "sessions", "messages", "staticfiles", "humanize"]
 ] + ["django.forms"]
-MY_APPS = env_as_list("MY_APPS", ["cohort", "integrador", "dashboard", "base", "dsgovbr", "health"])
+MY_APPS = env_as_list("MY_APPS", ["cohort", "integrador", "dashboard", "base", "health"])
 HACK_APPS = env_as_list("HACK_APPS", ["hacks"])
-INSTALLED_APPS = MY_APPS + THIRD_APPS + DJANGO_APPS + HACK_APPS
+INSTALLED_APPS = MY_APPS + THIRD_APPS + DJANGO_APPS + HACK_APPS + ["dsgovbr"]
