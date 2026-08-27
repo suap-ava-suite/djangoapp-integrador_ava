@@ -9,11 +9,13 @@ THIRD_APPS = env_as_list(
         "django_json_widget",
         "django_extensions",
         "django_rule_engine",
+        "django_suap_auth",
+        "django_suap_auth.profile",
     ],
 )
 DJANGO_APPS = [
     f"django.contrib.{x}" for x in ["admin", "auth", "contenttypes", "sessions", "messages", "staticfiles", "humanize"]
 ] + ["django.forms"]
-MY_APPS = env_as_list("MY_APPS", ["cohort", "integrador", "security", "dashboard", "base", "dsgovbr", "health"])
+MY_APPS = env_as_list("MY_APPS", ["cohort", "integrador", "dashboard", "base", "dsgovbr", "health"])
 HACK_APPS = env_as_list("HACK_APPS", ["hacks"])
 INSTALLED_APPS = MY_APPS + THIRD_APPS + DJANGO_APPS + HACK_APPS

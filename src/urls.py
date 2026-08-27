@@ -24,7 +24,7 @@ urlpatterns += [
     path("api/", include("django_rule_engine.api.urls")),  # API precisa vir ANTES do admin
     path("", include("integrador.urls")),  # noqa URLs do integrador ANTES do admin
     path("", include("health.urls")),  # noqa
-    path("", include("security.urls")),  # noqa
+    path("", include("django_suap_auth.urls")),  # noqa
     path("", admin.site.urls),  # noqa
 ]
 
