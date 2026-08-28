@@ -13,7 +13,7 @@ from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.utils.timezone import now
 
-from cohort.models import Cohort, Enrolment, Role
+from cohort.models import Cohort, Enrolment, MoodleUser, Role
 from integrador.models import Ambiente, Solicitacao
 
 logger = logging.getLogger(__name__)
@@ -71,6 +71,121 @@ class DashboardStorage:
             logger.debug("Cache desabilitado - dados não foram armazenados")
 
         return self.data
+
+    def get_auth_context(self):
+        """Retorna o contexto do dashboard da aplicação Auth."""
+        try:
+            usuarios_total = User.objects.count()
+            usuarios_ativos = User.objects.filter(is_active=True).count()
+            usuarios_inativos = usuarios_total - usuarios_ativos
+            usuarios_equipe = User.objects.filter(is_staff=True).count()
+
+            grupos_total = Group.objects.count()
+            grupos_queryset = Group.objects.annotate(num_users=Count("user")).order_by("-num_users", "name")
+            grupos_detalhe = [
+                {"name": grupo.name, "usuarios_count": grupo.num_users}
+                for grupo in grupos_queryset
+            ]
+
+            return {
+                "usuarios_total": usuarios_total,
+                "usuarios_ativos": usuarios_ativos,
+                "usuarios_inativos": usuarios_inativos,
+                "usuarios_equipe": usuarios_equipe,
+                "grupos_total": grupos_total,
+                "grupos_detalhe": grupos_detalhe,
+            }
+        except Exception as e:
+            logger.error(f"Erro ao carregar contexto de auth: {e}", exc_info=True)
+            return {
+                "usuarios_total": 0,
+                "usuarios_ativos": 0,
+                "usuarios_inativos": 0,
+                "usuarios_equipe": 0,
+                "grupos_total": 0,
+                "grupos_detalhe": [],
+            }
+
+    def get_cohort_context(self, top_n=5):
+        """Retorna o contexto do dashboard da aplicação Cohort."""
+        try:
+            coortes_total = Cohort.objects.count()
+            coortes_ativas = Cohort.objects.filter(active=True).count()
+            coortes_inativas = coortes_total - coortes_ativas
+            coortes_top_usuarios = list(
+                Cohort.objects.annotate(num_users=Count("enrolments"))
+                .order_by("-num_users", "name")
+                .values("name", "num_users")[:top_n]
+            )
+
+            papeis_total = Role.objects.count()
+            papeis_ativos = Role.objects.filter(active=True).count()
+            papeis_inativos = papeis_total - papeis_ativos
+            papeis_top_coortes = list(
+                Role.objects.annotate(num_cohorts=Count("cohort_roles"))
+                .order_by("-num_cohorts", "name")
+                .values("name", "num_cohorts")[:top_n]
+            )
+            papeis_top_usuarios = list(
+                Role.objects.annotate(num_users=Count("cohort_roles__enrolments"))
+                .order_by("-num_users", "name")
+                .values("name", "num_users")[:top_n]
+            )
+
+            moodle_usuarios_total = MoodleUser.objects.count()
+            moodle_usuarios_sincronizar = MoodleUser.objects.filter(active=True).count()
+            moodle_usuarios_top_vinculos = list(
+                MoodleUser.objects.annotate(num_vinculos=Count("enrolments"))
+                .order_by("-num_vinculos", "fullname")
+                .values("fullname", "login", "num_vinculos")[:top_n]
+            )
+
+            return {
+                "coortes_total": coortes_total,
+                "coortes_ativas": coortes_ativas,
+                "coortes_inativas": coortes_inativas,
+                "coortes_top_usuarios": coortes_top_usuarios,
+                "papeis_total": papeis_total,
+                "papeis_ativos": papeis_ativos,
+                "papeis_inativos": papeis_inativos,
+                "papeis_top_coortes": papeis_top_coortes,
+                "papeis_top_usuarios": papeis_top_usuarios,
+                "moodle_usuarios_total": moodle_usuarios_total,
+                "moodle_usuarios_sincronizar": moodle_usuarios_sincronizar,
+                "moodle_usuarios_top_vinculos": moodle_usuarios_top_vinculos,
+            }
+        except Exception as e:
+            logger.error(f"Erro ao carregar contexto de cohort: {e}", exc_info=True)
+            return {
+                "coortes_total": 0,
+                "coortes_ativas": 0,
+                "coortes_inativas": 0,
+                "coortes_top_usuarios": [],
+                "papeis_total": 0,
+                "papeis_ativos": 0,
+                "papeis_inativos": 0,
+                "papeis_top_coortes": [],
+                "papeis_top_usuarios": [],
+                "moodle_usuarios_total": 0,
+                "moodle_usuarios_sincronizar": 0,
+                "moodle_usuarios_top_vinculos": [],
+            }
+
+    def get_integrador_context(self):
+        """Retorna o contexto do dashboard da aplicação Integrador."""
+        context = self.get_context()
+        return {
+            "ambientes_total": context.get("ambientes_total", 0),
+            "ambientes_ativos": context.get("ambientes_ativos", 0),
+            "ambientes_com_erro": context.get("ambientes_com_erro", 0),
+            "solicitacoes_24h": context.get("solicitacoes_24h", 0),
+            "solicitacoes_sucesso": context.get("solicitacoes_sucesso", 0),
+            "solicitacoes_falha": context.get("solicitacoes_falha", 0),
+            "solicitacoes_processando": context.get("solicitacoes_processando", 0),
+            "taxa_sucesso": context.get("taxa_sucesso", 0),
+            "total_solicitacoes": context.get("total_solicitacoes", 0),
+            "solicitacoes_series": context.get("solicitacoes_series", []),
+        }
 
     def _load_data(self):
         """Carrega todos os dados do dashboard."""

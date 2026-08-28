@@ -11,11 +11,12 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.http import Http404
 from django.test import RequestFactory, TestCase, override_settings
 from django.utils.timezone import now
 
-from cohort.models import Cohort, Role
-from dashboard.admin_views import admin_index_dashboard
+from cohort.models import Cohort, Enrolment, MoodleUser, Role
+from dashboard.admin_views import admin_app_index_dashboard, admin_index_dashboard
 from dashboard.storage import DashboardStorage
 from integrador.models import Ambiente, Solicitacao
 
@@ -101,6 +102,55 @@ class DashboardStorageTestCase(TestCase):
             # Segunda chamada deve usar cache
             context2 = self.storage.get_context()
             self.assertEqual(context1["ambientes_total"], context2["ambientes_total"])
+
+    def test_get_auth_context(self):
+        """Testa o contexto específico da app Auth."""
+        from django.contrib.auth.models import Group
+        group = Group.objects.create(name="Professores")
+        group.user_set.add(self.user)
+
+        auth_context = self.storage.get_auth_context()
+        self.assertEqual(auth_context["usuarios_total"], 1)
+        self.assertEqual(auth_context["usuarios_ativos"], 1)
+        self.assertEqual(auth_context["grupos_total"], 1)
+        self.assertEqual(len(auth_context["grupos_detalhe"]), 1)
+        self.assertEqual(auth_context["grupos_detalhe"][0]["name"], "Professores")
+        self.assertEqual(auth_context["grupos_detalhe"][0]["usuarios_count"], 1)
+
+    def test_get_auth_context_exception(self):
+        """Testa tratamento de exceção em get_auth_context."""
+        with patch("dashboard.storage.User.objects.count", side_effect=Exception("DB Error")):
+            context = self.storage.get_auth_context()
+            self.assertEqual(context["usuarios_total"], 0)
+            self.assertEqual(context["grupos_detalhe"], [])
+
+    def test_get_cohort_context(self):
+        """Testa o contexto específico da app Cohort."""
+        m_user = MoodleUser.objects.create(fullname="Joao Silva", login="joaosilva", email="joao@test.com", active=True)
+        Enrolment.objects.create(user=m_user, cohort=self.cohort, active=True)
+
+        cohort_context = self.storage.get_cohort_context(top_n=5)
+        self.assertEqual(cohort_context["coortes_total"], 1)
+        self.assertEqual(cohort_context["coortes_ativas"], 1)
+        self.assertEqual(len(cohort_context["coortes_top_usuarios"]), 1)
+        self.assertEqual(cohort_context["coortes_top_usuarios"][0]["num_users"], 1)
+        self.assertEqual(cohort_context["papeis_total"], 1)
+        self.assertEqual(cohort_context["moodle_usuarios_total"], 1)
+        self.assertEqual(len(cohort_context["moodle_usuarios_top_vinculos"]), 1)
+
+    def test_get_cohort_context_exception(self):
+        """Testa tratamento de exceção em get_cohort_context."""
+        with patch("dashboard.storage.Cohort.objects.count", side_effect=Exception("DB Error")):
+            context = self.storage.get_cohort_context()
+            self.assertEqual(context["coortes_total"], 0)
+            self.assertEqual(context["coortes_top_usuarios"], [])
+
+    def test_get_integrador_context(self):
+        """Testa o contexto específico da app Integrador."""
+        integrador_context = self.storage.get_integrador_context()
+        self.assertEqual(integrador_context["ambientes_total"], 1)
+        self.assertEqual(integrador_context["solicitacoes_sucesso"], 1)
+        self.assertIn("solicitacoes_series", integrador_context)
 
     def test_load_ambientes(self):
         """Testa carregamento de ambientes."""
@@ -302,7 +352,7 @@ class DashboardStorageTestCase(TestCase):
 
 
 class AdminIndexDashboardTestCase(TestCase):
-    """Testes para a view admin_index_dashboard."""
+    """Testes para as views admin_index_dashboard e admin_app_index_dashboard."""
 
     def setUp(self):
         """Configura o ambiente de teste."""
@@ -393,3 +443,65 @@ class AdminIndexDashboardTestCase(TestCase):
                         context = mock_render.call_args[0][2]
                         self.assertEqual(context.get("extra_test"), 123)
 
+    def test_admin_app_index_dashboard_auth(self):
+        """Testa admin_app_index_dashboard para a aplicação auth."""
+        request = self.factory.get("/admin/auth/")
+        request.user = self.staff_user
+
+        fake_app_dict = {"auth": {"name": "Auth", "app_label": "auth", "models": []}}
+        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+            with patch("dashboard.admin_views.render") as mock_render:
+                admin_app_index_dashboard(request, app_label="auth")
+                mock_render.assert_called_once()
+                template_list = mock_render.call_args[0][1]
+                self.assertEqual(template_list, ["admin/auth/app_index.html", "admin/app_index.html"])
+                context = mock_render.call_args[0][2]
+                self.assertIn("usuarios_total", context)
+
+    def test_admin_app_index_dashboard_cohort(self):
+        """Testa admin_app_index_dashboard para a aplicação cohort."""
+        request = self.factory.get("/admin/cohort/")
+        request.user = self.staff_user
+
+        fake_app_dict = {"cohort": {"name": "Cohort", "app_label": "cohort", "models": []}}
+        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+            with patch("dashboard.admin_views.render") as mock_render:
+                admin_app_index_dashboard(request, app_label="cohort")
+                mock_render.assert_called_once()
+                context = mock_render.call_args[0][2]
+                self.assertIn("coortes_total", context)
+
+    def test_admin_app_index_dashboard_integrador(self):
+        """Testa admin_app_index_dashboard para a aplicação integrador."""
+        request = self.factory.get("/admin/integrador/")
+        request.user = self.staff_user
+
+        fake_app_dict = {"integrador": {"name": "Integrador", "app_label": "integrador", "models": []}}
+        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+            with patch("dashboard.admin_views.render") as mock_render:
+                admin_app_index_dashboard(request, app_label="integrador")
+                mock_render.assert_called_once()
+                context = mock_render.call_args[0][2]
+                self.assertIn("solicitacoes_24h", context)
+
+    def test_admin_app_index_dashboard_not_found(self):
+        """Testa admin_app_index_dashboard com app inexistente lançando Http404."""
+        request = self.factory.get("/admin/nonexistent/")
+        request.user = self.staff_user
+
+        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value={}):
+            with self.assertRaises(Http404):
+                admin_app_index_dashboard(request, app_label="nonexistent")
+
+    def test_admin_app_index_dashboard_generic_and_extra_context(self):
+        """Testa admin_app_index_dashboard com app genérica e extra_context."""
+        request = self.factory.get("/admin/generic/")
+        request.user = self.staff_user
+
+        fake_app_dict = {"generic": {"name": "Generic", "app_label": "generic", "models": []}}
+        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+            with patch("dashboard.admin_views.render") as mock_render:
+                admin_app_index_dashboard(request, app_label="generic", extra_context={"extra": 99})
+                mock_render.assert_called_once()
+                context = mock_render.call_args[0][2]
+                self.assertEqual(context.get("extra"), 99)

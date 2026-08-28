@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block bodyclass %}{{ block.super }} app-{{ app_label }} dashboard{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "integrador/css/dashboard.css" %}" />
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="dashboard-grid">
+    {% if app_dict %}
+      <div class="dashboard-card">
+        <h3>{% translate "Modelos de administração" %}</h3>
+        <ul class="admin-models-list">
+          {% for model in app_dict.models %}
+            <li class="admin-model-item">
+              {% if model.admin_url %}
+                <a href="{{ model.admin_url }}" class="model-name">{{ model.name }}</a>
+              {% else %}
+                <span class="model-name">{{ model.name }}</span>
+              {% endif %}
+              {% if model.add_url %}
+                <a href="{{ model.add_url }}" class="add-button">+ {% translate "Adicionar" %}</a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

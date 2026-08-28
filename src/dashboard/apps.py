@@ -13,7 +13,8 @@ class DashboardConfig(AppConfig):
         """
         from django.contrib import admin
 
-        from .admin_views import admin_index_dashboard
+        from .admin_views import admin_app_index_dashboard, admin_index_dashboard
 
-        # Registra a view personalizada como página inicial do admin
+        # Registra as views personalizadas para a home e índices de aplicações no admin
         admin.site.index = admin_index_dashboard
+        admin.site.app_index = admin_app_index_dashboard

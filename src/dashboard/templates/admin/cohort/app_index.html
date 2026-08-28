@@ -1,0 +1,106 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static l10n %}
+
+{% block bodyclass %}{{ block.super }} app-cohort dashboard{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "integrador/css/dashboard.css" %}" />
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="dashboard-grid">
+        <!-- Card 1: Dados de Coortes -->
+        <div class="dashboard-card">
+            <h3><a href="{% url "admin:cohort_cohort_changelist" %}">{% translate "Coortes" %}</a> <a href="{% url "admin:cohort_cohort_add" %}" class="add-button">+</a></h3>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Total de coortes" %}</span>
+                <span class="stat-value">{{ coortes_total|localize }}</span>
+            </div>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Ativas" %}</span>
+                <span class="stat-badge success">{{ coortes_ativas|localize }}</span>
+            </div>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Inativas" %}</span>
+                <span class="stat-badge danger">{{ coortes_inativas|localize }}</span>
+            </div>
+            {% if coortes_top_usuarios %}
+                <div class="stat-subhead">{% translate "Top coortes com mais usuários" %}</div>
+                <ul class="detail-list">
+                    {% for item in coortes_top_usuarios %}
+                        <li class="detail-item">
+                            <span class="detail-name">{{ item.name }}</span>
+                            <span class="stat-badge">{{ item.num_users|localize }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Card 2: Dados de Papéis -->
+        <div class="dashboard-card">
+            <h3><a href="{% url "admin:cohort_role_changelist" %}">{% translate "Papéis" %}</a> <a href="{% url "admin:cohort_role_add" %}" class="add-button">+</a></h3>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Total de papéis" %}</span>
+                <span class="stat-value">{{ papeis_total|localize }}</span>
+            </div>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Ativos" %}</span>
+                <span class="stat-badge success">{{ papeis_ativos|localize }}</span>
+            </div>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Inativos" %}</span>
+                <span class="stat-badge danger">{{ papeis_inativos|localize }}</span>
+            </div>
+            {% if papeis_top_coortes %}
+                <div class="stat-subhead">{% translate "Top papéis com mais coortes" %}</div>
+                <ul class="detail-list">
+                    {% for item in papeis_top_coortes %}
+                        <li class="detail-item">
+                            <span class="detail-name">{{ item.name }}</span>
+                            <span class="stat-badge">{{ item.num_cohorts|localize }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if papeis_top_usuarios %}
+                <div class="stat-subhead">{% translate "Top papéis com mais usuários nas coortes" %}</div>
+                <ul class="detail-list">
+                    {% for item in papeis_top_usuarios %}
+                        <li class="detail-item">
+                            <span class="detail-name">{{ item.name }}</span>
+                            <span class="stat-badge">{{ item.num_users|localize }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Card 3: Usuários das Coortes -->
+        <div class="dashboard-card">
+            <h3><a href="{% url "admin:cohort_moodleuser_changelist" %}">{% translate "Usuários das coortes" %}</a> <a href="{% url "admin:cohort_moodleuser_add" %}" class="add-button">+</a></h3>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "Total de usuários Moodle" %}</span>
+                <span class="stat-value">{{ moodle_usuarios_total|localize }}</span>
+            </div>
+            <div class="card-stat">
+                <span class="stat-label">{% translate "A sincronizar (ativos)" %}</span>
+                <span class="stat-badge success">{{ moodle_usuarios_sincronizar|localize }}</span>
+            </div>
+            {% if moodle_usuarios_top_vinculos %}
+                <div class="stat-subhead">{% translate "Top usuários com mais vínculos" %}</div>
+                <ul class="detail-list">
+                    {% for item in moodle_usuarios_top_vinculos %}
+                        <li class="detail-item">
+                            <span class="detail-name">{{ item.fullname }} ({{ item.login }})</span>
+                            <span class="stat-badge">{{ item.num_vinculos|localize }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
