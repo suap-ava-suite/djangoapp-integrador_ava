@@ -24,6 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 
 
+def load_schema(filename: str) -> dict:
+    return json.loads((STATIC_DIR / filename).read_text(encoding="utf-8"))
+
+
 class Ambiente(Model):
     class AmbienteManager(Manager):
         def seleciona_ambiente(self, sync_json: dict) -> Model:
@@ -108,14 +112,25 @@ class Solicitacao(Model):
             _("Sync UP: Diário"),
             value="SUDiario",
             icon="🔼",
-            schema=json.loads((STATIC_DIR / "SUDiario.schema.json").read_text(encoding="utf-8")),
         )
         SYNC_DOWN_NOTAS = Choices.Value(
             _("Sync DOWN: Notas"),
             value="SDNotas",
             icon="⬇️",
-            schema=json.loads((STATIC_DIR / "SDNotas.schema.json").read_text(encoding="utf-8")),
         )
+
+        @property
+        def schema(self) -> dict | None:
+            return self.get_schema(self.value)
+
+        @classmethod
+        def get_schema(cls, value: str) -> dict | None:
+            if not hasattr(cls, "_schemas"):
+                cls._schemas = {
+                    cls.SYNC_UP_DIARIO.value: load_schema("SUDiario.schema.json"),
+                    cls.SYNC_DOWN_NOTAS.value: load_schema("SDNotas.schema.json"),
+                }
+            return cls._schemas.get(str(value))
 
     ambiente = ForeignKey(Ambiente, verbose_name=_("ambiente"), on_delete=PROTECT, null=True, blank=False)
     timestamp = DateTimeField(_("quando ocorreu"), auto_now_add=True, db_index=True)

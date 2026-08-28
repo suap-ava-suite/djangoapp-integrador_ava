@@ -1930,6 +1930,30 @@ class SolicitacaoModelTestCase(TestCase):
         self.assertEqual(Solicitacao._meta.verbose_name, "solicitação")
         self.assertEqual(Solicitacao._meta.verbose_name_plural, "solicitações")
 
+    def test_solicitacao_operacao_schema_lazy_loading(self):
+        """Testa o carregamento sob demanda (lazy) dos schemas JSON em Solicitacao.Operacao."""
+        # Garante inicialização prévia do cache
+        Solicitacao.Operacao.get_schema("SUDiario")
+        self.assertTrue(hasattr(Solicitacao.Operacao, "_schemas"))
+
+        # Remove atributo do cache para testar reinicialização sob demanda
+        delattr(Solicitacao.Operacao, "_schemas")
+        self.assertFalse(hasattr(Solicitacao.Operacao, "_schemas"))
+
+        schema_up = Solicitacao.Operacao.SYNC_UP_DIARIO.schema
+        self.assertIsInstance(schema_up, dict)
+        self.assertIn("$schema", schema_up)
+
+        self.assertTrue(hasattr(Solicitacao.Operacao, "_schemas"))
+
+        schema_down = Solicitacao.Operacao.SYNC_DOWN_NOTAS.schema
+        self.assertIsInstance(schema_down, dict)
+        self.assertIn("$schema", schema_down)
+
+        self.assertEqual(Solicitacao.Operacao.get_schema("SUDiario"), schema_up)
+        self.assertEqual(Solicitacao.Operacao.get_schema("SDNotas"), schema_down)
+        self.assertIsNone(Solicitacao.Operacao.get_schema("operacao_invalida"))
+
 
 class SolicitacaoAdminTestCase(TestCase):
     """Testes para SolicitacaoAdmin."""
