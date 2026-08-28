@@ -55,6 +55,7 @@ junit.xml
 
 # Translations
 *.mo
+!src/locale/**/*.mo
 *.pot
 
 # Django stuff:
