@@ -25,6 +25,8 @@ DJANGO_APPS = [
         "humanize",
     ]
 ] + ["django.forms"]
-MY_APPS = env_as_list("MY_APPS", ["cohort", "integrador", "dashboard", "base", "health"])
+MY_APPS = [
+    x for x in env_as_list("MY_APPS", ["cohort", "integrador", "dashboard", "base", "health"]) if x != "security"
+]
 HACK_APPS = env_as_list("HACK_APPS", ["hacks"])
-INSTALLED_APPS = MY_APPS + THIRD_APPS + DJANGO_APPS + HACK_APPS + ["dsgovbr"]
+INSTALLED_APPS = [app for app in (MY_APPS + THIRD_APPS + DJANGO_APPS + HACK_APPS + ["dsgovbr"]) if app != "security"]

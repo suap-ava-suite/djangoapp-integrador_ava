@@ -74,6 +74,16 @@ class SettingsAppsTestCase(TestCase):
         """Checks whether SHOW_SUPPORT_CHAT is a boolean."""
         self.assertIsInstance(settings.SHOW_SUPPORT_CHAT, bool)
 
+    def test_security_is_filtered_from_installed_apps(self):
+        """Garante que 'security' é removido de INSTALLED_APPS se fornecido via env var."""
+        with patch.dict(os.environ, {"MY_APPS": "cohort,integrador,security,dashboard,base,health"}):
+            import settings.apps
+
+            importlib.reload(settings.apps)
+            self.assertNotIn("security", settings.apps.INSTALLED_APPS)
+            # Restaura settings.apps
+            importlib.reload(settings.apps)
+
 
 class SettingsDatabasesTestCase(TestCase):
     """Testes para settings/databases.py."""
