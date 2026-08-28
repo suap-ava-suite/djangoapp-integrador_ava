@@ -1,11 +1,9 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from django.views.static import serve
-from django_suap_auth.views import SuapCallbackView, SuapLoginView
 
 admin.site.site_title = f"{settings.PROJECT_TITLE} (v{settings.PROJECT_VERSION})"
 admin.site.index_title = settings.PROJECT_TITLE
@@ -27,7 +25,10 @@ urlpatterns += [
     path("admin/login/", RedirectView.as_view(url="/auth/suap/login/", query_string=True)),
     path("login/", RedirectView.as_view(url="/auth/suap/login/", query_string=True)),
     path("logout/", RedirectView.as_view(url="/auth/suap/logout/", query_string=True)),
-    path("authenticate/", RedirectView.as_view(url="/auth/suap/callback/", query_string=True)),
+    path(
+        "authenticate/",
+        RedirectView.as_view(url="/auth/suap/callback/", query_string=True),
+    ),
     path("", include("integrador.urls")),  # noqa URLs do integrador ANTES do admin
     path("", include("health.urls")),  # noqa
     path("auth/suap/", include("django_suap_auth.urls")),  # noqa

@@ -17,6 +17,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="solicitacao",
             name="tipo",
-            field=models.CharField(blank=True, default=None, max_length=256, null=True, verbose_name="tipo de diário"),
+            field=models.CharField(
+                blank=True,
+                default=None,
+                max_length=256,
+                null=True,
+                verbose_name="tipo de diário",
+            ),
         ),
     ]

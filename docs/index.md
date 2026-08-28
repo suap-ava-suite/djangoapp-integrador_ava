@@ -73,13 +73,26 @@ Após instalar o plugin no Moodle, configure:
 
 ### Passo 2 — Configurar as variáveis de ambiente do Integrador
 
-|Variável             |Obrigatória|Descrição                                             |Padrão                    |
-|---------------------|-----------|------------------------------------------------------|--------------------------|
-|`SUAP_INTEGRADOR_KEY`|Sim        |Token que o SGA deve enviar no header `Authentication`|`changeme`                |
-|`DJANGO_SECRET_KEY`  |Sim        |Chave secreta Django (use valor aleatório em produção)|`changeme`                |
-|`SUAP_BASE_URL`      |Não        |URL base do SUAP (usada para redirect de logout)      |`https://suap.ifrn.edu.br`|
+|Variável              |Obrigatória|Descrição                                             |Padrão                    |
+|----------------------|-----------|------------------------------------------------------|--------------------------|
+|`SUAP_INTEGRADOR_KEY` |Sim        |Token que o SGA deve enviar no header `Authentication`|`changeme`                |
+|`DJANGO_SECRET_KEY`   |Sim        |Chave secreta Django (use valor aleatório em produção)|`changeme`                |
+|`SUAP_BASE_URL`       |Não        |URL base do SUAP (usada para redirect de logout)      |`https://suap.ifrn.edu.br`|
+|`DJANGO_LANGUAGE_CODE`|Não        |Código do idioma padrão do sistema                    |`pt-br`                   |
 
 > **Atenção:** troque `changeme` por valores secretos reais antes de ir para produção.
+
+### Suporte a Internacionalização (i18n)
+
+O Integrador AVA possui suporte nativo a múltiplos idiomas com catálogos gettext completos para:
+
+- **Português (pt-br)** — idioma padrão
+- **Inglês (en)**
+- **Espanhol (es)**
+- **Francês (fr)**
+- **Chinês Simplificado (zh-hans)**
+
+A seleção do idioma ocorre automaticamente via cabeçalho HTTP `Accept-Language` ou sessão/cookie de usuário.
 
 ### Passo 3 — Cadastrar o Ambiente no admin
 

@@ -11,7 +11,10 @@ LOGOUT_REDIRECT_URL = env("DJANGO_LOGOUT_REDIRECT_URL", "/auth/suap/logout/")
 GO_TO_HTTPS = env_as_bool("GO_TO_HTTPS", False)
 AUTHENTICATION_BACKENDS = env_as_list(
     "AUTHENTICATION_BACKENDS",
-    ["django_suap_auth.profile.backends.SuapProfileAuthBackend", "django.contrib.auth.backends.ModelBackend"],
+    [
+        "django_suap_auth.profile.backends.SuapProfileAuthBackend",
+        "django.contrib.auth.backends.ModelBackend",
+    ],
 )
 AUTH_PASSWORD_VALIDATORS = env_as_list("DJANGO_AUTH_PASSWORD_VALIDATORS", [])
 

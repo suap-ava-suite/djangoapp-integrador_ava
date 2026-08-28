@@ -2,6 +2,7 @@ import logging
 
 from django.db import transaction
 from django.http import HttpRequest
+from django.utils.translation import gettext_lazy as _
 
 from integrador.brokers.suap2local_suap import Suap2LocalSuapBroker
 from integrador.brokers.suap2tool_sga import Suap2ToolSgaBroker
@@ -36,8 +37,9 @@ def sync_up_enrolments(request: HttpRequest = None) -> dict:
         return Suap2ToolSgaBroker(request.solicitacao).sync_up_enrolments()
     else:
         raise Exception(
-            f"O ambiente {ambiente.nome} não está configurado "
-            f"para enviar dados para o Local SUAP ou Tool SGA. Contacte um administrador."
+            str(_("O ambiente"))
+            + f" {ambiente.nome} "
+            + str(_("não está configurado para enviar dados para o Local SUAP ou Tool SGA. Contacte um administrador."))
         )
 
 

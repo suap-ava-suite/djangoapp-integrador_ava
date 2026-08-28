@@ -12,7 +12,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="ambiente",
             name="expressao_seletora",
-            field=models.TextField(blank=True, max_length=2550, null=True, verbose_name="expressão seletora"),
+            field=models.TextField(
+                blank=True,
+                max_length=2550,
+                null=True,
+                verbose_name="expressão seletora",
+            ),
         ),
         migrations.AlterField(
             model_name="ambiente",

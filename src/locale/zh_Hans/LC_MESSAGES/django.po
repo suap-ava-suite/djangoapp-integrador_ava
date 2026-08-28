@@ -1,0 +1,663 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-28 11:24-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: cohort/admin.py:79
+msgid "Informações Básicas"
+msgstr "基本信息"
+
+#: cohort/admin.py:81
+msgid "Regras de Validação"
+msgstr "验证规则"
+
+#: cohort/admin.py:88
+msgid ""
+"Configure a regra para validar quando este coorte deve ser sincronizado no "
+"diário"
+msgstr "配置规则以验证何时在日志中同步此群组"
+
+#: cohort/admin.py:91 cohort/models.py:80
+msgid "Descrição"
+msgstr "描述"
+
+#: cohort/models.py:12
+msgid "nome completo do usuário"
+msgstr "用户全名"
+
+#: cohort/models.py:13
+msgid "email do usuário"
+msgstr "用户电子邮件"
+
+#: cohort/models.py:14
+msgid "login do usuário"
+msgstr "用户登录名"
+
+#: cohort/models.py:16
+msgid "sincronizar com o Moodle"
+msgstr "与 Moodle 同步"
+
+#: cohort/models.py:18
+msgid ""
+"Indica se a sincronização do usuário com o Moodle está ativa. Inativar aqui "
+"não remove o usuário do Moodle nem o inativa no Moodle, apenas indica que "
+"ele não deve ser sincronizado."
+msgstr "指示用户与 Moodle 的同步是否处于活动状态。在此停用不会删除或停用 Moodle 中的用户，仅指示不应对其进行同步。"
+
+#: cohort/models.py:24 cohort/models.py:92
+msgid "usuário"
+msgstr "用户"
+
+#: cohort/models.py:25
+msgid "usuários"
+msgstr "用户"
+
+#: cohort/models.py:34
+msgid "nome da role"
+msgstr "角色名称"
+
+#: cohort/models.py:37
+msgid ""
+"Este atributo será cohort.name Ex.: <sup>ZL.CooCurso.15056</sup>, "
+"<sup>ZL.CooPolo.Caraubas(RN)</sup>, <sup>ZL.MedPedProg.UAB</sup>."
+msgstr "该属性将为 cohort.name 例如：<sup>ZL.CooCurso.15056</sup>, <sup>ZL.CooPolo.Caraubas(RN)</sup>, <sup>ZL.MedPedProg.UAB</sup>。"
+
+#: cohort/models.py:42
+msgid "shortname da role"
+msgstr "角色简称"
+
+#: cohort/models.py:45
+msgid ""
+"Este atributo deve ser conforme role.shortname. Ex.: "
+"<sup>teachercoordenadorcurso</sup>, <sup>coordenadordepolo</sup>, "
+"<sup>coordenadordeprograma</sup>"
+msgstr "该属性必须符合 role.shortname。例如：<sup>teachercoordenadorcurso</sup>, <sup>coordenadordepolo</sup>, <sup>coordenadordeprograma</sup>"
+
+#: cohort/models.py:49 cohort/models.py:94
+msgid "ativo?"
+msgstr "是否有效？"
+
+#: cohort/models.py:49
+msgid "Indica se esta coorte deverá ser sincronizada"
+msgstr "指示是否应同步此群组"
+
+#: cohort/models.py:54 cohort/models.py:66
+msgid "role"
+msgstr "角色"
+
+#: cohort/models.py:55
+msgid "roles"
+msgstr "角色"
+
+#: cohort/models.py:63
+msgid "nome da coorte"
+msgstr "群组名称"
+
+#: cohort/models.py:64
+msgid "idnumber"
+msgstr "ID 编号"
+
+#: cohort/models.py:65
+msgid "visível"
+msgstr "可见"
+
+#: cohort/models.py:68
+msgid "regra de validação para diário"
+msgstr "日志验证规则"
+
+#: cohort/models.py:72
+msgid "Exemplos: <ul><li>curso.codigo == '132456'</li></ul>"
+msgstr "示例：<ul><li>curso.codigo == '132456'</li></ul>"
+
+#: cohort/models.py:75
+msgid "regra de validação para sala de coordenação"
+msgstr "协调室验证规则"
+
+#: cohort/models.py:83 cohort/models.py:93
+msgid "coorte"
+msgstr "群组"
+
+#: cohort/models.py:84
+msgid "coortes"
+msgstr "群组"
+
+#: cohort/models.py:97
+msgid "vínculo"
+msgstr "关联"
+
+#: cohort/models.py:98
+msgid "vínculos"
+msgstr "关联"
+
+#: dashboard/admin_views.py:65
+msgid "App não encontrada."
+msgstr "未找到应用。"
+
+#: dashboard/templates/admin/app_index.html:16
+msgid "Modelos de administração"
+msgstr "管理模型"
+
+#: dashboard/templates/admin/app_index.html:26
+msgid "Adicionar"
+msgstr "添加"
+
+#: dashboard/templates/admin/auth/app_index.html:17
+msgid "Usuários"
+msgstr "用户"
+
+#: dashboard/templates/admin/auth/app_index.html:19
+#: dashboard/templates/admin/index.html:91
+msgid "Total de usuários"
+msgstr "用户总数"
+
+#: dashboard/templates/admin/auth/app_index.html:23
+#: dashboard/templates/admin/cohort/app_index.html:50
+#: dashboard/templates/admin/index.html:39
+#: dashboard/templates/admin/index.html:75
+#: dashboard/templates/admin/integrador/app_index.html:24
+msgid "Ativos"
+msgstr "已激活"
+
+#: dashboard/templates/admin/auth/app_index.html:27
+#: dashboard/templates/admin/cohort/app_index.html:54
+#: dashboard/templates/admin/index.html:79
+msgid "Inativos"
+msgstr "未激活"
+
+#: dashboard/templates/admin/auth/app_index.html:31
+msgid "Equipe / Staff"
+msgstr "团队 / 员工"
+
+#: dashboard/templates/admin/auth/app_index.html:38
+msgid "Grupos"
+msgstr "组"
+
+#: dashboard/templates/admin/auth/app_index.html:40
+#: dashboard/templates/admin/index.html:87
+msgid "Total de grupos"
+msgstr "组总数"
+
+#: dashboard/templates/admin/auth/app_index.html:44
+msgid "Usuários por grupo"
+msgstr "每个组的用户"
+
+#: dashboard/templates/admin/auth/app_index.html:54
+msgid "Nenhum grupo cadastrado."
+msgstr "未注册任何组。"
+
+#: dashboard/templates/admin/cohort/app_index.html:16
+#: dashboard/templates/admin/index.html:49
+msgid "Coortes"
+msgstr "群组"
+
+#: dashboard/templates/admin/cohort/app_index.html:18
+#: dashboard/templates/admin/index.html:51
+msgid "Total de coortes"
+msgstr "群组总数"
+
+#: dashboard/templates/admin/cohort/app_index.html:22
+#: dashboard/templates/admin/index.html:55
+msgid "Ativas"
+msgstr "活动"
+
+#: dashboard/templates/admin/cohort/app_index.html:26
+#: dashboard/templates/admin/index.html:59
+msgid "Inativas"
+msgstr "非活动"
+
+#: dashboard/templates/admin/cohort/app_index.html:30
+msgid "Top coortes com mais usuários"
+msgstr "最多用户的顶级群组"
+
+#: dashboard/templates/admin/cohort/app_index.html:44
+#: dashboard/templates/admin/index.html:69
+msgid "Papéis"
+msgstr "角色"
+
+#: dashboard/templates/admin/cohort/app_index.html:46
+#: dashboard/templates/admin/index.html:71
+msgid "Total de papéis"
+msgstr "角色总数"
+
+#: dashboard/templates/admin/cohort/app_index.html:58
+msgid "Top papéis com mais coortes"
+msgstr "最多群组的顶级角色"
+
+#: dashboard/templates/admin/cohort/app_index.html:69
+msgid "Top papéis com mais usuários nas coortes"
+msgstr "群组中最多用户的顶级角色"
+
+#: dashboard/templates/admin/cohort/app_index.html:83
+msgid "Usuários das coortes"
+msgstr "群组用户"
+
+#: dashboard/templates/admin/cohort/app_index.html:85
+msgid "Total de usuários Moodle"
+msgstr "Moodle 用户总数"
+
+#: dashboard/templates/admin/cohort/app_index.html:89
+msgid "A sincronizar (ativos)"
+msgstr "待同步（活动）"
+
+#: dashboard/templates/admin/cohort/app_index.html:93
+msgid "Top usuários com mais vínculos"
+msgstr "最多关联的顶级用户"
+
+#: dashboard/templates/admin/index.html:18
+msgid "Ações rápidas"
+msgstr "快捷操作"
+
+#: dashboard/templates/admin/index.html:21
+msgid "Ver solicitações"
+msgstr "查看请求"
+
+#: dashboard/templates/admin/index.html:24
+msgid "Configurar coortes"
+msgstr "配置群组"
+
+#: dashboard/templates/admin/index.html:27
+msgid "Configurar ambientes"
+msgstr "配置环境"
+
+#: dashboard/templates/admin/index.html:33
+#: dashboard/templates/admin/integrador/app_index.html:18
+msgid "Ambientes"
+msgstr "环境"
+
+#: dashboard/templates/admin/index.html:35
+#: dashboard/templates/admin/integrador/app_index.html:20
+msgid "Total de Ambientes"
+msgstr "环境总数"
+
+#: dashboard/templates/admin/index.html:43
+#: dashboard/templates/admin/integrador/app_index.html:28
+msgid "Com erros"
+msgstr "有错误"
+
+#: dashboard/templates/admin/index.html:63
+msgid "Vínculos"
+msgstr "关联"
+
+#: dashboard/templates/admin/index.html:85
+msgid "Usuários e grupos"
+msgstr "用户与组"
+
+#: dashboard/templates/admin/index.html:95
+msgid "Usuários ativos"
+msgstr "活动用户"
+
+#: dashboard/templates/admin/index.html:101
+#: dashboard/templates/admin/integrador/app_index.html:35
+msgid "Solicitações de integração"
+msgstr "集成请求"
+
+#: dashboard/templates/admin/index.html:103
+#: dashboard/templates/admin/integrador/app_index.html:37
+msgid "Últimas 24h"
+msgstr "过去 24 小时"
+
+#: dashboard/templates/admin/index.html:107
+#: dashboard/templates/admin/integrador/app_index.html:41
+#: integrador/models.py:102
+msgid "Sucesso"
+msgstr "成功"
+
+#: dashboard/templates/admin/index.html:111
+#: dashboard/templates/admin/integrador/app_index.html:45
+msgid "Falhas"
+msgstr "失败"
+
+#: dashboard/templates/admin/index.html:115
+#: dashboard/templates/admin/integrador/app_index.html:49
+#: integrador/models.py:104
+msgid "Processando"
+msgstr "处理中"
+
+#: dashboard/templates/admin/index.html:119
+#: dashboard/templates/admin/integrador/app_index.html:53
+msgid "Taxa de sucesso"
+msgstr "成功率"
+
+#: dashboard/templates/admin/index.html:123
+#: dashboard/templates/admin/integrador/app_index.html:57
+msgid "Total processadas"
+msgstr "已处理总数"
+
+#: dashboard/templates/admin/index.html:129
+#: dashboard/templates/admin/integrador/app_index.html:66
+msgid "Série temporal de solicitações (histórica)"
+msgstr "请求时间序列（历史）"
+
+#: dashboard/templates/admin/index.html:132
+#: dashboard/templates/admin/integrador/app_index.html:69
+msgid "Série temporal de solicitações"
+msgstr "请求时间序列"
+
+#: integrador/admin.py:54
+msgid "Identificação"
+msgstr "标识"
+
+#: integrador/admin.py:55 integrador/admin.py:140
+msgid "Local SUAP"
+msgstr "本地 SUAP"
+
+#: integrador/admin.py:56 integrador/admin.py:146
+msgid "Tool SGA"
+msgstr "Tool SGA"
+
+#: integrador/admin.py:64 integrador/models.py:37
+msgid "URL"
+msgstr "URL"
+
+#: integrador/admin.py:68
+msgid "Erro ao tentar validar a URL deste AVA."
+msgstr "尝试验证此 LMS 的 URL 时出错。"
+
+#: integrador/admin.py:73
+msgid "A URL deste AVA foi validada com sucesso."
+msgstr "此 LMS 的 URL 已成功验证。"
+
+#: integrador/admin.py:83
+msgid "Expressão Seletora"
+msgstr "选择器表达式"
+
+#: integrador/admin.py:86
+msgid "Não configurada"
+msgstr "未配置"
+
+#: integrador/admin.py:90
+msgid "Regra validada com sucesso."
+msgstr "规则已成功验证。"
+
+#: integrador/admin.py:94
+msgid "Regra inválida."
+msgstr "规则无效。"
+
+#: integrador/admin.py:112
+msgid "inativo e sem token."
+msgstr "未激活且无令牌。"
+
+#: integrador/admin.py:115
+msgid "token configurado, mas inativo."
+msgstr "已配置令牌但未激活。"
+
+#: integrador/admin.py:118
+msgid "ativo, mas sem token configurado."
+msgstr "激活 concentration 未配置令牌。"
+
+#: integrador/admin.py:132
+msgid "token inválido (401)."
+msgstr "无效令牌 (401)。"
+
+#: integrador/admin.py:135
+msgid "resposta inesperada"
+msgstr "意外响应"
+
+#: integrador/admin.py:138
+msgid "erro ao contactar o plugin"
+msgstr "联系插件时出错"
+
+#: integrador/admin.py:186
+msgid "Requisição"
+msgstr "请求"
+
+#: integrador/admin.py:207
+msgid "Contexto"
+msgstr "上下文"
+
+#: integrador/admin.py:211
+msgid "Ações"
+msgstr "操作"
+
+#: integrador/admin.py:217
+msgid "Reenviar"
+msgstr "重新发送"
+
+#: integrador/admin.py:221
+msgid "Professores"
+msgstr "教师"
+
+#: integrador/admin.py:232
+msgid "externo"
+msgstr "外部"
+
+#: integrador/admin.py:232
+msgid "servidor"
+msgstr "公职人员"
+
+#: integrador/admin.py:252
+msgid "Links"
+msgstr "链接"
+
+#: integrador/admin.py:273 integrador/admin.py:280
+msgid "Sala de coordenação"
+msgstr "协调室"
+
+#: integrador/admin.py:290
+msgid "Diário no SUAP"
+msgstr "SUAP 日志"
+
+#: integrador/admin.py:297
+msgid "Sincronização no Moodle"
+msgstr "Moodle 同步"
+
+#: integrador/decorators.py:56
+msgid "Method HTTP não autorizado."
+msgstr "未授权的 HTTP 方法。"
+
+#: integrador/decorators.py:65
+msgid "Você se esqueceu de configurar a settings 'SUAP_INTEGRADOR_KEY'."
+msgstr "您忘记了配置设置 'SUAP_INTEGRADOR_KEY'。"
+
+#: integrador/decorators.py:68
+msgid "Envie o token de autenticação no header."
+msgstr "请在请求头中发送身份验证令牌。"
+
+#: integrador/decorators.py:72
+msgid ""
+"Você enviou um token de autenticação diferente do que tem na settings "
+"'SUAP_INTEGRADOR_KEY'."
+msgstr "您发送的身份验证令牌与设置 'SUAP_INTEGRADOR_KEY' 中的令牌不一致。"
+
+#: integrador/decorators.py:83
+msgid "Não implementado."
+msgstr "未实现。"
+
+#: integrador/decorators.py:103
+msgid "Foi enviado um JSON mal formado ou nem é JSON"
+msgstr "发送了格式错误或非 JSON 数据"
+
+#: integrador/decorators.py:109
+msgid "Erro ao decodificar o body em utf-8"
+msgstr "使用 utf-8 解码正文时出错"
+
+#: integrador/decorators.py:129
+msgid "Nao encontramos um Ambiente ativo para o campus"
+msgstr "未找到校区的活动环境"
+
+#: integrador/decorators.py:142
+msgid "Não consegui ler o JSON."
+msgstr "无法读取 JSON。"
+
+#: integrador/decorators.py:147
+msgid "Erro desconhecido."
+msgstr "未知错误。"
+
+#: integrador/decorators.py:173
+msgid "Ambiente não encontrado ou não ativo."
+msgstr "未找到环境或环境未激活。"
+
+#: integrador/decorators.py:186
+msgid "Contacte um administrador. O AVA retornou o seguinte erro:"
+msgstr "请联系管理员。LMS 返回了以下错误："
+
+#: integrador/models.py:36
+msgid "nome do ambiente"
+msgstr "环境名称"
+
+#: integrador/models.py:38
+msgid "expressão seletora"
+msgstr "选择器表达式"
+
+#: integrador/models.py:39
+msgid "ordem"
+msgstr "顺序"
+
+#: integrador/models.py:40
+msgid "token local_suap"
+msgstr "local_suap 令牌"
+
+#: integrador/models.py:41
+msgid "local_suap ativo?"
+msgstr "local_suap 是否激活？"
+
+#: integrador/models.py:42
+msgid "token tool_sga"
+msgstr "tool_sga 令牌"
+
+#: integrador/models.py:43
+msgid "tool_sga ativo?"
+msgstr "tool_sga 是否激活？"
+
+#: integrador/models.py:48 integrador/models.py:120
+msgid "ambiente"
+msgstr "环境"
+
+#: integrador/models.py:49
+msgid "ambientes"
+msgstr "环境"
+
+#: integrador/models.py:101
+msgid "Não Definido"
+msgstr "未定义"
+
+#: integrador/models.py:103
+msgid "Falha"
+msgstr "失败"
+
+#: integrador/models.py:108
+msgid "Sync UP: Diário"
+msgstr "向上同步：日志"
+
+#: integrador/models.py:114
+msgid "Sync DOWN: Notas"
+msgstr "向下同步：成绩"
+
+#: integrador/models.py:121
+msgid "quando ocorreu"
+msgstr "发生时间"
+
+#: integrador/models.py:122
+msgid "campus"
+msgstr "校区"
+
+#: integrador/models.py:123
+msgid "código do diário"
+msgstr "日志代码"
+
+#: integrador/models.py:124
+msgid "ID do diário"
+msgstr "日志 ID"
+
+#: integrador/models.py:126
+msgid "operação"
+msgstr "操作"
+
+#: integrador/models.py:133
+msgid "tipo de diário"
+msgstr "日志类型"
+
+#: integrador/models.py:134
+msgid "status"
+msgstr "状态"
+
+#: integrador/models.py:135
+msgid "status code"
+msgstr "状态码"
+
+#: integrador/models.py:136
+msgid "JSON recebido"
+msgstr "接收到的 JSON"
+
+#: integrador/models.py:137
+msgid "JSON enviado"
+msgstr "发送的 JSON"
+
+#: integrador/models.py:138
+msgid "JSON respondido"
+msgstr "响应该 JSON"
+
+#: integrador/models.py:145
+msgid "solicitação"
+msgstr "请求"
+
+#: integrador/models.py:146
+msgid "solicitações"
+msgstr "请求"
+
+#: integrador/templates/403_csrf.html:20
+msgid "Ocorreu erro de CSRF (403)!"
+msgstr "发生 CSRF 错误 (403)！"
+
+#: integrador/templates/admin/change_list_results.html:19
+msgid "Remove from sorting"
+msgstr "从排序中移除"
+
+#: integrador/templates/admin/change_list_results.html:22
+msgid "Sorting priority"
+msgstr "排序优先级"
+
+#: integrador/templates/admin/change_list_results.html:26
+msgid "Toggle sorting"
+msgstr "切换排序"
+
+#: integrador/templates/integrador/sync_error.html:6
+msgid "Erro de Sincronização"
+msgstr "同步错误"
+
+#: integrador/views.py:40
+msgid "O ambiente"
+msgstr "环境"
+
+#: integrador/views.py:42
+msgid ""
+"não está configurado para enviar dados para o Local SUAP ou Tool SGA. "
+"Contacte um administrador."
+msgstr "未配置发送数据到 Local SUAP 或 Tool SGA。请联系管理员。"
+
+#: settings/internationalizations.py:18
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+#: settings/internationalizations.py:19
+msgid "English"
+msgstr "英语"
+
+#: settings/internationalizations.py:20
+msgid "Spanish"
+msgstr "西班牙语"
+
+#: settings/internationalizations.py:21
+msgid "French"
+msgstr "法语"
+
+#: settings/internationalizations.py:22
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+#: sga/db/fields.py:26
+msgid "Informe uma URL válida."
+msgstr "请输入有效的 URL。"

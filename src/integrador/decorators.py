@@ -4,6 +4,7 @@ from functools import wraps
 import sentry_sdk
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
+from django.utils.translation import gettext_lazy as _
 
 from integrador.models import Ambiente, Solicitacao
 from integrador.utils import SyncError
@@ -52,7 +53,7 @@ def exception_as_json(func):
 def check_is_post(func):
     def inner(request: HttpRequest, *args, **kwargs):
         if request.method != "POST":
-            raise SyncError("Method HTTP não autorizado.", 501)
+            raise SyncError(_("Method HTTP não autorizado."), 501)
         return func(request, *args, **kwargs)
 
     return inner
@@ -61,14 +62,17 @@ def check_is_post(func):
 def valid_token(func):
     def inner(request: HttpRequest, *args, **kwargs):
         if not hasattr(settings, "SUAP_INTEGRADOR_KEY"):
-            raise SyncError("Você se esqueceu de configurar a settings 'SUAP_INTEGRADOR_KEY'.", 428)
+            raise SyncError(
+                _("Você se esqueceu de configurar a settings 'SUAP_INTEGRADOR_KEY'."),
+                428,
+            )
 
         if "HTTP_AUTHENTICATION" not in request.META:
-            raise SyncError("Envie o token de autenticação no header.", 431)
+            raise SyncError(_("Envie o token de autenticação no header."), 431)
 
         if f"Token {settings.SUAP_INTEGRADOR_KEY}" != request.META["HTTP_AUTHENTICATION"]:
             raise SyncError(
-                "Você enviou um token de autenticação diferente do que tem na settings 'SUAP_INTEGRADOR_KEY'.",
+                _("Você enviou um token de autenticação diferente do que tem na settings 'SUAP_INTEGRADOR_KEY'."),
                 403,  # noqa
             )
         return func(request, *args, **kwargs)
@@ -79,7 +83,7 @@ def valid_token(func):
 def check_is_get(func):
     def inner(request: HttpRequest, *args, **kwargs):
         if request.method != "GET":
-            raise SyncError("Não implementado.", 501)
+            raise SyncError(_("Não implementado."), 501)
         return func(request, *args, **kwargs)
 
     return inner
@@ -99,13 +103,19 @@ def check_json(operacao: str):
                 except Exception as e2:
                     request.json_recebido = {
                         "check_json": {
-                            "error": {"code": 512, "message": f"Foi enviado um JSON mal formado ou nem é JSON ({e2})."},
+                            "error": {
+                                "code": 512,
+                                "message": str(_("Foi enviado um JSON mal formado ou nem é JSON")) + f" ({e2}).",
+                            },
                             "request_message": message,
                         }
                     }
             except Exception as e1:
                 request.json_recebido = {
-                    "error": {"code": 405, "message": f"Erro ao decodificar o body em utf-8 ({e1})."},
+                    "error": {
+                        "code": 405,
+                        "message": str(_("Erro ao decodificar o body em utf-8")) + f" ({e1}).",
+                    },
                     "request_message": message,
                 }
             return func(request, *args, **kwargs)
@@ -118,14 +128,19 @@ def check_json(operacao: str):
 def detect_ambiente(func):
     def inner(request: HttpRequest, *args, **kwargs):
         request.json_recebido = getattr(
-            request, "json_recebido", {"campus": {"sigla": request.GET.get("campus_sigla")}}
+            request,
+            "json_recebido",
+            {"campus": {"sigla": request.GET.get("campus_sigla")}},
         )
         request.ambiente = Ambiente.objects.seleciona_ambiente(request.json_recebido)
         if getattr(request, "ambiente") is None:
             origin = request.json_recebido.get("campus", {}).get("sigla")
             if origin is None:
                 origin = request.json_recebido.get("check_json", {}).get("error", {}).get("message", "desconecido")
-            raise SyncError(f"Nao encontramos um Ambiente ativo para o campus '{origin}'", 404)
+            raise SyncError(
+                str(_("Nao encontramos um Ambiente ativo para o campus")) + f" '{origin}'",
+                404,
+            )
 
         return JsonResponse(func(request, *args, **kwargs), safe=False)
 
@@ -138,12 +153,14 @@ def try_solicitacao(operacao: str):
         def wrapper(request: HttpRequest, *args, **kwargs):
             solicitacao = None
             request.json_recebido = getattr(
-                request, "json_recebido", {"error": {"code": 400, "message": "Não consegui ler o JSON."}}
+                request,
+                "json_recebido",
+                {"error": {"code": 400, "message": str(_("Não consegui ler o JSON."))}},
             )
 
             if "error" in request.json_recebido:
                 raise SyncError(
-                    request.json_recebido["error"].get("message", "Erro desconhecido."),
+                    request.json_recebido["error"].get("message", _("Erro desconhecido.")),
                     request.json_recebido["error"].get("code", 400),
                 )
 
@@ -169,7 +186,7 @@ def try_solicitacao(operacao: str):
                 solicitacao.site_url = request.build_absolute_uri("/")
 
                 if request.ambiente is None:
-                    raise SyncError("Ambiente não encontrado ou não ativo.", 404)
+                    raise SyncError(_("Ambiente não encontrado ou não ativo."), 404)
 
                 request.solicitacao = solicitacao
 
@@ -182,7 +199,7 @@ def try_solicitacao(operacao: str):
 
                 return solicitacao.respondido
             except Exception as e:
-                error_text = f"Contacte um administrador. O AVA retornou o seguinte erro:\n{e}."
+                error_text = str(_("Contacte um administrador. O AVA retornou o seguinte erro:")) + f"\n{e}."
                 if solicitacao is not None:
                     if hasattr(e, "retorno") and e.retorno is not None:
                         solicitacao.respondido = e.retorno
@@ -191,7 +208,11 @@ def try_solicitacao(operacao: str):
                     solicitacao.status = Solicitacao.Status.FALHA
                     solicitacao.status_code = getattr(e, "code", 500)
                     solicitacao.save()
-                    raise SyncError(error_text, solicitacao.status_code, retorno=getattr(e, "retorno", None))
+                    raise SyncError(
+                        error_text,
+                        solicitacao.status_code,
+                        retorno=getattr(e, "retorno", None),
+                    )
                 raise SyncError(error_text, 500, retorno=getattr(e, "retorno", None))
 
         return wrapper

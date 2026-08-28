@@ -40,7 +40,11 @@ class CohortModelTestCase(TestCase):
 
     def setUp(self):
         """Configura o ambiente de teste."""
-        self.role = Role.objects.create(name="Coordenador de Curso", shortname="teachercoordenadorcurso", active=True)
+        self.role = Role.objects.create(
+            name="Coordenador de Curso",
+            shortname="teachercoordenadorcurso",
+            active=True,
+        )
 
         self.cohort = Cohort.objects.create(name="Test Cohort", idnumber="TEST001", active=True, role=self.role)
 
@@ -339,7 +343,10 @@ class IntegrationTestCase(TestCase):
 
         # 2. Cria cohort
         cohort = Cohort.objects.create(
-            name="Integration Cohort", idnumber="INT001", role=role, rule_diario="curso.codigo == '123456'"
+            name="Integration Cohort",
+            idnumber="INT001",
+            role=role,
+            rule_diario="curso.codigo == '123456'",
         )
 
         # 3. Cria usuário

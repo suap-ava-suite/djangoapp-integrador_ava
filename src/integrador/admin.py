@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import path, reverse
 from django.utils.html import format_html, format_html_join
 from django.utils.timezone import localtime
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django_json_widget.widgets import JSONEditorWidget
 from import_export.resources import ModelResource
 
@@ -45,13 +45,22 @@ class AmbienteAdmin(BaseModelAdmin):
             fields = export_order
             skip_unchanged = True
 
-    list_display = ["nome", "checked_url", "checked_expressao_seletora", "checked_local_suap", "checked_tool_sga"]
+    list_display = [
+        "nome",
+        "checked_url",
+        "checked_expressao_seletora",
+        "checked_local_suap",
+        "checked_tool_sga",
+    ]
     history_list_display = list_display
     field_to_highlight = list_display[0]
     search_fields = ["nome", "url"]
     list_filter = []
     fieldsets = [
-        (_("Identificação"), {"fields": ["nome", "url", "expressao_seletora", "ordem"]}),
+        (
+            _("Identificação"),
+            {"fields": ["nome", "url", "expressao_seletora", "ordem"]},
+        ),
         (_("Local SUAP"), {"fields": ["local_suap_active", "local_suap_token"]}),
         (_("Tool SGA"), {"fields": ["tool_sga_active", "tool_sga_token"]}),
     ]
@@ -61,16 +70,16 @@ class AmbienteAdmin(BaseModelAdmin):
         """Otimiza queryset para evitar N+1 queries."""
         return super().get_queryset(request).all()
 
-    @display(description="URL")
+    @display(description=_("URL"))
     def checked_url(self, obj):
         validation_error = format_html(
             '<span title="{}"> {}</span>',
-            "Erro ao tentar validar a URL deste AVA.",
+            _("Erro ao tentar validar a URL deste AVA."),
             "🚫",
         )
         validation_success = format_html(
             '<span title="{}"> {}</span>',
-            "A URL deste AVA foi validada com sucesso.",
+            _("A URL deste AVA foi validada com sucesso."),
             "✅",
         )
         try:
@@ -80,18 +89,18 @@ class AmbienteAdmin(BaseModelAdmin):
             message = validation_error
         return format_html('{}<a href="{}">{}🔗</a>', message, obj.url, obj.url)
 
-    @display(description="Expressão Seletora")
+    @display(description=_("Expressão Seletora"))
     def checked_expressao_seletora(self, obj):
         if obj.expressao_seletora is None or obj.expressao_seletora.strip() == "":
-            title = "Não configurada"
+            title = _("Não configurada")
             status = "⚠️"
             color = "orange"
         elif obj.valid_expressao_seletora:
-            title = "Regra validada com sucesso."
+            title = _("Regra validada com sucesso.")
             status = "✅"
             color = "green"
         else:
-            title = "Regra inválida."
+            title = _("Regra inválida.")
             status = "🚫"
             color = "red"
 
@@ -109,13 +118,22 @@ class AmbienteAdmin(BaseModelAdmin):
         has_token = bool(token and str(token).strip())
 
         if not active and not has_token:
-            return format_html('<span title="{}">🚫</span>', f"{label}: inativo e sem token.")
+            return format_html(
+                '<span title="{}">🚫</span>',
+                f"{label}: " + str(_("inativo e sem token.")),
+            )
 
         if not active:
-            return format_html('<span title="{}">⏸️</span>', f"{label}: token configurado, mas inativo.")
+            return format_html(
+                '<span title="{}">⏸️</span>',
+                f"{label}: " + str(_("token configurado, mas inativo.")),
+            )
 
         if not has_token:
-            return format_html('<span title="{}">⚠️</span>', f"{label}: ativo, mas sem token configurado.")
+            return format_html(
+                '<span title="{}">⚠️</span>',
+                f"{label}: " + str(_("ativo, mas sem token configurado.")),
+            )
         try:
             response = requests.get(
                 f"{obj.base_url}{api_path}",
@@ -129,24 +147,39 @@ class AmbienteAdmin(BaseModelAdmin):
                 )
                 return format_html('<span title="{}">✅</span>', title)
             elif response.status_code == 401:
-                return format_html('<span title="{}">🔑</span>', f"{label}: token inválido (401).")
+                return format_html(
+                    '<span title="{}">🔑</span>',
+                    f"{label}: " + str(_("token inválido (401).")),
+                )
             else:
                 return format_html(
-                    '<span title="{}">❌</span>', f"{label}: resposta inesperada ({response.status_code})."
+                    '<span title="{}">❌</span>',
+                    f"{label}: " + str(_("resposta inesperada")) + f" ({response.status_code}).",
                 )
         except Exception as e:
-            return format_html('<span title="{}">⛔</span>', f"{label}: erro ao contactar o plugin — {e}.")
+            return format_html(
+                '<span title="{}">⛔</span>',
+                f"{label}: " + str(_("erro ao contactar o plugin")) + f" — {e}.",
+            )
 
-    @display(description="Local SUAP")
+    @display(description=_("Local SUAP"))
     def checked_local_suap(self, obj):
         return self._integration_badge(
-            obj, obj.local_suap_active, "local_suap_token", "/local/suap/api/index.php?health", "Local SUAP"
+            obj,
+            obj.local_suap_active,
+            "local_suap_token",
+            "/local/suap/api/index.php?health",
+            "Local SUAP",
         )
 
-    @display(description="Tool SGA")
+    @display(description=_("Tool SGA"))
     def checked_tool_sga(self, obj):
         return self._integration_badge(
-            obj, obj.tool_sga_active, "tool_sga_token", "/admin/tool/sga/api/index.php?health", "Tool SGA"
+            obj,
+            obj.tool_sga_active,
+            "tool_sga_token",
+            "/admin/tool/sga/api/index.php?health",
+            "Tool SGA",
         )
 
 
@@ -159,7 +192,14 @@ class SolicitacaoAdmin(BaseModelAdmin):
         "professores",
         "acoes",
     )
-    list_filter = ("operacao", "tipo", "ambiente", "status", "status_code", "campus_sigla")
+    list_filter = (
+        "operacao",
+        "tipo",
+        "ambiente",
+        "status",
+        "status_code",
+        "campus_sigla",
+    )
 
     search_fields = ["diario_codigo", "diario_id"]
     date_hierarchy = "timestamp"
@@ -183,13 +223,26 @@ class SolicitacaoAdmin(BaseModelAdmin):
     formfield_overrides = {JSONField: {"widget": JSONEditorWidget}}
     form = SolicitacaoAdminForm
 
-    @display(description="Requisição", ordering="timestamp")
+    @display(description=_("Requisição"), ordering="timestamp")
     def requisicao(self, obj):
         if obj.timestamp:
             nbspace = "\u00a0"
             horalocal_dt = localtime(obj.timestamp)
             horalocal = horalocal_dt.strftime("%d/%m/%Y" + nbspace + "%H:%M:%S")
-            clock_icons = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"]
+            clock_icons = [
+                "🕛",
+                "🕐",
+                "🕑",
+                "🕒",
+                "🕓",
+                "🕔",
+                "🕕",
+                "🕖",
+                "🕗",
+                "🕘",
+                "🕙",
+                "🕚",
+            ]
             hora = clock_icons[horalocal_dt.hour % 12]
         else:
             horalocal = None
@@ -204,20 +257,21 @@ class SolicitacaoAdmin(BaseModelAdmin):
             obj.tipo,
         )
 
-    @display(description="Contexto")
+    @display(description=_("Contexto"))
     def origem(self, obj):
         return format_html("{}<br>{}", obj.ambiente, obj.campus_sigla)
 
-    @display(description="Ações")
+    @display(description=_("Ações"))
     def acoes(self, obj):
         if obj.operacao == Solicitacao.Operacao.SYNC_UP_DIARIO:
             return format_html(
-                '<a class="export_link" href="{}">Reenviar</a>',
+                '<a class="export_link" href="{}">{}</a>',
                 reverse("admin:integrador_solicitacao_sync", args=[obj.id]),
+                _("Reenviar"),
             )
         return "-"
 
-    @display(description="Professores")
+    @display(description=_("Professores"))
     def professores(self, obj):
         try:
             professores = []
@@ -228,7 +282,7 @@ class SolicitacaoAdmin(BaseModelAdmin):
                     if username and len(username) > 10
                     else "/admin/rh/servidor/?ativo__exact=1&q="
                 )
-                vinculo = "externo" if username and len(username) > 10 else "servidor"
+                vinculo = _("externo") if username and len(username) > 10 else _("servidor")
                 professores.append(
                     format_html(
                         '<li><a href="{}{}{}">{} ({}:{})</a></li>',
@@ -248,7 +302,7 @@ class SolicitacaoAdmin(BaseModelAdmin):
         except Exception:
             return "-"
 
-    @display(description="Links")
+    @display(description=_("Links"))
     def links(self, obj):
         try:
             respondido = obj.respondido if obj and isinstance(obj.respondido, dict) else {}
@@ -269,29 +323,41 @@ class SolicitacaoAdmin(BaseModelAdmin):
 
             url_sala_coordenacao = respondido.get("url_sala_coordenacao")
             if url_sala_coordenacao:
-                items.append(format_html('<li><a href="{}">Sala de coordenação</a></li>', url_sala_coordenacao))
+                items.append(
+                    format_html(
+                        '<li><a href="{}">{}</a></li>',
+                        url_sala_coordenacao,
+                        _("Sala de coordenação"),
+                    )
+                )
             elif obj.diario_codigo:
                 items.append(
                     format_html(
-                        '<li><a href="{}/course/management.php?search={}">Sala de coordenação</a></li>',
+                        '<li><a href="{}/course/management.php?search={}">{}</a></li>',
                         obj.ambiente.base_url,
                         obj.diario_codigo,
+                        _("Sala de coordenação"),
                     )
                 )
 
             if obj.diario_id:
                 items.append(
                     format_html(
-                        '<li><a href="{}/edu/meu_diario/{}/1/">Diário no SUAP</a></li>',
+                        '<li><a href="{}/edu/meu_diario/{}/1/">{}</a></li>',
                         settings.SUAP_BASE_URL,
                         obj.diario_id,
+                        _("Diário no SUAP"),
                     )
                 )
 
             sincronizacao_url = respondido.get("sincronizacao_url")
             if sincronizacao_url:
                 items.append(
-                    format_html('<li><a href="{}" target="_blank">Sincronização no Moodle</a></li>', sincronizacao_url)
+                    format_html(
+                        '<li><a href="{}" target="_blank">{}</a></li>',
+                        sincronizacao_url,
+                        _("Sincronização no Moodle"),
+                    )
                 )
 
             if not items:

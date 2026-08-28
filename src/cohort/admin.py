@@ -68,7 +68,14 @@ class CohortAdmin(BasicModelAdmin):
         class Meta:
             model = Cohort
             import_id_fields = ("idnumber",)
-            export_order = ("idnumber", "name", "rule_diario", "rule_coordenacao", "active", "enrolments")
+            export_order = (
+                "idnumber",
+                "name",
+                "rule_diario",
+                "rule_coordenacao",
+                "active",
+                "enrolments",
+            )
             fields = export_order
             skip_unchanged = True
 
@@ -76,7 +83,10 @@ class CohortAdmin(BasicModelAdmin):
     search_fields = ["name", "idnumber"]
     list_filter = ["active"] + BasicModelAdmin.list_filter
     fieldsets = (
-        (_("Informações Básicas"), {"fields": (("name", "idnumber", "active"), "role")}),
+        (
+            _("Informações Básicas"),
+            {"fields": (("name", "idnumber", "active"), "role")},
+        ),
         (
             _("Regras de Validação"),
             {

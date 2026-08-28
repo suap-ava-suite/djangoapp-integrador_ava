@@ -1,0 +1,663 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-28 11:24-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: cohort/admin.py:79
+msgid "Informações Básicas"
+msgstr "Información Básica"
+
+#: cohort/admin.py:81
+msgid "Regras de Validação"
+msgstr "Reglas de Validación"
+
+#: cohort/admin.py:88
+msgid ""
+"Configure a regra para validar quando este coorte deve ser sincronizado no "
+"diário"
+msgstr "Configure la regla para validar cuándo este cohorte debe sincronizarse en el diario"
+
+#: cohort/admin.py:91 cohort/models.py:80
+msgid "Descrição"
+msgstr "Descripción"
+
+#: cohort/models.py:12
+msgid "nome completo do usuário"
+msgstr "nombre completo del usuario"
+
+#: cohort/models.py:13
+msgid "email do usuário"
+msgstr "correo electrónico del usuario"
+
+#: cohort/models.py:14
+msgid "login do usuário"
+msgstr "nombre de usuario"
+
+#: cohort/models.py:16
+msgid "sincronizar com o Moodle"
+msgstr "sincronizar con Moodle"
+
+#: cohort/models.py:18
+msgid ""
+"Indica se a sincronização do usuário com o Moodle está ativa. Inativar aqui "
+"não remove o usuário do Moodle nem o inativa no Moodle, apenas indica que "
+"ele não deve ser sincronizado."
+msgstr "Indica si la sincronización del usuario con Moodle está activa. Inactivar aquí no elimina al usuario de Moodle ni lo inactiva en Moodle, solo indica que no debe sincronizarse."
+
+#: cohort/models.py:24 cohort/models.py:92
+msgid "usuário"
+msgstr "usuario"
+
+#: cohort/models.py:25
+msgid "usuários"
+msgstr "usuarios"
+
+#: cohort/models.py:34
+msgid "nome da role"
+msgstr "nombre del rol"
+
+#: cohort/models.py:37
+msgid ""
+"Este atributo será cohort.name Ex.: <sup>ZL.CooCurso.15056</sup>, "
+"<sup>ZL.CooPolo.Caraubas(RN)</sup>, <sup>ZL.MedPedProg.UAB</sup>."
+msgstr "Este atributo será cohort.name Ej.: <sup>ZL.CooCurso.15056</sup>, <sup>ZL.CooPolo.Caraubas(RN)</sup>, <sup>ZL.MedPedProg.UAB</sup>."
+
+#: cohort/models.py:42
+msgid "shortname da role"
+msgstr "nombre corto del rol"
+
+#: cohort/models.py:45
+msgid ""
+"Este atributo deve ser conforme role.shortname. Ex.: "
+"<sup>teachercoordenadorcurso</sup>, <sup>coordenadordepolo</sup>, "
+"<sup>coordenadordeprograma</sup>"
+msgstr "Este atributo debe ser conforme a role.shortname. Ej.: <sup>teachercoordenadorcurso</sup>, <sup>coordenadordepolo</sup>, <sup>coordenadordeprograma</sup>"
+
+#: cohort/models.py:49 cohort/models.py:94
+msgid "ativo?"
+msgstr "¿activo?"
+
+#: cohort/models.py:49
+msgid "Indica se esta coorte deverá ser sincronizada"
+msgstr "Indica si esta cohorte debe ser sincronizada"
+
+#: cohort/models.py:54 cohort/models.py:66
+msgid "role"
+msgstr "rol"
+
+#: cohort/models.py:55
+msgid "roles"
+msgstr "roles"
+
+#: cohort/models.py:63
+msgid "nome da coorte"
+msgstr "nombre de la cohorte"
+
+#: cohort/models.py:64
+msgid "idnumber"
+msgstr "número de id"
+
+#: cohort/models.py:65
+msgid "visível"
+msgstr "visible"
+
+#: cohort/models.py:68
+msgid "regra de validação para diário"
+msgstr "regla de validación para diario"
+
+#: cohort/models.py:72
+msgid "Exemplos: <ul><li>curso.codigo == '132456'</li></ul>"
+msgstr "Ejemplos: <ul><li>curso.codigo == '132456'</li></ul>"
+
+#: cohort/models.py:75
+msgid "regra de validação para sala de coordenação"
+msgstr "regla de validación para sala de coordinación"
+
+#: cohort/models.py:83 cohort/models.py:93
+msgid "coorte"
+msgstr "cohorte"
+
+#: cohort/models.py:84
+msgid "coortes"
+msgstr "cohortes"
+
+#: cohort/models.py:97
+msgid "vínculo"
+msgstr "vinculación"
+
+#: cohort/models.py:98
+msgid "vínculos"
+msgstr "vinculaciones"
+
+#: dashboard/admin_views.py:65
+msgid "App não encontrada."
+msgstr "Aplicación no encontrada."
+
+#: dashboard/templates/admin/app_index.html:16
+msgid "Modelos de administração"
+msgstr "Modelos de administración"
+
+#: dashboard/templates/admin/app_index.html:26
+msgid "Adicionar"
+msgstr "Añadir"
+
+#: dashboard/templates/admin/auth/app_index.html:17
+msgid "Usuários"
+msgstr "Usuarios"
+
+#: dashboard/templates/admin/auth/app_index.html:19
+#: dashboard/templates/admin/index.html:91
+msgid "Total de usuários"
+msgstr "Total de usuarios"
+
+#: dashboard/templates/admin/auth/app_index.html:23
+#: dashboard/templates/admin/cohort/app_index.html:50
+#: dashboard/templates/admin/index.html:39
+#: dashboard/templates/admin/index.html:75
+#: dashboard/templates/admin/integrador/app_index.html:24
+msgid "Ativos"
+msgstr "Activos"
+
+#: dashboard/templates/admin/auth/app_index.html:27
+#: dashboard/templates/admin/cohort/app_index.html:54
+#: dashboard/templates/admin/index.html:79
+msgid "Inativos"
+msgstr "Inactivos"
+
+#: dashboard/templates/admin/auth/app_index.html:31
+msgid "Equipe / Staff"
+msgstr "Equipo / Personal"
+
+#: dashboard/templates/admin/auth/app_index.html:38
+msgid "Grupos"
+msgstr "Grupos"
+
+#: dashboard/templates/admin/auth/app_index.html:40
+#: dashboard/templates/admin/index.html:87
+msgid "Total de grupos"
+msgstr "Total de grupos"
+
+#: dashboard/templates/admin/auth/app_index.html:44
+msgid "Usuários por grupo"
+msgstr "Usuarios por grupo"
+
+#: dashboard/templates/admin/auth/app_index.html:54
+msgid "Nenhum grupo cadastrado."
+msgstr "No hay grupos registrados."
+
+#: dashboard/templates/admin/cohort/app_index.html:16
+#: dashboard/templates/admin/index.html:49
+msgid "Coortes"
+msgstr "Cohortes"
+
+#: dashboard/templates/admin/cohort/app_index.html:18
+#: dashboard/templates/admin/index.html:51
+msgid "Total de coortes"
+msgstr "Total de cohortes"
+
+#: dashboard/templates/admin/cohort/app_index.html:22
+#: dashboard/templates/admin/index.html:55
+msgid "Ativas"
+msgstr "Activas"
+
+#: dashboard/templates/admin/cohort/app_index.html:26
+#: dashboard/templates/admin/index.html:59
+msgid "Inativas"
+msgstr "Inactivas"
+
+#: dashboard/templates/admin/cohort/app_index.html:30
+msgid "Top coortes com mais usuários"
+msgstr "Principales cohortes con más usuarios"
+
+#: dashboard/templates/admin/cohort/app_index.html:44
+#: dashboard/templates/admin/index.html:69
+msgid "Papéis"
+msgstr "Roles"
+
+#: dashboard/templates/admin/cohort/app_index.html:46
+#: dashboard/templates/admin/index.html:71
+msgid "Total de papéis"
+msgstr "Total de roles"
+
+#: dashboard/templates/admin/cohort/app_index.html:58
+msgid "Top papéis com mais coortes"
+msgstr "Principales roles con más cohortes"
+
+#: dashboard/templates/admin/cohort/app_index.html:69
+msgid "Top papéis com mais usuários nas coortes"
+msgstr "Principales roles con más usuarios en cohortes"
+
+#: dashboard/templates/admin/cohort/app_index.html:83
+msgid "Usuários das coortes"
+msgstr "Usuarios de las cohortes"
+
+#: dashboard/templates/admin/cohort/app_index.html:85
+msgid "Total de usuários Moodle"
+msgstr "Total de usuarios Moodle"
+
+#: dashboard/templates/admin/cohort/app_index.html:89
+msgid "A sincronizar (ativos)"
+msgstr "Por sincronizar (activos)"
+
+#: dashboard/templates/admin/cohort/app_index.html:93
+msgid "Top usuários com mais vínculos"
+msgstr "Principales usuarios con más vinculaciones"
+
+#: dashboard/templates/admin/index.html:18
+msgid "Ações rápidas"
+msgstr "Acciones rápidas"
+
+#: dashboard/templates/admin/index.html:21
+msgid "Ver solicitações"
+msgstr "Ver solicitudes"
+
+#: dashboard/templates/admin/index.html:24
+msgid "Configurar coortes"
+msgstr "Configure cohorts"
+
+#: dashboard/templates/admin/index.html:27
+msgid "Configurar ambientes"
+msgstr "Configurar entornos"
+
+#: dashboard/templates/admin/index.html:33
+#: dashboard/templates/admin/integrador/app_index.html:18
+msgid "Ambientes"
+msgstr "Entornos"
+
+#: dashboard/templates/admin/index.html:35
+#: dashboard/templates/admin/integrador/app_index.html:20
+msgid "Total de Ambientes"
+msgstr "Total de Entornos"
+
+#: dashboard/templates/admin/index.html:43
+#: dashboard/templates/admin/integrador/app_index.html:28
+msgid "Com erros"
+msgstr "Con errores"
+
+#: dashboard/templates/admin/index.html:63
+msgid "Vínculos"
+msgstr "Vinculaciones"
+
+#: dashboard/templates/admin/index.html:85
+msgid "Usuários e grupos"
+msgstr "Usuarios y grupos"
+
+#: dashboard/templates/admin/index.html:95
+msgid "Usuários ativos"
+msgstr "Usuarios activos"
+
+#: dashboard/templates/admin/index.html:101
+#: dashboard/templates/admin/integrador/app_index.html:35
+msgid "Solicitações de integração"
+msgstr "Solicitudes de integración"
+
+#: dashboard/templates/admin/index.html:103
+#: dashboard/templates/admin/integrador/app_index.html:37
+msgid "Últimas 24h"
+msgstr "Últimas 24h"
+
+#: dashboard/templates/admin/index.html:107
+#: dashboard/templates/admin/integrador/app_index.html:41
+#: integrador/models.py:102
+msgid "Sucesso"
+msgstr "Éxito"
+
+#: dashboard/templates/admin/index.html:111
+#: dashboard/templates/admin/integrador/app_index.html:45
+msgid "Falhas"
+msgstr "Fallos"
+
+#: dashboard/templates/admin/index.html:115
+#: dashboard/templates/admin/integrador/app_index.html:49
+#: integrador/models.py:104
+msgid "Processando"
+msgstr "Procesando"
+
+#: dashboard/templates/admin/index.html:119
+#: dashboard/templates/admin/integrador/app_index.html:53
+msgid "Taxa de sucesso"
+msgstr "Tasa de éxito"
+
+#: dashboard/templates/admin/index.html:123
+#: dashboard/templates/admin/integrador/app_index.html:57
+msgid "Total processadas"
+msgstr "Total procesadas"
+
+#: dashboard/templates/admin/index.html:129
+#: dashboard/templates/admin/integrador/app_index.html:66
+msgid "Série temporal de solicitações (histórica)"
+msgstr "Serie temporal de solicitudes (histórica)"
+
+#: dashboard/templates/admin/index.html:132
+#: dashboard/templates/admin/integrador/app_index.html:69
+msgid "Série temporal de solicitações"
+msgstr "Serie temporal de solicitudes"
+
+#: integrador/admin.py:54
+msgid "Identificação"
+msgstr "Identificación"
+
+#: integrador/admin.py:55 integrador/admin.py:140
+msgid "Local SUAP"
+msgstr "Local SUAP"
+
+#: integrador/admin.py:56 integrador/admin.py:146
+msgid "Tool SGA"
+msgstr "Tool SGA"
+
+#: integrador/admin.py:64 integrador/models.py:37
+msgid "URL"
+msgstr "URL"
+
+#: integrador/admin.py:68
+msgid "Erro ao tentar validar a URL deste AVA."
+msgstr "Error al intentar validar la URL de este AVA."
+
+#: integrador/admin.py:73
+msgid "A URL deste AVA foi validada com sucesso."
+msgstr "La URL de este AVA fue validada con éxito."
+
+#: integrador/admin.py:83
+msgid "Expressão Seletora"
+msgstr "Expresión Selectora"
+
+#: integrador/admin.py:86
+msgid "Não configurada"
+msgstr "No configurada"
+
+#: integrador/admin.py:90
+msgid "Regra validada com sucesso."
+msgstr "Regla validada con éxito."
+
+#: integrador/admin.py:94
+msgid "Regra inválida."
+msgstr "Regla inválida."
+
+#: integrador/admin.py:112
+msgid "inativo e sem token."
+msgstr "inactivo y sin token."
+
+#: integrador/admin.py:115
+msgid "token configurado, mas inativo."
+msgstr "token configurado, pero inactivo."
+
+#: integrador/admin.py:118
+msgid "ativo, mas sem token configurado."
+msgstr "activo, pero sin token configurado."
+
+#: integrador/admin.py:132
+msgid "token inválido (401)."
+msgstr "token inválido (401)."
+
+#: integrador/admin.py:135
+msgid "resposta inesperada"
+msgstr "respuesta inesperada"
+
+#: integrador/admin.py:138
+msgid "erro ao contactar o plugin"
+msgstr "error al contactar el plugin"
+
+#: integrador/admin.py:186
+msgid "Requisição"
+msgstr "Solicitud"
+
+#: integrador/admin.py:207
+msgid "Contexto"
+msgstr "Contexto"
+
+#: integrador/admin.py:211
+msgid "Ações"
+msgstr "Acciones"
+
+#: integrador/admin.py:217
+msgid "Reenviar"
+msgstr "Reenviar"
+
+#: integrador/admin.py:221
+msgid "Professores"
+msgstr "Profesores"
+
+#: integrador/admin.py:232
+msgid "externo"
+msgstr "externo"
+
+#: integrador/admin.py:232
+msgid "servidor"
+msgstr "servidor"
+
+#: integrador/admin.py:252
+msgid "Links"
+msgstr "Enlaces"
+
+#: integrador/admin.py:273 integrador/admin.py:280
+msgid "Sala de coordenação"
+msgstr "Sala de coordinación"
+
+#: integrador/admin.py:290
+msgid "Diário no SUAP"
+msgstr "Diario en SUAP"
+
+#: integrador/admin.py:297
+msgid "Sincronização no Moodle"
+msgstr "Sincronización en Moodle"
+
+#: integrador/decorators.py:56
+msgid "Method HTTP não autorizado."
+msgstr "Método HTTP no autorizado."
+
+#: integrador/decorators.py:65
+msgid "Você se esqueceu de configurar a settings 'SUAP_INTEGRADOR_KEY'."
+msgstr "Olvidó configurar la opción 'SUAP_INTEGRADOR_KEY'."
+
+#: integrador/decorators.py:68
+msgid "Envie o token de autenticação no header."
+msgstr "Envíe el token de autenticación en el encabezado."
+
+#: integrador/decorators.py:72
+msgid ""
+"Você enviou um token de autenticação diferente do que tem na settings "
+"'SUAP_INTEGRADOR_KEY'."
+msgstr "Envió un token de autenticación diferente al configurado en 'SUAP_INTEGRADOR_KEY'."
+
+#: integrador/decorators.py:83
+msgid "Não implementado."
+msgstr "No implementado."
+
+#: integrador/decorators.py:103
+msgid "Foi enviado um JSON mal formado ou nem é JSON"
+msgstr "Se envió un JSON mal formado o no es un JSON"
+
+#: integrador/decorators.py:109
+msgid "Erro ao decodificar o body em utf-8"
+msgstr "Error al decodificar el cuerpo en utf-8"
+
+#: integrador/decorators.py:129
+msgid "Nao encontramos um Ambiente ativo para o campus"
+msgstr "No encontramos un Entorno activo para el campus"
+
+#: integrador/decorators.py:142
+msgid "Não consegui ler o JSON."
+msgstr "No se pudo leer el JSON."
+
+#: integrador/decorators.py:147
+msgid "Erro desconhecido."
+msgstr "Error desconocido."
+
+#: integrador/decorators.py:173
+msgid "Ambiente não encontrado ou não ativo."
+msgstr "Entorno no encontrado o no activo."
+
+#: integrador/decorators.py:186
+msgid "Contacte um administrador. O AVA retornou o seguinte erro:"
+msgstr "Contacte a un administrador. El AVA retornó el siguiente error:"
+
+#: integrador/models.py:36
+msgid "nome do ambiente"
+msgstr "nombre del entorno"
+
+#: integrador/models.py:38
+msgid "expressão seletora"
+msgstr "expresión selectora"
+
+#: integrador/models.py:39
+msgid "ordem"
+msgstr "orden"
+
+#: integrador/models.py:40
+msgid "token local_suap"
+msgstr "token local_suap"
+
+#: integrador/models.py:41
+msgid "local_suap ativo?"
+msgstr "¿local_suap activo?"
+
+#: integrador/models.py:42
+msgid "token tool_sga"
+msgstr "token tool_sga"
+
+#: integrador/models.py:43
+msgid "tool_sga ativo?"
+msgstr "¿tool_sga activo?"
+
+#: integrador/models.py:48 integrador/models.py:120
+msgid "ambiente"
+msgstr "entorno"
+
+#: integrador/models.py:49
+msgid "ambientes"
+msgstr "entornos"
+
+#: integrador/models.py:101
+msgid "Não Definido"
+msgstr "No Definido"
+
+#: integrador/models.py:103
+msgid "Falha"
+msgstr "Fallo"
+
+#: integrador/models.py:108
+msgid "Sync UP: Diário"
+msgstr "Sync UP: Diario"
+
+#: integrador/models.py:114
+msgid "Sync DOWN: Notas"
+msgstr "Sync DOWN: Notas"
+
+#: integrador/models.py:121
+msgid "quando ocorreu"
+msgstr "cuándo ocurrió"
+
+#: integrador/models.py:122
+msgid "campus"
+msgstr "campus"
+
+#: integrador/models.py:123
+msgid "código do diário"
+msgstr "código del diario"
+
+#: integrador/models.py:124
+msgid "ID do diário"
+msgstr "ID del diario"
+
+#: integrador/models.py:126
+msgid "operação"
+msgstr "operación"
+
+#: integrador/models.py:133
+msgid "tipo de diário"
+msgstr "tipo de diario"
+
+#: integrador/models.py:134
+msgid "status"
+msgstr "estado"
+
+#: integrador/models.py:135
+msgid "status code"
+msgstr "código de estado"
+
+#: integrador/models.py:136
+msgid "JSON recebido"
+msgstr "JSON recibido"
+
+#: integrador/models.py:137
+msgid "JSON enviado"
+msgstr "JSON enviado"
+
+#: integrador/models.py:138
+msgid "JSON respondido"
+msgstr "JSON respondido"
+
+#: integrador/models.py:145
+msgid "solicitação"
+msgstr "solicitud"
+
+#: integrador/models.py:146
+msgid "solicitações"
+msgstr "solicitudes"
+
+#: integrador/templates/403_csrf.html:20
+msgid "Ocorreu erro de CSRF (403)!"
+msgstr "¡Ocurrió un error de CSRF (403)!"
+
+#: integrador/templates/admin/change_list_results.html:19
+msgid "Remove from sorting"
+msgstr "Eliminar del ordenamiento"
+
+#: integrador/templates/admin/change_list_results.html:22
+msgid "Sorting priority"
+msgstr "Prioridad de ordenamiento"
+
+#: integrador/templates/admin/change_list_results.html:26
+msgid "Toggle sorting"
+msgstr "Alternar ordenamiento"
+
+#: integrador/templates/integrador/sync_error.html:6
+msgid "Erro de Sincronização"
+msgstr "Error de Sincronización"
+
+#: integrador/views.py:40
+msgid "O ambiente"
+msgstr "El entorno"
+
+#: integrador/views.py:42
+msgid ""
+"não está configurado para enviar dados para o Local SUAP ou Tool SGA. "
+"Contacte um administrador."
+msgstr "no está configurado para enviar datos a Local SUAP o Tool SGA. Contacte a un administrador."
+
+#: settings/internationalizations.py:18
+msgid "Portuguese"
+msgstr "Portugués"
+
+#: settings/internationalizations.py:19
+msgid "English"
+msgstr "Inglés"
+
+#: settings/internationalizations.py:20
+msgid "Spanish"
+msgstr "Español"
+
+#: settings/internationalizations.py:21
+msgid "French"
+msgstr "Francés"
+
+#: settings/internationalizations.py:22
+msgid "Simplified Chinese"
+msgstr "Chino Simplificado"
+
+#: sga/db/fields.py:26
+msgid "Informe uma URL válida."
+msgstr "Ingrese una URL válida."

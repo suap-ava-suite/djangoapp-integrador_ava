@@ -16,8 +16,18 @@ class Command(BaseCommand):
     help = "Gera solicitações de teste para o dashboard"
 
     def add_arguments(self, parser):
-        parser.add_argument("--months", type=int, default=12, help="Número de meses de dados a gerar (padrão: 12)")
-        parser.add_argument("--per-day", type=int, default=10, help="Número de solicitações por dia (padrão: 10)")
+        parser.add_argument(
+            "--months",
+            type=int,
+            default=12,
+            help="Número de meses de dados a gerar (padrão: 12)",
+        )
+        parser.add_argument(
+            "--per-day",
+            type=int,
+            default=10,
+            help="Número de solicitações por dia (padrão: 10)",
+        )
 
     def handle(self, *args, **options):
         months = options["months"]

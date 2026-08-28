@@ -1,5 +1,12 @@
-from django.db.models import PROTECT, BooleanField, CharField, ForeignKey, Model, TextField
-from django.utils.translation import gettext as _
+from django.db.models import (
+    PROTECT,
+    BooleanField,
+    CharField,
+    ForeignKey,
+    Model,
+    TextField,
+)
+from django.utils.translation import gettext_lazy as _
 from django_rule_engine.fields import RuleField
 from simple_history.models import HistoricalRecords
 
@@ -33,8 +40,10 @@ class Role(ActiveMixin, Model):
     name = CharField(
         _("nome da role"),
         max_length=256,
-        help_text="Este atributo será cohort.name"
-        " Ex.: <sup>ZL.CooCurso.15056</sup>, <sup>ZL.CooPolo.Caraubas(RN)</sup>, <sup>ZL.MedPedProg.UAB</sup>.",
+        help_text=_(
+            "Este atributo será cohort.name"
+            " Ex.: <sup>ZL.CooCurso.15056</sup>, <sup>ZL.CooPolo.Caraubas(RN)</sup>, <sup>ZL.MedPedProg.UAB</sup>."
+        ),
     )
     shortname = CharField(
         _("shortname da role"),
@@ -61,13 +70,13 @@ class Cohort(ActiveMixin, Model):
     name = CharField(_("nome da coorte"), max_length=2560, unique=True)
     idnumber = CharField(_("idnumber"), max_length=2560, unique=True)
     active = BooleanField(_("visível"), default=True)
-    role = ForeignKey(Role, on_delete=PROTECT, related_name="cohort_roles")
+    role = ForeignKey(Role, verbose_name=_("role"), on_delete=PROTECT, related_name="cohort_roles")
     rule_diario = RuleField(
         _("regra de validação para diário"),
         blank=True,
         null=True,
         example_data=JSON_DE_EXEMPLO,
-        help_text="Exemplos: <ul><li>curso.codigo == '132456'</li></ul>",
+        help_text=_("Exemplos: <ul><li>curso.codigo == '132456'</li></ul>"),
     )
     rule_coordenacao = RuleField(
         _("regra de validação para sala de coordenação"),
@@ -87,8 +96,15 @@ class Cohort(ActiveMixin, Model):
 
 
 class Enrolment(Model):
-    user = ForeignKey(MoodleUser, on_delete=PROTECT, related_name="enrolments", null=True, blank=False)
-    cohort = ForeignKey(Cohort, on_delete=PROTECT, related_name="enrolments")
+    user = ForeignKey(
+        MoodleUser,
+        verbose_name=_("usuário"),
+        on_delete=PROTECT,
+        related_name="enrolments",
+        null=True,
+        blank=False,
+    )
+    cohort = ForeignKey(Cohort, verbose_name=_("coorte"), on_delete=PROTECT, related_name="enrolments")
     active = BooleanField(_("ativo?"), default=True)
 
     class Meta:

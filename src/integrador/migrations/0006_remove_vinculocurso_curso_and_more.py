@@ -117,7 +117,12 @@ class Migration(migrations.Migration):
             model_name="solicitacao",
             name="status",
             field=models.CharField(
-                choices=[("nao_definido", "Não Definido"), ("S", "Sucesso"), ("F", "Falha"), ("P", "Processando")],
+                choices=[
+                    ("nao_definido", "Não Definido"),
+                    ("S", "Sucesso"),
+                    ("F", "Falha"),
+                    ("P", "Processando"),
+                ],
                 max_length=256,
                 null=True,
                 verbose_name="status",

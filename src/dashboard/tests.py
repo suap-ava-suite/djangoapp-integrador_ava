@@ -106,6 +106,7 @@ class DashboardStorageTestCase(TestCase):
     def test_get_auth_context(self):
         """Testa o contexto específico da app Auth."""
         from django.contrib.auth.models import Group
+
         group = Group.objects.create(name="Professores")
         group.user_set.add(self.user)
 
@@ -258,7 +259,10 @@ class DashboardStorageTestCase(TestCase):
 
     def test_load_data_handles_exception(self):
         """Testa se exceções são tratadas no carregamento."""
-        with patch("dashboard.storage.Ambiente.objects.count", side_effect=Exception("DB Error")):
+        with patch(
+            "dashboard.storage.Ambiente.objects.count",
+            side_effect=Exception("DB Error"),
+        ):
             context = self.storage.get_context()
             # Deve retornar contexto mesmo com erro
             self.assertIsNotNone(context)
@@ -289,7 +293,10 @@ class DashboardStorageTestCase(TestCase):
 
     def test_load_solicitacoes_handles_exception(self):
         """Testa tratamento de exceção no carregamento de solicitações."""
-        with patch("dashboard.storage.Solicitacao.objects.filter", side_effect=Exception("DB Error")):
+        with patch(
+            "dashboard.storage.Solicitacao.objects.filter",
+            side_effect=Exception("DB Error"),
+        ):
             storage = DashboardStorage()
             storage._load_solicitacoes()
             # Deve manter valores padrão
@@ -297,7 +304,10 @@ class DashboardStorageTestCase(TestCase):
 
     def test_load_series_temporal_handles_exception(self):
         """Testa tratamento de exceção no carregamento da série temporal."""
-        with patch("dashboard.storage.Solicitacao.objects.all", side_effect=Exception("DB Error")):
+        with patch(
+            "dashboard.storage.Solicitacao.objects.all",
+            side_effect=Exception("DB Error"),
+        ):
             storage = DashboardStorage()
             storage._load_series_temporal()
             # Deve manter lista vazia
@@ -413,7 +423,10 @@ class AdminIndexDashboardTestCase(TestCase):
         request = self.factory.get("/admin/")
         request.user = self.staff_user
 
-        with patch("dashboard.admin_views.LogEntry.objects.filter", side_effect=Exception("DB Error")):
+        with patch(
+            "dashboard.admin_views.LogEntry.objects.filter",
+            side_effect=Exception("DB Error"),
+        ):
             with patch("dashboard.admin_views.DashboardStorage") as mock_storage:
                 mock_instance = mock_storage.return_value
                 mock_instance.get_context.return_value = {}
@@ -449,7 +462,10 @@ class AdminIndexDashboardTestCase(TestCase):
         request.user = self.staff_user
 
         fake_app_dict = {"auth": {"name": "Auth", "app_label": "auth", "models": []}}
-        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+        with patch(
+            "dashboard.admin_views.admin.site._build_app_dict",
+            return_value=fake_app_dict,
+        ):
             with patch("dashboard.admin_views.render") as mock_render:
                 admin_app_index_dashboard(request, app_label="auth")
                 mock_render.assert_called_once()
@@ -464,7 +480,10 @@ class AdminIndexDashboardTestCase(TestCase):
         request.user = self.staff_user
 
         fake_app_dict = {"cohort": {"name": "Cohort", "app_label": "cohort", "models": []}}
-        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+        with patch(
+            "dashboard.admin_views.admin.site._build_app_dict",
+            return_value=fake_app_dict,
+        ):
             with patch("dashboard.admin_views.render") as mock_render:
                 admin_app_index_dashboard(request, app_label="cohort")
                 mock_render.assert_called_once()
@@ -476,8 +495,17 @@ class AdminIndexDashboardTestCase(TestCase):
         request = self.factory.get("/admin/integrador/")
         request.user = self.staff_user
 
-        fake_app_dict = {"integrador": {"name": "Integrador", "app_label": "integrador", "models": []}}
-        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+        fake_app_dict = {
+            "integrador": {
+                "name": "Integrador",
+                "app_label": "integrador",
+                "models": [],
+            }
+        }
+        with patch(
+            "dashboard.admin_views.admin.site._build_app_dict",
+            return_value=fake_app_dict,
+        ):
             with patch("dashboard.admin_views.render") as mock_render:
                 admin_app_index_dashboard(request, app_label="integrador")
                 mock_render.assert_called_once()
@@ -499,7 +527,10 @@ class AdminIndexDashboardTestCase(TestCase):
         request.user = self.staff_user
 
         fake_app_dict = {"generic": {"name": "Generic", "app_label": "generic", "models": []}}
-        with patch("dashboard.admin_views.admin.site._build_app_dict", return_value=fake_app_dict):
+        with patch(
+            "dashboard.admin_views.admin.site._build_app_dict",
+            return_value=fake_app_dict,
+        ):
             with patch("dashboard.admin_views.render") as mock_render:
                 admin_app_index_dashboard(request, app_label="generic", extra_context={"extra": 99})
                 mock_render.assert_called_once()

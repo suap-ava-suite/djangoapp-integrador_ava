@@ -1,6 +1,6 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="{{ LANGUAGE_CODE|default:"pt-br" }}">
     <head>
         <style>
             body {background-color: #f5f5f5;}
@@ -17,7 +17,7 @@
             <span class="title">Integrador AVA</span>
         </header>
         <main>
-            <h1>Ocorreu erro de CSRF (403)!</h1>
+            <h1>{% translate "Ocorreu erro de CSRF (403)!" %}</h1>
             {% if error %}<p class="error">{{ error }}.</p>{% endif %}
             {% if reason %}<p class="error">reason: {{ reason }}.</p>{% endif %}
             {% if path %}<p class="error">path: {{ path }}.</p>{% endif %}

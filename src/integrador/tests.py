@@ -45,7 +45,13 @@ from integrador.decorators import (
 from integrador.middleware import DisableCSRFForAPIMiddleware
 from integrador.models import Ambiente, Solicitacao
 from integrador.moodle_mock import LocalSuapHTTPMock, MockHTTPResponse, ToolSgaHTTPMock
-from integrador.utils import SyncError, http_get, http_get_json, http_post, http_post_json
+from integrador.utils import (
+    SyncError,
+    http_get,
+    http_get_json,
+    http_post,
+    http_post_json,
+)
 from integrador.views import sync_up_enrolments
 
 # Configura logging para WARNING durante testes (suprime DEBUG e INFO)
@@ -580,7 +586,10 @@ class CSRFErrorViewTestCase(TestCase):
         """Testa fallback de renderização de erro CSRF quando template padrão falha."""
         from django.http import HttpResponse
 
-        mock_render.side_effect = [Exception("Template error"), HttpResponse("Fallback HTML", status=403)]
+        mock_render.side_effect = [
+            Exception("Template error"),
+            HttpResponse("Fallback HTML", status=403),
+        ]
 
         request = self.factory.post("/admin/login/")
         request.META["HTTP_ACCEPT"] = "text/html"
@@ -596,7 +605,10 @@ class CSRFErrorViewTestCase(TestCase):
     @patch("integrador.views_errors.sentry_sdk")
     def test_csrf_failure_fallback_html_when_all_renders_fail(self, mock_sentry, mock_render):
         """Testa fallback de erro CSRF para HttpResponse puro quando todos os templates falham."""
-        mock_render.side_effect = [Exception("Template error 1"), Exception("Template error 2")]
+        mock_render.side_effect = [
+            Exception("Template error 1"),
+            Exception("Template error 2"),
+        ]
 
         request = self.factory.post("/admin/login/")
         request.META["HTTP_ACCEPT"] = "text/html"
@@ -690,7 +702,11 @@ class CSRFErrorViewTestCase(TestCase):
     @patch("integrador.views_errors.sentry_sdk")
     def test_csrf_failure_returns_json_when_content_type_is_json(self, mock_sentry):
         """Testa que erro CSRF retorna JSON quando Content-Type é application/json."""
-        request = self.factory.post("/admin/test/", content_type="application/json", data=json.dumps({"test": "data"}))
+        request = self.factory.post(
+            "/admin/test/",
+            content_type="application/json",
+            data=json.dumps({"test": "data"}),
+        )
         request.user = Mock()
         request.user.is_authenticated = False
 
@@ -894,7 +910,14 @@ class AmbienteModelTestCase(TestCase):
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
 
         ambiente = Ambiente(
-            **(AMBIENTE_GOOD_SGA | {"tool_sga_active": False, "local_suap_active": False, "expressao_seletora": ""})
+            **(
+                AMBIENTE_GOOD_SGA
+                | {
+                    "tool_sga_active": False,
+                    "local_suap_active": False,
+                    "expressao_seletora": "",
+                }
+            )
         )
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_OK))
         self.assertFalse(ambiente.check_selectable(AmbienteModelTestCase.SYNC_JSON_NOT_OK))
@@ -1178,7 +1201,13 @@ class DecoratorsTestCase(TestCase):
 
     def test_exception_as_json_decorator_with_sync_error_and_retorno(self):
         """Testa decorator exception_as_json com SyncError contendo retorno (supressão de trace)."""
-        error_payload = {"error": {"message": "Erro do Moodle", "code": 527, "trace": "Traceback aqui"}}
+        error_payload = {
+            "error": {
+                "message": "Erro do Moodle",
+                "code": 527,
+                "trace": "Traceback aqui",
+            }
+        }
 
         @exception_as_json
         def test_view(request):
@@ -1405,7 +1434,12 @@ class DecoratorsTestCase(TestCase):
 
         request = self.factory.get("/test/")
         request.json_recebido = {
-            "check_json": {"error": {"code": 512, "message": "Foi enviado um JSON mal formado ou nem é JSON."}}
+            "check_json": {
+                "error": {
+                    "code": 512,
+                    "message": "Foi enviado um JSON mal formado ou nem é JSON.",
+                }
+            }
         }
         with self.assertRaises(SyncError) as context:
             test_view(request)
@@ -1560,7 +1594,10 @@ class TrySolicitacaoDecoratorTestCase(TestCase):
             "diario": {"id": 123},
         }
 
-        with patch("integrador.models.Solicitacao.objects.create", side_effect=Exception("Database failure")):
+        with patch(
+            "integrador.models.Solicitacao.objects.create",
+            side_effect=Exception("Database failure"),
+        ):
             with self.assertRaises(SyncError) as context:
                 test_view(request)
             self.assertEqual(context.exception.code, 500)
@@ -1584,7 +1621,11 @@ class CohortSelecaoTestCase(TestCase):
         "campus": {"id": 14, "sigla": "ZL", "descricao": "Campus EaD"},
         "curso": {"id": 2, "codigo": "99999", "nome": "Curso Sem Polo"},
         "turma": {"id": 3, "codigo": "20261.6.99999.1E"},
-        "componente": {"id": 2, "sigla": "TEC.9999", "descricao": "Disciplina Sem Polo"},
+        "componente": {
+            "id": 2,
+            "sigla": "TEC.9999",
+            "descricao": "Disciplina Sem Polo",
+        },
         "diario": {"id": 3, "sigla": "TEC.9999", "situacao": "Aberto"},
         "alunos": [
             {"polo": {"descricao": "Sem polo"}, "programa": "Institucional"},
@@ -1997,7 +2038,10 @@ class SolicitacaoAdminTestCase(TestCase):
 
     def test_links_with_dict_respondido(self):
         """Testa links quando respondido é um dicionário (ex: novo padrão sync_down_grades)."""
-        self.solicitacao.respondido = {"url": "http://moodle/course", "url_sala_coordenacao": "http://moodle/sala"}
+        self.solicitacao.respondido = {
+            "url": "http://moodle/course",
+            "url_sala_coordenacao": "http://moodle/sala",
+        }
         self.solicitacao.diario_codigo = "T123"
         self.solicitacao.diario_id = "456"
         result = self.admin.links(self.solicitacao)
@@ -2008,7 +2052,9 @@ class SolicitacaoAdminTestCase(TestCase):
     def test_get_urls_wrap_executes_admin_view_wrapper(self):
         """Testa wrapper de get_urls delegando para admin_site.admin_view."""
         with patch.object(
-            self.admin.admin_site, "admin_view", return_value=lambda *args, **kwargs: "ok"
+            self.admin.admin_site,
+            "admin_view",
+            return_value=lambda *args, **kwargs: "ok",
         ) as mock_admin_view:
             urls = self.admin.get_urls()
             callback = urls[0].callback
@@ -2092,7 +2138,9 @@ class BaseBrokerTestCase(TestCase):
         self.ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         self.solicitacao = Solicitacao.objects.create(
-            ambiente=self.ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido={"diario": {"id": 123}}
+            ambiente=self.ambiente,
+            operacao=Solicitacao.Operacao.SYNC_UP_DIARIO,
+            recebido={"diario": {"id": 123}},
         )
 
         self.broker = BaseBroker(self.solicitacao)
@@ -2192,9 +2240,17 @@ class Suap2LocalSuapBrokerTestCase(TestCase):
             diario_id="123",
             recebido={
                 "campus": {"id": 1, "sigla": "TEST", "descricao": "Campus Teste"},
-                "curso": {"id": 10, "codigo": "15806", "nome": "Sistemas Operacionais Abertos"},
+                "curso": {
+                    "id": 10,
+                    "codigo": "15806",
+                    "nome": "Sistemas Operacionais Abertos",
+                },
                 "turma": {"id": 2, "codigo": "T1"},
-                "componente": {"id": 5, "sigla": "TEC.1023", "descricao": "Bancos de Dados"},
+                "componente": {
+                    "id": 5,
+                    "sigla": "TEC.1023",
+                    "descricao": "Bancos de Dados",
+                },
                 "diario": {"id": 123, "sigla": "TEC.1023", "situacao": "Aberto"},
             },
         )
@@ -2247,7 +2303,11 @@ class Suap2LocalSuapBrokerTestCase(TestCase):
     @patch("integrador.brokers.suap2local_suap.http_get_json")
     def test_broker_sync_down_grades_success(self, mock_http_get_json):
         """Testa sync_down_grades com sucesso."""
-        mock_http_get_json.return_value = {"notas": [], "url": "http://", "url_sala_coordenacao": "http://"}
+        mock_http_get_json.return_value = {
+            "notas": [],
+            "url": "http://",
+            "url_sala_coordenacao": "http://",
+        }
 
         result = self.broker.sync_down_grades()
 
@@ -2335,7 +2395,9 @@ class ManagementCommandTestCase(TestCase):
         # Cria solicitações com diario_codigo nulo
         for i in range(3):
             sol = Solicitacao.objects.create(
-                ambiente=self.ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido={"diario": {"id": i}}
+                ambiente=self.ambiente,
+                operacao=Solicitacao.Operacao.SYNC_UP_DIARIO,
+                recebido={"diario": {"id": i}},
             )
             Solicitacao.objects.filter(pk=sol.pk).update(diario_codigo=None)
 
@@ -2351,7 +2413,9 @@ class ManagementCommandTestCase(TestCase):
         # Cria solicitação com diario_codigo nulo
         self.assertIsNotNone(self.ambiente)
         sol = Solicitacao.objects.create(
-            ambiente=self.ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido={"diario": {"id": 999}}
+            ambiente=self.ambiente,
+            operacao=Solicitacao.Operacao.SYNC_UP_DIARIO,
+            recebido={"diario": {"id": 999}},
         )
         sol.diario_codigo = None
         sol.save()
@@ -2393,14 +2457,26 @@ class IntegrationTestCase(TestCase):
 
         json_data = {
             "campus": {"id": 1, "sigla": "TEST", "descricao": "Campus Integration"},
-            "curso": {"id": 10, "codigo": "15806", "nome": "Sistemas Operacionais Abertos"},
+            "curso": {
+                "id": 10,
+                "codigo": "15806",
+                "nome": "Sistemas Operacionais Abertos",
+            },
             "turma": {"id": 2, "codigo": "T123"},
-            "componente": {"id": 5, "sigla": "COMP", "descricao": "Componente de Integração"},
+            "componente": {
+                "id": 5,
+                "sigla": "COMP",
+                "descricao": "Componente de Integração",
+            },
             "diario": {"id": 456, "sigla": "COMP", "situacao": "Aberto"},
             "professores": [],
         }
 
-        request = self.factory.post("/api/enviar_diarios/", data=json.dumps(json_data), content_type="application/json")
+        request = self.factory.post(
+            "/api/enviar_diarios/",
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
         request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
 
         response = sync_up_enrolments(request)
@@ -2439,7 +2515,11 @@ class IntegrationTestCase(TestCase):
             "professores": [],
         }
 
-        request = self.factory.post("/api/enviar_diarios/", data=json.dumps(json_data), content_type="application/json")
+        request = self.factory.post(
+            "/api/enviar_diarios/",
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
         request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
 
         response = sync_up_enrolments(request)
@@ -2474,7 +2554,11 @@ class IntegrationTestCase(TestCase):
             "professores": [],
         }
 
-        request = self.factory.post("/api/enviar_diarios/", data=json.dumps(json_data), content_type="application/json")
+        request = self.factory.post(
+            "/api/enviar_diarios/",
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
         request.META["HTTP_AUTHENTICATION"] = f"Token {TEST_TOKEN}"
 
         response = sync_up_enrolments(request)
@@ -2557,7 +2641,9 @@ class EdgeCasesTestCase(TestCase):
         ambiente = Ambiente.objects.create(**AMBIENTE_GOOD_SGA)
 
         solicitacao = Solicitacao.objects.create(
-            ambiente=ambiente, operacao=Solicitacao.Operacao.SYNC_UP_DIARIO, recebido={"diario": {"id": 1}}
+            ambiente=ambiente,
+            operacao=Solicitacao.Operacao.SYNC_UP_DIARIO,
+            recebido={"diario": {"id": 1}},
         )
 
         broker = Suap2LocalSuapBroker(solicitacao)
@@ -2626,7 +2712,8 @@ class MoodleMockTestCase(TestCase):
 
                     url = f"http://{host}:{port}/local/suap/api/index.php?sync_down_grades&diario_id=123"
                     req = urllib.request.Request(  # noqa: S310
-                        url, headers={"Authentication": f"Token {LocalSuapHTTPMock.TEST_TOKEN}"}
+                        url,
+                        headers={"Authentication": f"Token {LocalSuapHTTPMock.TEST_TOKEN}"},
                     )
                     with urllib.request.urlopen(req, timeout=2) as resp:  # noqa: S310
                         self.assertEqual(resp.status, 200)
@@ -2638,7 +2725,11 @@ class MoodleMockTestCase(TestCase):
                             "campus": {"id": 1, "sigla": "TEST", "descricao": "Test"},
                             "curso": {"id": 1, "codigo": "123", "nome": "Test"},
                             "turma": {"id": 1, "codigo": "123"},
-                            "componente": {"id": 1, "sigla": "TEST", "descricao": "Test"},
+                            "componente": {
+                                "id": 1,
+                                "sigla": "TEST",
+                                "descricao": "Test",
+                            },
                             "diario": {"id": 123, "sigla": "TEST", "situacao": "Test"},
                         }
                     ).encode("utf-8")
@@ -2682,3 +2773,48 @@ class MoodleMockTestCase(TestCase):
                 run_with_mock_exception(ValueError("another_exception"))
 
             stop_mock_moodle_server_in_background()
+
+
+class InternationalizationTestCase(TestCase):
+    def test_translations_in_supported_languages(self):
+        from django.utils import translation
+        from django.utils.translation import gettext as _
+
+        translations_expected = {
+            "en": {
+                "Informações Básicas": "Basic Information",
+                "Sucesso": "Success",
+                "Configurar ambientes": "Configure environments",
+                "Erro de Sincronização": "Synchronization Error",
+            },
+            "es": {
+                "Informações Básicas": "Información Básica",
+                "Sucesso": "Éxito",
+                "Configurar ambientes": "Configurar entornos",
+                "Erro de Sincronização": "Error de Sincronización",
+            },
+            "fr": {
+                "Informações Básicas": "Informations de base",
+                "Sucesso": "Succès",
+                "Configurar ambientes": "Configurer les environnements",
+                "Erro de Sincronização": "Erreur de synchronisation",
+            },
+            "zh-hans": {
+                "Informações Básicas": "基本信息",
+                "Sucesso": "成功",
+                "Configurar ambientes": "配置环境",
+                "Erro de Sincronização": "同步错误",
+            },
+            "pt-br": {
+                "Informações Básicas": "Informações Básicas",
+                "Sucesso": "Sucesso",
+                "Configurar ambientes": "Configurar ambientes",
+                "Erro de Sincronização": "Erro de Sincronização",
+            },
+        }
+
+        for lang, mapping in translations_expected.items():
+            with translation.override(lang):
+                for msgid, expected_msgstr in mapping.items():
+                    msg = f"Falha ao traduzir '{msgid}' para o idioma '{lang}'."
+                    self.assertEqual(str(_(msgid)), expected_msgstr, msg)

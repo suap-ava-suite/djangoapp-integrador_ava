@@ -91,7 +91,10 @@ class Suap2LocalSuapBroker(BaseBroker):
             get_nacionalidades(autoinscricao),
             get_alunos(autoinscricao.get("campi", []), "m['campus']"),
             get_alunos(autoinscricao.get("modalidades", []), "m['detalhamento']['modalidade']"),
-            get_alunos(autoinscricao.get("niveis_ensino", []), "m['detalhamento']['nivel_ensino']"),
+            get_alunos(
+                autoinscricao.get("niveis_ensino", []),
+                "m['detalhamento']['nivel_ensino']",
+            ),
             get_alunos(autoinscricao.get("cursos", []), "m['detalhamento']['curso']"),
         ]
         payload["turma"]["restricoes"] = " and ".join([r for r in restricoes if r != ""])
@@ -139,7 +142,13 @@ class Suap2LocalSuapBroker(BaseBroker):
         result = self.__post_json("sync_up_enrolments", self.solicitacao.enviado)
         result["ambiente"] = self.solicitacao.ambiente.base_url
 
-        for key in ["logMessages", "sala_tipo", "sincronizacao_url", "restricoes", "ids_suspensos"]:
+        for key in [
+            "logMessages",
+            "sala_tipo",
+            "sincronizacao_url",
+            "restricoes",
+            "ids_suspensos",
+        ]:
             result.pop(key, None)
         return result
 

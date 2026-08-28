@@ -36,12 +36,20 @@ def health(request):
         moodles[ambiente.nome] = {
             "url": ambiente.url,
             "local_suap": (
-                _check_plugin_token(ambiente.base_url, local_suap_token, "/local/suap/api/index.php?health")
+                _check_plugin_token(
+                    ambiente.base_url,
+                    local_suap_token,
+                    "/local/suap/api/index.php?health",
+                )
                 if ambiente.local_suap_active
                 else "INACTIVE"
             ),
             "tool_sga": (
-                _check_plugin_token(ambiente.base_url, tool_sga_token, "/admin/tool/sga/api/index.php?health")
+                _check_plugin_token(
+                    ambiente.base_url,
+                    tool_sga_token,
+                    "/admin/tool/sga/api/index.php?health",
+                )
                 if ambiente.tool_sga_active
                 else "INACTIVE"
             ),

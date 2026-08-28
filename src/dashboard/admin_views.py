@@ -8,9 +8,8 @@ import logging
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render
-
 from django.http import Http404
+from django.shortcuts import render
 from django.utils.translation import gettext as _
 
 from dashboard.storage import DashboardStorage
@@ -83,4 +82,3 @@ def admin_app_index_dashboard(request, app_label, extra_context=None):
 
     template_list = [f"admin/{app_label}/app_index.html", "admin/app_index.html"]
     return render(request, template_list, context)
-

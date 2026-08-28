@@ -72,7 +72,12 @@ class LocalSuapHTTPMock:
         auth = headers.get("Authentication") or headers.get("authentication")
         if auth is None:
             return MockHTTPResponse(
-                {"error": {"message": "Bad Request - Authentication not informed", "code": 400}},
+                {
+                    "error": {
+                        "message": "Bad Request - Authentication not informed",
+                        "code": 400,
+                    }
+                },
                 status_code=400,
             )
         if auth != f"Token {LocalSuapHTTPMock.TEST_TOKEN}":  #
@@ -111,7 +116,12 @@ class LocalSuapHTTPMock:
         ]
         if missing:
             return MockHTTPResponse(
-                {"error": {"message": f"Campos obrigatórios ausentes: {', '.join(missing)}", "code": 422}},
+                {
+                    "error": {
+                        "message": f"Campos obrigatórios ausentes: {', '.join(missing)}",
+                        "code": 422,
+                    }
+                },
                 status_code=422,
             )
         base = f"{parsed.scheme}://{parsed.netloc}"
@@ -143,7 +153,11 @@ class LocalSuapHTTPMock:
         )
 
     def request(
-        self, method: str, url: str, jsonbody: dict | None = None, headers: dict | None = None
+        self,
+        method: str,
+        url: str,
+        jsonbody: dict | None = None,
+        headers: dict | None = None,
     ) -> MockHTTPResponse:
         parsed = urlparse(url)
         if not parsed.path.endswith("/local/suap/api/index.php"):
@@ -202,7 +216,12 @@ class ToolSgaHTTPMock:
         auth = headers.get("Authentication") or headers.get("authentication")
         if auth is None:
             return MockHTTPResponse(
-                {"error": {"message": "Bad Request - Authentication not informed", "code": 400}},
+                {
+                    "error": {
+                        "message": "Bad Request - Authentication not informed",
+                        "code": 400,
+                    }
+                },
                 status_code=400,
             )
         if auth != f"Token {ToolSgaHTTPMock.TEST_TOKEN}":
@@ -213,7 +232,11 @@ class ToolSgaHTTPMock:
         return None
 
     def request(
-        self, method: str, url: str, jsonbody: dict | None = None, headers: dict | None = None
+        self,
+        method: str,
+        url: str,
+        jsonbody: dict | None = None,
+        headers: dict | None = None,
     ) -> MockHTTPResponse:
         parsed = urlparse(url)
         if not parsed.path.endswith(self.PLUGIN_PATH):
@@ -225,7 +248,12 @@ class ToolSgaHTTPMock:
 
         # Broker ainda não implementado — todos os serviços retornam 501
         return MockHTTPResponse(
-            {"error": {"message": "Broker tool_sga ainda não implementado.", "code": 501}},
+            {
+                "error": {
+                    "message": "Broker tool_sga ainda não implementado.",
+                    "code": 501,
+                }
+            },
             status_code=501,
         )
 

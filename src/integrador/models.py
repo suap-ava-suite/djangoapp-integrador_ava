@@ -14,7 +14,7 @@ from django.db.models import (
     TextField,
 )
 from django.utils.html import format_html
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django_better_choices import Choices
 from rule_engine import Rule
 
@@ -153,7 +153,10 @@ class Solicitacao(Model):
     @property
     def status_merged(self):
         return format_html(
-            "{}{}({})", Solicitacao.Status(self.status).icon, self.get_status_display(), self.status_code or ""
+            "{}{}({})",
+            Solicitacao.Status(self.status).icon,
+            self.get_status_display(),
+            self.status_code or "",
         )
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -166,7 +169,8 @@ class Solicitacao(Model):
             self.diario_id = diario.get("id", "")
             self.diario_codigo = f"{turma}.{componente}#{self.diario_id}"
             self.tipo = self.recebido.get("diario", {}).get(
-                "tipo", "regular" if self.operacao == Solicitacao.Operacao.SYNC_UP_DIARIO else None
+                "tipo",
+                ("regular" if self.operacao == Solicitacao.Operacao.SYNC_UP_DIARIO else None),
             )
         return super().save(
             force_insert=force_insert,

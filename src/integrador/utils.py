@@ -67,7 +67,14 @@ def http_get(url, headers: dict | None = None, encoding="utf-8", decode=True, **
     return _send_request(req, timeout, url, encoding, decode)
 
 
-def http_post(url, jsonbody: dict | None = None, headers: dict | None = None, encoding="utf-8", decode=True, **kwargs):
+def http_post(
+    url,
+    jsonbody: dict | None = None,
+    headers: dict | None = None,
+    encoding="utf-8",
+    decode=True,
+    **kwargs,
+):
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_SECONDS)
     req_headers = headers or {}
 
@@ -88,7 +95,12 @@ def http_get_json(url, headers={}, encoding="utf-8", json_kwargs=None, **kwargs)
 
 
 def http_post_json(
-    url, jsonbody: dict | None = None, headers: dict | None = None, encoding="utf-8", json_kwargs=None, **kwargs
+    url,
+    jsonbody: dict | None = None,
+    headers: dict | None = None,
+    encoding="utf-8",
+    json_kwargs=None,
+    **kwargs,
 ):
     content = http_post(url, jsonbody=jsonbody, headers=headers or {}, encoding=encoding, **kwargs)
     try:

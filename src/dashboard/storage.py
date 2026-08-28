@@ -82,10 +82,7 @@ class DashboardStorage:
 
             grupos_total = Group.objects.count()
             grupos_queryset = Group.objects.annotate(num_users=Count("user")).order_by("-num_users", "name")
-            grupos_detalhe = [
-                {"name": grupo.name, "usuarios_count": grupo.num_users}
-                for grupo in grupos_queryset
-            ]
+            grupos_detalhe = [{"name": grupo.name, "usuarios_count": grupo.num_users} for grupo in grupos_queryset]
 
             return {
                 "usuarios_total": usuarios_total,
