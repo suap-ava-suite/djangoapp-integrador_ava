@@ -1,4 +1,4 @@
-# Project Overview
+# AGENTS Instructions
 
 - **Backend:** Django
 - **Frontend:** Django Templates with vanilla JavaScript
