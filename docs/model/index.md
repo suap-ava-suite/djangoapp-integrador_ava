@@ -99,7 +99,9 @@ operações.
 | `SUDiario`    | Sync UP: Diário      | Enviar matrícula/papéis ao Moodle      |
 | `SDNotas`     | Sync DOWN: Notas     | Baixar notas do Moodle                 |
 
-Os schemas JSON de cada operação (`SUDiario.schema.json` e `SDNotas.schema.json`) são carregados sob demanda (*lazy loading*) e mantidos em cache. Podem ser acessados através da propriedade `.schema` de cada membro ou pelo método de classe `Solicitacao.Operacao.get_schema(valor)`.
+Os schemas JSON de cada operação (`SUDiario.schema.json` e `SDNotas.schema.json`) são carregados sob demanda
+(*lazy loading*) e mantidos em cache. Podem ser acessados através da propriedade `.schema` de cada membro ou pelo
+método de classe `Solicitacao.Operacao.get_schema(valor)`.
 
 - Ordenação padrão `["-timestamp"]` (mais recente primeiro)
 

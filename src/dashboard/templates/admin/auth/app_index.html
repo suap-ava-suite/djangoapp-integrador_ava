@@ -9,51 +9,51 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main">
-    <div class="dashboard-grid">
+    <div id="content-main">
+        <div class="dashboard-grid">
 
         <!-- Card 1: Métricas de Usuários -->
-        <div class="dashboard-card">
-            <h3><a href="{% url "admin:auth_user_changelist" %}">{% translate "Usuários" %}</a> <a href="{% url "admin:auth_user_add" %}" class="add-button">+</a></h3>
-            <div class="card-stat">
-                <span class="stat-label">{% translate "Total de usuários" %}</span>
-                <span class="stat-value">{{ usuarios_total|localize }}</span>
+            <div class="dashboard-card">
+                <h3><a href="{% url "admin:auth_user_changelist" %}">{% translate "Usuários" %}</a> <a href="{% url "admin:auth_user_add" %}" class="add-button">+</a></h3>
+                <div class="card-stat">
+                    <span class="stat-label">{% translate "Total de usuários" %}</span>
+                    <span class="stat-value">{{ usuarios_total|localize }}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">{% translate "Ativos" %}</span>
+                    <span class="stat-badge success">{{ usuarios_ativos|localize }}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">{% translate "Inativos" %}</span>
+                    <span class="stat-badge danger">{{ usuarios_inativos|localize }}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">{% translate "Equipe / Staff" %}</span>
+                    <span class="stat-badge">{{ usuarios_equipe|localize }}</span>
+                </div>
             </div>
-            <div class="card-stat">
-                <span class="stat-label">{% translate "Ativos" %}</span>
-                <span class="stat-badge success">{{ usuarios_ativos|localize }}</span>
-            </div>
-            <div class="card-stat">
-                <span class="stat-label">{% translate "Inativos" %}</span>
-                <span class="stat-badge danger">{{ usuarios_inativos|localize }}</span>
-            </div>
-            <div class="card-stat">
-                <span class="stat-label">{% translate "Equipe / Staff" %}</span>
-                <span class="stat-badge">{{ usuarios_equipe|localize }}</span>
-            </div>
-        </div>
 
         <!-- Card 2: Métricas de Grupos e Usuários por Grupo -->
-        <div class="dashboard-card">
-            <h3><a href="{% url "admin:auth_group_changelist" %}">{% translate "Grupos" %}</a> <a href="{% url "admin:auth_group_add" %}" class="add-button">+</a></h3>
-            <div class="card-stat">
-                <span class="stat-label">{% translate "Total de grupos" %}</span>
-                <span class="stat-value">{{ grupos_total|localize }}</span>
+            <div class="dashboard-card">
+                <h3><a href="{% url "admin:auth_group_changelist" %}">{% translate "Grupos" %}</a> <a href="{% url "admin:auth_group_add" %}" class="add-button">+</a></h3>
+                <div class="card-stat">
+                    <span class="stat-label">{% translate "Total de grupos" %}</span>
+                    <span class="stat-value">{{ grupos_total|localize }}</span>
+                </div>
+                {% if grupos_detalhe %}
+                    <div class="stat-subhead">{% translate "Usuários por grupo" %}</div>
+                    <ul class="detail-list">
+                        {% for grupo in grupos_detalhe %}
+                            <li class="detail-item">
+                                <span class="detail-name">{{ grupo.name }}</span>
+                                <span class="stat-badge">{{ grupo.usuarios_count|localize }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-notice">{% translate "Nenhum grupo cadastrado." %}</p>
+                {% endif %}
             </div>
-            {% if grupos_detalhe %}
-                <div class="stat-subhead">{% translate "Usuários por grupo" %}</div>
-                <ul class="detail-list">
-                    {% for grupo in grupos_detalhe %}
-                        <li class="detail-item">
-                            <span class="detail-name">{{ grupo.name }}</span>
-                            <span class="stat-badge">{{ grupo.usuarios_count|localize }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="empty-notice">{% translate "Nenhum grupo cadastrado." %}</p>
-            {% endif %}
         </div>
     </div>
-</div>
 {% endblock %}

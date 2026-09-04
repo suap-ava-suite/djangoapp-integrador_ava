@@ -9,71 +9,71 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main">
-    <div class="integrador-dashboard-container">
+    <div id="content-main">
+        <div class="integrador-dashboard-container">
         <!-- Coluna da Esquerda: Ambientes e Solicitações um abaixo do outro -->
-        <div class="integrador-stats-column">
+            <div class="integrador-stats-column">
             <!-- Card 1: Ambientes -->
-            <div class="dashboard-card">
-                <h3><a href="{% url "admin:integrador_ambiente_changelist" %}">{% translate "Ambientes" %}</a> <a href="{% url "admin:integrador_ambiente_add" %}" class="add-button">+</a></h3>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Total de Ambientes" %}</span>
-                    <span class="stat-value">{{ ambientes_total|localize }}</span>
+                <div class="dashboard-card">
+                    <h3><a href="{% url "admin:integrador_ambiente_changelist" %}">{% translate "Ambientes" %}</a> <a href="{% url "admin:integrador_ambiente_add" %}" class="add-button">+</a></h3>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Total de Ambientes" %}</span>
+                        <span class="stat-value">{{ ambientes_total|localize }}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Ativos" %}</span>
+                        <span class="stat-badge success">{{ ambientes_ativos|localize }}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Com erros" %}</span>
+                        <span class="stat-badge danger">{{ ambientes_com_erro|localize }}</span>
+                    </div>
                 </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Ativos" %}</span>
-                    <span class="stat-badge success">{{ ambientes_ativos|localize }}</span>
-                </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Com erros" %}</span>
-                    <span class="stat-badge danger">{{ ambientes_com_erro|localize }}</span>
-                </div>
-            </div>
 
             <!-- Card 2: Solicitações de Integração -->
-            <div class="dashboard-card">
-                <h3><a href="{% url "admin:integrador_solicitacao_changelist" %}">{% translate "Solicitações de integração" %}</a> <a href="{% url "admin:integrador_solicitacao_add" %}" class="add-button">+</a></h3>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Últimas 24h" %}</span>
-                    <span class="stat-value">{{ solicitacoes_24h|localize }}</span>
-                </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Sucesso" %}</span>
-                    <span class="stat-badge success">{{ solicitacoes_sucesso|localize }}</span>
-                </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Falhas" %}</span>
-                    <span class="stat-badge danger">{{ solicitacoes_falha|localize }}</span>
-                </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Processando" %}</span>
-                    <span class="stat-badge warning">{{ solicitacoes_processando|localize }}</span>
-                </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Taxa de sucesso" %}</span>
-                    <span class="stat-value">{{ taxa_sucesso|localize }}%</span>
-                </div>
-                <div class="card-stat">
-                    <span class="stat-label">{% translate "Total processadas" %}</span>
-                    <span class="stat-badge">{{ total_solicitacoes|localize }}</span>
+                <div class="dashboard-card">
+                    <h3><a href="{% url "admin:integrador_solicitacao_changelist" %}">{% translate "Solicitações de integração" %}</a> <a href="{% url "admin:integrador_solicitacao_add" %}" class="add-button">+</a></h3>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Últimas 24h" %}</span>
+                        <span class="stat-value">{{ solicitacoes_24h|localize }}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Sucesso" %}</span>
+                        <span class="stat-badge success">{{ solicitacoes_sucesso|localize }}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Falhas" %}</span>
+                        <span class="stat-badge danger">{{ solicitacoes_falha|localize }}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Processando" %}</span>
+                        <span class="stat-badge warning">{{ solicitacoes_processando|localize }}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Taxa de sucesso" %}</span>
+                        <span class="stat-value">{{ taxa_sucesso|localize }}%</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">{% translate "Total processadas" %}</span>
+                        <span class="stat-badge">{{ total_solicitacoes|localize }}</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
         <!-- Coluna da Direita: Gráfico da Série Temporal de Solicitações -->
-        <div class="integrador-chart-column">
-            <div class="dashboard-card integrador-chart-card">
-                <h3>{% translate "Série temporal de solicitações (histórica)" %}</h3>
-                <div class="chart-area">
-                    <canvas id="solicitacoes-series-chart"
-                            aria-label="{% translate "Série temporal de solicitações" %}"
-                            role="img"></canvas>
+            <div class="integrador-chart-column">
+                <div class="dashboard-card integrador-chart-card">
+                    <h3>{% translate "Série temporal de solicitações (histórica)" %}</h3>
+                    <div class="chart-area">
+                        <canvas id="solicitacoes-series-chart"
+                                aria-label="{% translate "Série temporal de solicitações" %}"
+                                role="img"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
+        <script>window.dashboardChartData = {{ solicitacoes_series|safe }};</script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="{% static "integrador/js/dashboard-chart.js" %}"></script>
     </div>
-    <script>window.dashboardChartData = {{ solicitacoes_series|safe }};</script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static "integrador/js/dashboard-chart.js" %}"></script>
-</div>
 {% endblock %}

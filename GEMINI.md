@@ -30,3 +30,19 @@ sas test integrador
 ## How to use Docker Compose
 
 In this project we use `sas` as short to `docker compose`.
+
+## Pre-commit, Pre-push e Validação com Act
+
+- Antes de realizar commits ou subir alterações (push), ative o ambiente virtual `.venv` do projeto.
+- Execute a verificação de pre-commit e pre-push localmente:
+
+  ```bash
+  pre-commit run --all-files
+  pre-commit run --hook-stage pre-push --all-files
+  ```
+
+- Valide os workflows do GitHub Actions localmente utilizando `act` antes de realizar o push:
+
+  ```bash
+  act -j test
+  ```
