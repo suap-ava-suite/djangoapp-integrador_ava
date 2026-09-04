@@ -16,6 +16,9 @@
 
 - A imagem base Docker (`ctezlifrn/avaintegrationbase:<versao>`) especificada em `ARG BASEIMAGE` no `Dockerfile` é
   publicada no Docker Hub via CI/CD quando uma nova versão/tag do repositório `avaintegration_metapackage` é lançada.
+- A tag publicada no Docker Hub utiliza o prefixo 'v' (ex: `v6.0.8.42`). Portanto, `ARG BASEIMAGE` no `Dockerfile`
+  deve obrigatoriamente incluir o prefixo 'v' (ex: `ARG BASEIMAGE=v6.0.8.42`) para evitar erros de
+  `image not found` no CI/CD.
 - Ao atualizar a dependência `avaintegration-metapackage` no `pyproject.toml`, **NÃO** altere `ARG BASEIMAGE` no
   `Dockerfile` a menos que a versão correspondente da imagem Docker já tenha sido publicada no Docker Hub. Caso a
   versão do metapackage ainda não possua uma imagem base publicada no Docker Hub, mantenha `ARG BASEIMAGE` na última
