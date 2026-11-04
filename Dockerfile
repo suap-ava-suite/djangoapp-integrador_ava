@@ -1,4 +1,4 @@
-ARG BASEIMAGE=v6.0.8.49
+ARG BASEIMAGE=v6.0.8.50
 
 
 #########################
