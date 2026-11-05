@@ -230,7 +230,8 @@ jobs:
           "
 
   deploy-to-prod:
-    runs-on: [self-hosted, runner-dead]
+    # Label exclusivo do runner com acesso SSH ao servidor de produção (o label runner-dead é compartilhado)
+    runs-on: [self-hosted, runner-cnat-suap-ava]
     needs: publish-to-dockerhub
     # Filtra estritamente para rodar se for uma tag que NÃO possui o sufixo '-test'
     if: |
