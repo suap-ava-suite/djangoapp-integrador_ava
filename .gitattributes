@@ -1,0 +1,2 @@
+# Dump do Moodle usado pelos testes de integração: não conta nas estatísticas de linguagem
+tests_integration/fixtures/*.sql linguist-vendored
